@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display } from "next/font/google";
+import { Radley, Abhaya_Libre, Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -14,11 +14,23 @@ const nouvelle = localFont({
   variable: "--font-nouvelle",
 });
 
+const radley = Radley({
+  variable: "--font-radley",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+});
+
+const abhaya = Abhaya_Libre({
+  variable: "--font-abhaya",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -32,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${nouvelle.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${nouvelle.variable} ${radley.variable} ${abhaya.variable} ${playfair.variable}`}>
       <body
         className="min-h-screen"
         style={{ fontFamily: "var(--font-nouvelle), -apple-system, sans-serif" }}

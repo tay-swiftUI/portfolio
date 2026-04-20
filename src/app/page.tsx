@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import LiquidGlass from "liquid-glass-react";
 
 // ─── Typewriter Hook ───
 function useRotatingTypewriter(
@@ -90,7 +91,7 @@ function TypewriterHeadline() {
     <div className="h-[80px] flex items-center justify-center">
       <h1
         className="text-5xl font-normal tracking-tight text-gray-900 whitespace-nowrap md:text-6xl"
-        style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}
+        style={{ fontFamily: "var(--font-radley), Georgia, serif" }}
       >
         {displayed}
         <motion.span
@@ -277,7 +278,15 @@ function NavPill({
       transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
       className="fixed top-6 left-1/2 z-50 -translate-x-1/2"
     >
-      <div className="glass-heavy flex items-center gap-1 rounded-full px-2 py-1.5">
+      <div className="flex items-center gap-1 rounded-full px-2 py-1.5"
+        style={{
+          background: "rgba(255, 255, 255, 0.75)",
+          backdropFilter: "blur(40px) saturate(180%)",
+          WebkitBackdropFilter: "blur(40px) saturate(180%)",
+          border: "1px solid rgba(255, 255, 255, 0.6)",
+          boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+        }}
+      >
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -297,7 +306,7 @@ function NavPill({
             )}
             <span
               className={`relative z-10 ${
-                active === tab ? "text-white" : "text-gray-600 hover:text-black"
+                active === tab ? "text-white" : "text-gray-500 hover:text-black"
               }`}
             >
               {tab}
@@ -312,6 +321,7 @@ function NavPill({
 // ─── Experience Card ───
 function ExpCard({
   company,
+  logo,
   role,
   period,
   description,
@@ -320,6 +330,7 @@ function ExpCard({
   index,
 }: {
   company: string;
+  logo: string;
   role: string;
   period: string;
   description: string;
@@ -336,16 +347,27 @@ function ExpCard({
       transition={{ delay: index * 0.1 }}
       layout
       onClick={() => setOpen(!open)}
-      className="cursor-pointer glass-card rounded-2xl p-6"
+      className="cursor-pointer rounded-3xl p-6"
+      style={{
+        background: "rgba(255, 255, 255, 0.75)",
+        backdropFilter: "blur(40px) saturate(180%)",
+        WebkitBackdropFilter: "blur(40px) saturate(180%)",
+        border: "1px solid rgba(255, 255, 255, 0.6)",
+        boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
+      }}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-xl text-white text-sm font-bold"
-            style={{ background: color }}
-          >
-            {company[0]}
-          </div>
+          {logo ? (
+            <img src={logo} alt={company} className="h-12 w-12 rounded-xl object-cover" />
+          ) : (
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-xl text-white text-sm font-bold"
+              style={{ background: color }}
+            >
+              {company[0]}
+            </div>
+          )}
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{company}</h3>
             <p className="text-sm text-gray-500">{role}</p>
@@ -507,6 +529,48 @@ function IPhoneMockup({
         <p className="mt-0.5 text-xs text-gray-500">{description}</p>
         <span className="mt-2 inline-block rounded-full bg-white/60 backdrop-blur-sm px-2 py-0.5 text-[10px] font-medium text-gray-500 border border-white/50">{tag}</span>
       </div>
+    </motion.div>
+  );
+}
+
+// ─── Scrolling iPhone ───
+function ScrollingPhone({
+  src,
+  label,
+  index,
+  duration = 12,
+}: {
+  src: string;
+  label: string;
+  index: number;
+  duration?: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.12 }}
+      className="flex flex-col items-center"
+    >
+      <div className="relative w-[200px] h-[420px] rounded-[36px] border-[6px] border-gray-900 bg-black shadow-xl overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80px] h-[22px] bg-black rounded-b-xl z-20" />
+        <div className="w-full h-full rounded-[30px] overflow-hidden bg-gray-100 relative">
+          <motion.div
+            className="absolute top-0 left-0 w-full"
+            animate={{ y: ["0%", "-70%", "0%"] }}
+            transition={{
+              duration: duration,
+              repeat: Infinity,
+              ease: "easeInOut",
+              repeatDelay: 0.5,
+            }}
+          >
+            <img src={src} alt={label} className="w-full" />
+          </motion.div>
+        </div>
+        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-[35%] h-[3px] bg-gray-600 rounded-full z-20" />
+      </div>
+      <span className="mt-3 text-xs font-medium text-gray-500">{label}</span>
     </motion.div>
   );
 }
@@ -731,48 +795,74 @@ function PrototypesView() {
 const experiences = [
   {
     company: "Electronic Arts",
-    role: "Design Engineer",
-    period: "2024 — Present",
+    logo: "/logos/ea.jpg",
+    role: "Design Engineer — Parasoul (iOS)",
+    period: "Mar 2025 — Present",
     description:
-      "Building and owning the ML design system for Parasoul — a social iOS app. Architected 92+ SwiftUI components, design tokens, and a comprehensive Figma catalog with 1:1 code mapping.",
+      "Building and owning the design system for Parasoul, a generative AI social platform. Bridging design and engineering across SwiftUI components, interactive prototypes, and real-time AI features.",
     highlights: [
-      "Architected design token system (color, typography, spacing, icons, gradients)",
-      "Built component library adopted across 90+ production screens",
-      "Created Figma-to-code documentation bridging design and engineering",
-      "Migrated legacy component system to new design language",
+      "Architected and maintained a 92+ component design system (SwiftUI) with tokens for color, typography, spacing, icons, gradients, and corner radius",
+      "Built a comprehensive Figma-to-code component catalog with 1:1 mapping, enabling product teams to self-serve without designer involvement",
+      "Developed interactive AI features including real-time character chat, generative storylines, and AI-driven world creation flows",
+      "Created custom animations and micro-interactions — spring physics buttons, chat bubble transitions, parallax scroll effects, and gesture-driven interfaces",
+      "Implemented custom squircle corner smoothing algorithm matching Figma's 100% smoothing spec for pixel-perfect design fidelity",
+      "Built avatar system (Creator, Character, World) with 8 size tokens, gradient fallbacks, and transparent video compositing via Metal shaders",
+      "Migrated legacy component library (Air*) to new MetaLab design language (ML*) while maintaining backwards compatibility across 90+ production screens",
+      "Collaborated directly with MetaLab design agency, translating Figma specs to production Swift and identifying documentation gaps",
     ],
     color: "#0071E3",
   },
   {
-    company: "Spotify",
-    role: "iOS Engineer",
-    period: "Previous",
+    company: "Sidework",
+    logo: "/logos/sidework.png",
+    role: "Product Design Engineer",
+    period: "Mar 2024 — Mar 2025",
     description:
-      "Contributed to the Spotify iOS app, working on user-facing features and performance improvements at massive scale.",
+      "Drove 0→1 product development in a fast-paced startup, combining user research, design, prototyping, and engineering to transform abstract concepts into production-ready features.",
     highlights: [
-      "Built features reaching millions of daily active users",
-      "Worked with Swift and UIKit in a large-scale codebase",
-      "Collaborated with cross-functional design and product teams",
+      "Built high-fidelity, interactive prototypes in Figma to validate new product ideas and complex user flows, accelerating alignment and decision-making",
+      "Spearheaded a UX redesign informed by behavioral analysis, reducing user errors and support tickets by 40%",
+      "Engineered redesigned UI components and flows in Flutter with pixel-perfect fidelity and accessibility compliance",
+      "Developed a scalable design system to unify visual language and interaction patterns, streamlining development and ensuring consistency",
+      "Iterated rapidly on prototypes based on qualitative and quantitative feedback, improving usability and adoption before engineering implementation",
+    ],
+    color: "#3DC1B8",
+  },
+  {
+    company: "Spotify",
+    logo: "/logos/spotify.png",
+    role: "iOS Engineer",
+    period: "Oct 2022 — Mar 2024",
+    description:
+      "Developed a new Ads UI that delivered a 61% increase in click-through rates and a 120% surge in global video click-through rates.",
+    highlights: [
+      "Delivered 61% increase in overall ad click-through rates and 120% surge in global video CTR",
+      "Designed an accessibility-first color-extraction algorithm that dynamically adjusted hue, brightness, and contrast for compliance",
+      "Co-created a modular iOS design system for ad formats, enabling scalability and consistency across teams",
+      "Collaborated cross-functionally with designers, PMs, and engineers to align on user needs, brand guidelines, and feasibility",
     ],
     color: "#1DB954",
   },
   {
     company: "Nike",
+    logo: "/logos/nike.svg",
     role: "iOS Engineer",
-    period: "Previous",
+    period: "Aug 2021 — Oct 2022",
     description:
-      "Developed iOS experiences for Nike's digital ecosystem, focusing on interactive and motion-driven interfaces.",
+      "Worked on the Activity & Innovation team (Valiant Labs) to develop a running app targeting first-time female runners, with emphasis on inclusive design and supportive UX.",
     highlights: [
-      "Built interactive UI components with custom animations",
-      "Contributed to Nike's iOS design system",
-      "Worked on performance-critical rendering and smooth 60fps interactions",
+      "Contributed to design and development of an inclusive running experience for underserved users",
+      "Prioritized user-centered approach to foster a supportive running community",
+      "Contributed to a design system fitting Nike's brand and UX standards, ensuring consistency and scalability",
+      "Focused on usability, aesthetics, and accessible design patterns throughout the app",
     ],
     color: "#111111",
   },
 ];
 
 const prototypes: { title: string; description: string; tag: string; gifSrc?: string; videoSrc?: string }[] = [
-  { title: "Design System Catalog", description: "92+ components with 1:1 Figma-to-code mapping", tag: "SwiftUI" },
+  { title: "World Profile", description: "Immersive world profile with avatar, feed, and floating menu", tag: "SwiftUI", gifSrc: "/projects/world-profile.png" },
+  { title: "Character Chat", description: "Interactive AI character conversation with real-time responses", tag: "SwiftUI", videoSrc: "/projects/parasoul-chat.mp4" },
   { title: "Avatar System", description: "Creator, Character & World with gradient fallbacks", tag: "SwiftUI" },
   { title: "Squircle Corners", description: "Figma's 100% corner smoothing in Swift", tag: "SwiftUI" },
   { title: "Spring Animations", description: "Physics-based button interactions with haptics", tag: "UIKit" },
@@ -802,10 +892,491 @@ const bentoItems = [
   { label: "Design Inspiration", span: "col-span-2" },
 ];
 
+// ─── Projects Data ───
+const projects = [
+  {
+    id: "ea",
+    company: "Electronic Arts",
+    logo: "/logos/ea.jpg",
+    coverImage: "/projects/parasoul-cover.png",
+    coverVideos: ["/projects/discover-video.mp4", "/projects/feed-vid1.mp4"],
+    title: "Parasoul Design System",
+    subtitle: "Building the component library for a generative AI social platform",
+    role: "Design Engineer",
+    period: "2025",
+    color: "#0071E3",
+    overview: "Led the design and engineering of a comprehensive design system for Parasoul, EA's generative AI social app. Built 92+ SwiftUI components, established design tokens, and created a visual Figma catalog with 1:1 code mapping.",
+    impact: [
+      "92+ production components across 14 categories",
+      "Design token system covering color, typography, spacing, icons, gradients, and corner radius",
+      "Figma-to-code catalog enabling self-serve adoption by product teams",
+      "Custom squircle algorithm matching Figma's 100% corner smoothing",
+      "Avatar system with transparent video compositing via Metal shaders",
+    ],
+    tools: ["SwiftUI", "Swift 6", "Figma", "Metal", "GRPC"],
+    images: [],
+    sections: [
+      {
+        title: "Feed & Discovery",
+        subtitle: "Content browsing, storylines, and world exploration",
+        items: [
+          { label: "Feed", src: "/projects/Notifications.png", scroll: false },
+          { label: "Discovery", src: "/projects/discover-video.mp4", scroll: false },
+          { label: "Feed", src: "/projects/feed-vid1.mp4", scroll: false },
+        ],
+      },
+      {
+        title: "Profiles",
+        subtitle: "World, Character, and Creator profile experiences",
+        items: [
+          { label: "World Profile", src: "/projects/world-profile.png", scroll: false },
+          { label: "Character Profile", src: "/projects/character-profile-scroll.mp4", scroll: false },
+          { label: "Creator Profile", src: "/projects/creator-profile-scroll.mp4", scroll: false },
+        ],
+      },
+      {
+        title: "Chat",
+        subtitle: "AI character messaging and group conversations",
+        items: [
+          { label: "Messages", src: "/projects/char-1.png", scroll: false },
+          { label: "Group Chat", src: "/projects/group-chat.png", scroll: false },
+          { label: "Creator Chat", src: "/projects/creator-chat.png", scroll: false },
+          { label: "Chat Profile", src: "/projects/chat-profile.mp4", scroll: false },
+        ],
+      },
+      {
+        title: "Design Engineering Prototypes",
+        subtitle: "Interactive prototypes and custom interactions built in SwiftUI",
+        items: [
+          { label: "Character Chat", src: "/projects/parasoul-chat.mp4", scroll: false },
+          { label: "Placeholder", src: "", scroll: false },
+          { label: "Placeholder", src: "", scroll: false },
+        ],
+      },
+    ],
+  },
+  {
+    id: "sidework-pos",
+    company: "Sidework",
+    logo: "/logos/sidework.png",
+    coverImage: "/projects/sidework/Drinks-tab.png",
+    title: "Point of Sale Coffee Machine",
+    subtitle: "Designing the manager and barista experience for beverage dispensing",
+    role: "Product Design Engineer",
+    period: "2024 — 2025",
+    color: "#3DC1B8",
+    overview: "Designed and engineered the point-of-sale interface for Sidework's beverage dispenser, used by baristas and managers in coffee shops. Built data dashboards, drink management, audit logs, and reporting tools to streamline operations.",
+    impact: [
+      "Streamlined barista workflow for faster drink preparation",
+      "Manager dashboard with real-time sales and inventory data",
+      "Audit and reporting tools reducing operational overhead",
+    ],
+    tools: ["Flutter", "Figma", "Dart"],
+    images: [
+      "/projects/sidework/pos-cover.png",
+      "/projects/sidework/Drinks-tab.png",
+      "/projects/sidework/Dispensing-tab.png",
+      "/projects/sidework/history-tab.png",
+      "/projects/sidework/Modify-drinks.png",
+      "/projects/sidework/Data.png",
+      "/projects/sidework/Monthly-drinks.png",
+      "/projects/sidework/Report-drinks.png",
+      "/projects/sidework/Audit.png",
+      "/projects/sidework/gregs.png",
+    ],
+  },
+  {
+    id: "sidework",
+    company: "Sidework",
+    logo: "/logos/sidework.png",
+    coverImage: "/projects/self-serve-cover.png",
+    title: "Self Serve Kiosk",
+    subtitle: "Designing the next generation of beverage dispensing",
+    role: "Product Design Engineer",
+    period: "2024 — 2025",
+    color: "#3DC1B8",
+    overview: "Drove product development from concept to launch, combining user research, high-fidelity Figma prototyping, and Flutter engineering. Spearheaded a UX redesign that reduced support tickets by 40%.",
+    impact: [
+      "40% reduction in user errors and support tickets",
+      "High-fidelity interactive prototypes accelerating stakeholder alignment",
+      "Scalable design system unifying visual language across the product",
+      "Pixel-perfect Flutter implementation with accessibility compliance",
+    ],
+    tools: ["Flutter", "Figma", "Dart"],
+    images: [
+      "/projects/sidework/kiosk.png",
+      "/projects/sidework/Drink-selection.png",
+      "/projects/sidework/Drink-details.png",
+      "/projects/sidework/kiosk2.png",
+      "/projects/sidework/kiosk3.png",
+    ],
+  },
+  {
+    id: "spotify",
+    company: "Spotify",
+    logo: "/logos/spotify.png",
+    title: "Ads UI Redesign",
+    subtitle: "61% CTR increase through interactive ad formats and accessibility-first design",
+    role: "iOS Engineer",
+    period: "2022 — 2024",
+    color: "#1DB954",
+    overview: "Redesigned Spotify's ad experience on iOS, delivering a 61% increase in click-through rates and 120% surge in global video CTR. Built an accessibility-first color extraction algorithm and co-created a modular design system for ad formats.",
+    impact: [
+      "61% increase in overall ad click-through rates",
+      "120% surge in global video click-through rates",
+      "Accessibility-first color extraction algorithm for dynamic contrast",
+      "Modular iOS design system for scalable ad formats",
+    ],
+    tools: ["Swift", "UIKit", "Accessibility", "Core Image"],
+    coverImage: "/projects/spotify/chd-phone.png",
+    coverVideo: "/projects/spotify/ad-formats.mp4",
+    images: [
+      "/projects/spotify/spotify1.png",
+      "/projects/spotify/spotify2.png",
+      "/projects/spotify/spotify3.png",
+      "/projects/spotify/spotify-chd.png",
+    ],
+  },
+  {
+    id: "nike",
+    company: "Nike",
+    logo: "/logos/nike.svg",
+    title: "Momentum",
+    subtitle: "Nike's digital running experience for first-time female runners",
+    role: "iOS Engineer",
+    period: "2021 — 2022",
+    color: "#111111",
+    overview: "Momentum is Nike's latest digital running experience. Featuring audio-guided runs, daily missions, and coaches that \"are like you,\" the app is designed to help people start and maintain a running habit.",
+    impact: [
+      "User-centered design approach for underserved runner demographic",
+      "Design system maintaining Nike's brand and UX standards",
+      "Emphasis on accessibility, inclusivity, and supportive community features",
+    ],
+    tools: ["Swift", "SwiftUI", "UIKit"],
+    images: [
+      "/projects/nike/Momentum1.png",
+      "/projects/nike/momentum2.png",
+      "/projects/nike/momentum3.png",
+    ],
+    coverImage: "/projects/nike/nike-cover.png",
+    heroImage: "/projects/nike/momentum-header.avif",
+    dividerImage: "/projects/nike/momentum-divider.png",
+  },
+];
+
+// ─── Projects View ───
+function ProjectsView() {
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const project = projects.find((p) => p.id === selectedProject);
+
+  return (
+    <div>
+      <AnimatePresence mode="wait">
+        {!selectedProject ? (
+          <motion.div
+            key="grid"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <h2 className="mb-2 text-sm font-medium tracking-wide text-gray-400 uppercase">
+              Case Studies
+            </h2>
+            <p className="mb-10 text-3xl font-semibold tracking-tight text-gray-900">
+              Selected Projects
+            </p>
+
+            <div className="grid grid-cols-2 gap-5">
+              {projects.map((p, i) => (
+                <motion.div
+                  key={p.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: i * 0.06 }}
+                  whileHover={{ y: -3 }}
+                  onClick={() => setSelectedProject(p.id)}
+                  className="cursor-pointer rounded-3xl p-5 transition-shadow hover:shadow-lg"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.75)",
+                    backdropFilter: "blur(40px) saturate(180%)",
+                    WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                    border: "1px solid rgba(255, 255, 255, 0.6)",
+                    boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
+                  }}
+                >
+                  {/* Thumbnail */}
+                  <div className="mb-4 rounded-xl overflow-hidden bg-white">
+                    {(p as any).coverVideo ? (
+                      <video
+                        src={(p as any).coverVideo}
+                        autoPlay loop muted playsInline
+                        className="w-full aspect-[4/3] object-cover"
+                      />
+                    ) : (p as any).coverVideos && (p as any).coverImage ? (
+                      <div className="relative w-full aspect-[4/3]">
+                        <img src={(p as any).coverImage} alt={p.title} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 flex items-center justify-center gap-4">
+                          {(p as any).coverVideos.map((vid: string, vi: number) => (
+                            <div key={vi} className="relative w-[90px] h-[190px] rounded-[20px] border-[3px] border-gray-900 bg-black shadow-xl overflow-hidden">
+                              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[36px] h-[10px] bg-black rounded-b-lg z-10" />
+                              <div className="w-full h-full rounded-[17px] overflow-hidden">
+                                <video src={vid} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+                              </div>
+                              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[30%] h-[2px] bg-gray-600 rounded-full" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (p as any).coverImage ? (
+                      <img src={(p as any).coverImage} alt={p.title} className="w-full aspect-[4/3] object-contain" />
+                    ) : (p as any).heroImage ? (
+                      <img src={(p as any).heroImage} alt={p.title} className="w-full aspect-[4/3] object-contain" />
+                    ) : p.images.length > 0 ? (
+                      <img src={p.images[0]} alt={p.title} className="w-full aspect-[4/3] object-contain" />
+                    ) : p.logo ? (
+                      <div className="w-full aspect-[4/3] flex items-center justify-center">
+                        <img src={p.logo} alt={p.company} className="h-16 w-16 rounded-xl object-cover opacity-40" />
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-[4/3] flex items-center justify-center bg-gray-100">
+                        <span className="text-sm text-gray-300">Thumbnail</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Company + Title */}
+                  <p className="text-xs text-gray-400 mt-1">{p.company}</p>
+                  <h3 className="text-sm font-semibold text-gray-900">{p.title}</h3>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        ) : project ? (
+          <motion.div
+            key="case-study"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Back */}
+            <motion.button
+              onClick={() => setSelectedProject(null)}
+              whileHover={{ x: -3 }}
+              className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 mb-10 transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M10 4L6 8L10 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              Back
+            </motion.button>
+
+            {/* Divider — intentionally removed from top, placed before Context */}
+
+            {/* Title */}
+            <h1
+              className="text-4xl font-bold tracking-tight text-gray-900 mb-3"
+            >
+              {project.title}
+            </h1>
+            <p className="text-lg text-gray-400 mb-10">
+              {project.subtitle}
+            </p>
+
+            {/* Metadata card */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-16">
+              <div className="grid grid-cols-5 gap-6">
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 mb-1">Role</p>
+                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{project.role}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 mb-1">Company</p>
+                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{project.company}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 mb-1">Team</p>
+                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>Product</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 mb-1">Timeline</p>
+                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{project.period}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 mb-1">Tools & Technologies</p>
+                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{project.tools.join("\n")}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Featured video */}
+            {"featuredVideo" in project && (project as any).featuredVideo && (
+              <div className="flex justify-center mb-16">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <div className="relative w-[300px] h-[620px] rounded-[52px] border-[8px] border-gray-900 bg-black shadow-2xl overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[28px] bg-black rounded-b-2xl z-10" />
+                    <div className="w-full h-full rounded-[44px] overflow-hidden bg-gray-100">
+                      <video
+                        src={(project as any).featuredVideo}
+                        autoPlay loop muted playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[35%] h-[4px] bg-gray-600 rounded-full" />
+                  </div>
+                </motion.div>
+              </div>
+            )}
+
+            {/* Featured image in phone */}
+            {"featuredImage" in project && (project as any).featuredImage && (
+              <div className="flex justify-center mb-16">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <div className="relative w-[300px] h-[620px] rounded-[52px] border-[8px] border-gray-900 bg-black shadow-2xl overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[28px] bg-black rounded-b-2xl z-10" />
+                    <div className="w-full h-full rounded-[44px] overflow-hidden bg-gray-100">
+                      <img
+                        src={(project as any).featuredImage}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[35%] h-[4px] bg-gray-600 rounded-full" />
+                  </div>
+                </motion.div>
+              </div>
+            )}
+
+            {/* Divider before context */}
+            {"dividerImage" in project && (project as any).dividerImage && (
+              <div className="mb-12 -mx-6 rounded-2xl overflow-hidden">
+                <img src={(project as any).dividerImage} alt="" className="w-full h-20 object-cover" />
+              </div>
+            )}
+
+            {/* Context */}
+            <div className="mb-16">
+              <h2
+                className="text-3xl font-bold text-gray-900 mb-2"
+              >
+                Context
+              </h2>
+              <p className="text-sm text-gray-400 mb-6" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>
+                {project.subtitle}
+              </p>
+              <div className="bg-white rounded-2xl border border-gray-100 p-8">
+                <p
+                  className="text-gray-600 leading-relaxed"
+                  style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}
+                >
+                  {project.overview}
+                </p>
+              </div>
+            </div>
+
+            {/* Full-bleed images (Nike style) */}
+            {"heroImage" in project && (project as any).heroImage && (
+              <div className="mb-12 -mx-6">
+                <img
+                  src={(project as any).heroImage}
+                  alt={project.title}
+                  className="w-full rounded-2xl"
+                />
+              </div>
+            )}
+
+            {project.images.length > 0 && !("sections" in project && (project as any).sections?.length > 0) && (
+              <div className="space-y-8 mb-16">
+                {project.images.map((img, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.15 }}
+                    className="-mx-6"
+                  >
+                    <img src={img} alt="" className="w-full rounded-2xl" />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+
+            {/* divider removed from bottom */}
+            {false && (
+              <div></div>
+            )}
+
+            {/* Screens by section (EA style) */}
+            {"sections" in project && (project as any).sections?.length > 0 && (project as any).sections?.map((section: any, si: number) => (
+              <div key={si} className="mb-16">
+                <div className="mb-8">
+                  <h2
+                    className="text-3xl font-bold text-gray-900 mb-2"
+                  >
+                    {section.title}
+                  </h2>
+                  <p className="text-sm text-gray-400" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>
+                    {section.subtitle}
+                  </p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-8">
+                  {section.items.map((item: any, i: number) => {
+                    const isVideo = item.src && (item.src.endsWith(".mp4") || item.src.endsWith(".mov"));
+
+                    if (item.scroll) {
+                      return <ScrollingPhone key={i} src={item.src} label={item.label} index={i} duration={item.duration || 12} />;
+                    }
+
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex flex-col items-center"
+                      >
+                        <div className="relative w-[200px] h-[420px] rounded-[36px] border-[6px] border-gray-900 bg-black shadow-xl overflow-hidden">
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80px] h-[22px] bg-black rounded-b-xl z-10" />
+                          <div className="w-full h-full rounded-[30px] overflow-hidden bg-gray-100">
+                            {isVideo ? (
+                              <video src={item.src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+                            ) : item.src ? (
+                              <img src={item.src} alt={item.label} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-200">
+                                <span className="text-xs text-gray-400">Coming soon</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-[35%] h-[3px] bg-gray-600 rounded-full" />
+                        </div>
+                        <span className="mt-3 text-xs font-medium text-gray-500">{item.label}</span>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ─── Page ───
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Home");
-  const tabs = ["Home", "Prototypes", "Playground", "Resume", "Life"];
+  const tabs = ["Home", "Projects", "Prototypes", "Playground", "Resume", "Life"];
 
   return (
     <>
@@ -865,13 +1436,26 @@ export default function Home() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 2.5 }}
-                  className="mt-8 max-w-lg text-xl text-gray-400 leading-relaxed font-light"
-                  style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}
+                  className="mt-8 max-w-lg text-xl text-gray-400 leading-relaxed"
+                  style={{ fontFamily: "var(--font-abhaya), Georgia, serif", fontWeight: 500 }}
                 >
                   Bridging people and technology through{" "}
-                  <span className="text-gray-900 font-medium">thoughtful design</span>
+                  <span className="text-gray-900 font-semibold">thoughtful design</span>
                 </motion.p>
               </section>
+            </motion.div>
+          )}
+
+          {/* ─── PROJECTS TAB ─── */}
+          {activeTab === "Projects" && (
+            <motion.div
+              key="projects"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ProjectsView />
             </motion.div>
           )}
 
