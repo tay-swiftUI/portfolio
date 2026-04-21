@@ -575,6 +575,133 @@ function ScrollingPhone({
   );
 }
 
+// ─── Contact Typewriter ───
+function ContactTypewriter() {
+  const phrases = [
+    { text: "Contact me", link: "", subtitle: "" },
+    { text: "Email me", link: "mailto:tbreitz16@gmail.com", subtitle: "tbreitz16@gmail.com" },
+    { text: "Connect with me", link: "https://linkedin.com/in/taylorbreitzman", subtitle: "linkedin.com/in/taylorbreitzman" },
+  ];
+
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function run() {
+      while (!cancelled) {
+        const phrase = phrases[phraseIndex % phrases.length];
+
+        // Type in
+        setTyping(true);
+        for (let i = 1; i <= phrase.text.length; i++) {
+          if (cancelled) return;
+          setDisplayed(phrase.text.slice(0, i));
+          await sleep(60);
+        }
+        setTyping(false);
+
+        // Hold
+        await sleep(3000);
+        if (cancelled) return;
+
+        // Delete
+        setTyping(true);
+        for (let i = phrase.text.length; i >= 0; i--) {
+          if (cancelled) return;
+          setDisplayed(phrase.text.slice(0, i));
+          await sleep(25);
+        }
+        setTyping(false);
+        await sleep(300);
+
+        setPhraseIndex((prev) => prev + 1);
+      }
+    }
+
+    run();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phraseIndex]);
+
+  const current = phrases[phraseIndex % phrases.length];
+
+  return (
+    <div className="flex flex-col">
+      <div className="h-[60px] flex items-center">
+        <h2
+          className="text-5xl tracking-tight text-gray-900 whitespace-nowrap"
+          style={{ fontFamily: "var(--font-radley), Georgia, serif" }}
+        >
+          {displayed}
+          <motion.span
+            animate={{ opacity: typing ? [1, 0] : 0 }}
+            transition={typing ? { duration: 0.5, repeat: Infinity } : { duration: 0.2 }}
+            className="inline-block w-[2px] h-[0.8em] bg-gray-900 ml-0.5 align-text-bottom"
+          />
+        </h2>
+      </div>
+      <div className="h-[30px] mt-2">
+        <AnimatePresence mode="wait">
+          {current.subtitle && !typing && displayed === current.text && (
+            <motion.a
+              key={current.subtitle}
+              href={current.link}
+              target={current.link.startsWith("http") ? "_blank" : undefined}
+              rel={current.link.startsWith("http") ? "noopener noreferrer" : undefined}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.3 }}
+              className="text-gray-400 hover:text-gray-900 transition-colors text-base"
+              style={{ fontFamily: "var(--font-abhaya), Georgia, serif" }}
+            >
+              {current.subtitle}
+            </motion.a>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+// ─── Carousel Phone (waits for media to load before showing) ───
+function CarouselPhone({ src, isVideo, title }: { src: string; isVideo: boolean; title: string }) {
+  const [ready, setReady] = useState(!isVideo); // images are ready immediately
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: ready ? 1 : 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="relative w-[280px] h-[580px] rounded-[48px] border-[8px] border-gray-900 bg-black shadow-2xl overflow-hidden"
+    >
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[28px] bg-black rounded-b-2xl z-10" />
+      <div className="w-full h-full rounded-[40px] overflow-hidden bg-gray-100">
+        {isVideo ? (
+          <video
+            src={src}
+            autoPlay loop muted playsInline
+            onLoadedData={() => setReady(true)}
+            className="w-full h-full object-cover"
+          />
+        ) : src ? (
+          <img src={src} alt={title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-200">
+            <span className="text-sm text-gray-400 font-medium">Add media</span>
+          </div>
+        )}
+      </div>
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[35%] h-[4px] bg-gray-600 rounded-full" />
+    </motion.div>
+  );
+}
+
 // ─── Prototypes View (Carousel + Grid toggle) ───
 function PrototypesView() {
   const [view, setView] = useState<"carousel" | "grid">("carousel");
@@ -689,48 +816,22 @@ function PrototypesView() {
                   </svg>
                 </motion.button>
 
-                {/* Phone */}
-                <motion.div
-                  whileHover={{ rotateX: -2, rotateY: 3, scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                  style={{ perspective: 800, transformStyle: "preserve-3d" }}
-                  className="relative w-[280px] h-[580px] rounded-[48px] border-[8px] border-gray-900 bg-black shadow-2xl overflow-hidden">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[28px] bg-black rounded-b-2xl z-10" />
-                  <AnimatePresence mode="wait" custom={direction}>
-                    <motion.div
-                      key={current}
-                      custom={direction}
-                      initial={(d: number) => ({ opacity: 0, x: d * 120, scale: 0.92, rotateY: d * 15 })}
-                      animate={{ opacity: 1, x: 0, scale: 1, rotateY: 0 }}
-                      exit={(d: number) => ({ opacity: 0, x: d * -120, scale: 0.92, rotateY: d * -15 })}
-                      transition={{ type: "spring", stiffness: 300, damping: 28 }}
-                      className="w-full h-full rounded-[40px] overflow-hidden bg-gray-100"
-                      style={{ perspective: 1000 }}
-                    >
-                      {prototypes[current].videoSrc ? (
-                        <video
-                          key={prototypes[current].videoSrc}
-                          src={prototypes[current].videoSrc}
-                          autoPlay loop muted playsInline
-                          className="w-full h-full object-cover"
-                        />
-                      ) : prototypes[current].gifSrc ? (
-                        <img
-                          src={prototypes[current].gifSrc}
-                          alt={prototypes[current].title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-200">
-                          <span className="text-sm text-gray-400 font-medium">
-                            Add media
-                          </span>
-                        </div>
-                      )}
-                    </motion.div>
-                  </AnimatePresence>
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[35%] h-[4px] bg-gray-600 rounded-full" />
-                </motion.div>
+                {/* Preload all videos hidden */}
+                <div className="hidden">
+                  {prototypes.map((p, i) => p.videoSrc && (
+                    <video key={i} src={p.videoSrc} preload="auto" muted />
+                  ))}
+                </div>
+
+                {/* Phone — entire device swaps */}
+                <AnimatePresence mode="wait">
+                  <CarouselPhone
+                    key={current}
+                    src={prototypes[current].videoSrc || prototypes[current].gifSrc || ""}
+                    isVideo={!!prototypes[current].videoSrc}
+                    title={prototypes[current].title}
+                  />
+                </AnimatePresence>
               </div>
 
               {/* Dots */}
@@ -780,6 +881,7 @@ function PrototypesView() {
                     tag={p.tag}
                     index={i}
                     gifSrc={p.gifSrc}
+                    videoSrc={p.videoSrc}
                   />
                 </motion.div>
               ))}
@@ -863,11 +965,11 @@ const experiences = [
 const prototypes: { title: string; description: string; tag: string; gifSrc?: string; videoSrc?: string }[] = [
   { title: "World Profile", description: "Immersive world profile with avatar, feed, and floating menu", tag: "SwiftUI", gifSrc: "/projects/world-profile.png" },
   { title: "Character Chat", description: "Interactive AI character conversation with real-time responses", tag: "SwiftUI", videoSrc: "/projects/parasoul-chat.mp4" },
-  { title: "Avatar System", description: "Creator, Character & World with gradient fallbacks", tag: "SwiftUI" },
-  { title: "Squircle Corners", description: "Figma's 100% corner smoothing in Swift", tag: "SwiftUI" },
-  { title: "Spring Animations", description: "Physics-based button interactions with haptics", tag: "UIKit" },
-  { title: "Chat Bubble System", description: "Adaptive bubbles with image and reaction variants", tag: "SwiftUI" },
-  { title: "Floating Menu", description: "Toolbar with drawing tools, mentions, and color picker", tag: "SwiftUI" },
+  { title: "Character Portal", description: "Animated portal avatar with transparent video compositing", tag: "Metal + SwiftUI", videoSrc: "/projects/character-portal.mp4" },
+  { title: "Galaxy Canvas", description: "Interactive particle canvas with gesture-driven star field", tag: "SwiftUI", videoSrc: "/projects/galaxy-canvas.mp4" },
+  { title: "Chat Bubble Animation", description: "Spring-driven message bubbles with staggered entrance transitions", tag: "SwiftUI", videoSrc: "/projects/chat-bubble-anim.mp4" },
+  { title: "Navigation Bar", description: "Custom tab bar with diamond divot indicator and fluid transitions", tag: "SwiftUI", videoSrc: "/projects/nav-bar.mp4" },
+  { title: "Split Pane", description: "Draggable split view with fluid resizing and snap points", tag: "SwiftUI", videoSrc: "/projects/split-pane.mp4" },
 ];
 
 const playgroundItems = [
@@ -882,14 +984,10 @@ const playgroundItems = [
   { title: "Skeleton Loading", description: "Shimmer with gradient mask animation", tag: "SwiftUI", emoji: "💀" },
 ];
 
-const bentoItems = [
-  { label: "Travel", span: "col-span-2 row-span-2" },
-  { label: "Music" },
-  { label: "Photography" },
-  { label: "Cooking", span: "col-span-2" },
-  { label: "Reading" },
-  { label: "Hiking" },
-  { label: "Design Inspiration", span: "col-span-2" },
+// Drop photos in /public/life/ and add paths here
+const lifePhotos: string[] = [
+  // "/life/photo1.jpg",
+  // "/life/photo2.jpg",
 ];
 
 // ─── Projects Data ───
@@ -900,12 +998,12 @@ const projects = [
     logo: "/logos/ea.jpg",
     coverImage: "/projects/parasoul-cover.png",
     coverVideos: ["/projects/discover-video.mp4", "/projects/feed-vid1.mp4"],
-    title: "Parasoul Design System",
-    subtitle: "Building the component library for a generative AI social platform",
+    title: "Parasoul",
+    subtitle: "Design system and product engineering for a generative AI social platform",
     role: "Design Engineer",
     period: "2025",
     color: "#0071E3",
-    overview: "Led the design and engineering of a comprehensive design system for Parasoul, EA's generative AI social app. Built 92+ SwiftUI components, established design tokens, and created a visual Figma catalog with 1:1 code mapping.",
+    overview: "Parasoul is EA's generative AI social app where users create characters, build worlds, and interact through AI-driven storylines. I joined as the sole design engineer responsible for the component library, working directly with MetaLab's design team to translate their Figma specs into production SwiftUI. I built and maintained 92+ components, established the design token system, and created a visual catalog ensuring 1:1 parity between design and code.",
     impact: [
       "92+ production components across 14 categories",
       "Design token system covering color, typography, spacing, icons, gradients, and corner radius",
@@ -919,6 +1017,7 @@ const projects = [
       {
         title: "Feed & Discovery",
         subtitle: "Content browsing, storylines, and world exploration",
+        body: "The feed is the heart of Parasoul — a TikTok-style vertical scroll of AI-generated storylines. Each card features looping video, character avatars, and engagement actions. Discovery lets users explore new worlds, genres, and creators through a visual grid that adapts to their interests.",
         items: [
           { label: "Feed", src: "/projects/Notifications.png", scroll: false },
           { label: "Discovery", src: "/projects/discover-video.mp4", scroll: false },
@@ -928,6 +1027,7 @@ const projects = [
       {
         title: "Profiles",
         subtitle: "World, Character, and Creator profile experiences",
+        body: "Parasoul has three distinct profile types — worlds, characters, and creators — each with their own avatar system, content layout, and interaction patterns. World profiles showcase lore, characters, and storylines. Character profiles feature animated portal avatars with transparent video compositing via Metal shaders. Creator profiles display a portfolio of their worlds and followers.",
         items: [
           { label: "World Profile", src: "/projects/world-profile.png", scroll: false },
           { label: "Character Profile", src: "/projects/character-profile-scroll.mp4", scroll: false },
@@ -937,6 +1037,7 @@ const projects = [
       {
         title: "Chat",
         subtitle: "AI character messaging and group conversations",
+        body: "Chat in Parasoul isn't just messaging — it's interactive storytelling. Users can have 1:1 conversations with AI characters that respond in-character, join group chats where multiple characters interact, and message creators directly. I built the chat bubble system with spring-driven entrance animations, typing indicators, and image attachments.",
         items: [
           { label: "Messages", src: "/projects/char-1.png", scroll: false },
           { label: "Group Chat", src: "/projects/group-chat.png", scroll: false },
@@ -947,10 +1048,9 @@ const projects = [
       {
         title: "Design Engineering Prototypes",
         subtitle: "Interactive prototypes and custom interactions built in SwiftUI",
+        body: "Beyond the design system, I built custom interactions that pushed SwiftUI's capabilities — from character portal avatars using Metal shader transparency to spring-physics chat animations and gesture-driven split pane navigation. These prototypes were used to align with design on interaction feel before committing to production implementation.",
         items: [
           { label: "Character Chat", src: "/projects/parasoul-chat.mp4", scroll: false },
-          { label: "Placeholder", src: "", scroll: false },
-          { label: "Placeholder", src: "", scroll: false },
         ],
       },
     ],
@@ -961,11 +1061,11 @@ const projects = [
     logo: "/logos/sidework.png",
     coverImage: "/projects/sidework/Drinks-tab.png",
     title: "Point of Sale Coffee Machine",
-    subtitle: "Designing the manager and barista experience for beverage dispensing",
+    subtitle: "The barista and manager interface for automated beverage dispensing",
     role: "Product Design Engineer",
     period: "2024 — 2025",
     color: "#3DC1B8",
-    overview: "Designed and engineered the point-of-sale interface for Sidework's beverage dispenser, used by baristas and managers in coffee shops. Built data dashboards, drink management, audit logs, and reporting tools to streamline operations.",
+    overview: "Sidework's beverage dispenser needed a POS interface that untrained staff could operate on day one. I designed and built the drink management, dispensing flow, order history, and reporting dashboard in Flutter. The key constraint: no barista training required. The machine handles recipe logic, so the UI just needs to be fast, clear, and error-proof.",
     impact: [
       "Streamlined barista workflow for faster drink preparation",
       "Manager dashboard with real-time sales and inventory data",
@@ -991,11 +1091,11 @@ const projects = [
     logo: "/logos/sidework.png",
     coverImage: "/projects/self-serve-cover.png",
     title: "Self Serve Kiosk",
-    subtitle: "Designing the next generation of beverage dispensing",
+    subtitle: "Customer-facing ordering for automated beverage dispensing",
     role: "Product Design Engineer",
     period: "2024 — 2025",
     color: "#3DC1B8",
-    overview: "Drove product development from concept to launch, combining user research, high-fidelity Figma prototyping, and Flutter engineering. Spearheaded a UX redesign that reduced support tickets by 40%.",
+    overview: "I designed the self-serve kiosk interface for locations without trained staff — think office lobbies and convenience stores. Users browse drinks by category, customize modifications (milk, syrup, ice), and dispense directly. My prototype reframed the machine's value proposition, leading Insomnia Cookies to greenlight a pilot. That pilot turned into a storytelling tool for meetings with Coke, Starbucks, Dutch Bros, Pepsi, and Inspire Brands.",
     impact: [
       "40% reduction in user errors and support tickets",
       "High-fidelity interactive prototypes accelerating stakeholder alignment",
@@ -1016,11 +1116,11 @@ const projects = [
     company: "Spotify",
     logo: "/logos/spotify.png",
     title: "Ads UI Redesign",
-    subtitle: "61% CTR increase through interactive ad formats and accessibility-first design",
+    subtitle: "Interactive ad formats that increased click-through rates by 61%",
     role: "iOS Engineer",
     period: "2022 — 2024",
     color: "#1DB954",
-    overview: "Redesigned Spotify's ad experience on iOS, delivering a 61% increase in click-through rates and 120% surge in global video CTR. Built an accessibility-first color extraction algorithm and co-created a modular design system for ad formats.",
+    overview: "I redesigned Spotify's ad experience on iOS, focusing on making ads feel native to the listening experience rather than interruptive. I built an accessibility-first color extraction algorithm that dynamically adjusted ad backgrounds for contrast compliance, and co-created a modular design system so ad formats could scale across teams without custom engineering per campaign. The result was a 61% increase in overall CTR and 120% surge in global video click-through rates.",
     impact: [
       "61% increase in overall ad click-through rates",
       "120% surge in global video click-through rates",
@@ -1042,11 +1142,11 @@ const projects = [
     company: "Nike",
     logo: "/logos/nike.svg",
     title: "Momentum",
-    subtitle: "Nike's digital running experience for first-time female runners",
+    subtitle: "A running app designed for people who don't run yet",
     role: "iOS Engineer",
     period: "2021 — 2022",
     color: "#111111",
-    overview: "Momentum is Nike's latest digital running experience. Featuring audio-guided runs, daily missions, and coaches that \"are like you,\" the app is designed to help people start and maintain a running habit.",
+    overview: "On Nike's Valiant Labs team, I helped build Momentum — a running app targeting first-time female runners. The challenge wasn't performance tracking (Nike Run Club already did that), it was creating an experience that felt welcoming rather than intimidating. I contributed to the design system, built team-based features, and focused on inclusive UX that made starting a running habit feel achievable.",
     impact: [
       "User-centered design approach for underserved runner demographic",
       "Design system maintaining Nike's brand and UX standards",
@@ -1324,9 +1424,14 @@ function ProjectsView() {
                   >
                     {section.title}
                   </h2>
-                  <p className="text-sm text-gray-400" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>
+                  <p className="text-sm text-gray-400 mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>
                     {section.subtitle}
                   </p>
+                  {section.body && (
+                    <p className="text-[15px] text-gray-600 leading-relaxed max-w-2xl mt-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>
+                      {section.body}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap justify-center gap-8">
                   {section.items.map((item: any, i: number) => {
@@ -1376,11 +1481,24 @@ function ProjectsView() {
 // ─── Page ───
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Home");
-  const tabs = ["Home", "Projects", "Prototypes", "Playground", "Resume", "Life"];
+  const tabs = ["Home", "Projects", "Prototypes", "Resume", "Life", "Contact"];
 
   return (
     <>
       <NavPill tabs={tabs} active={activeTab} onChange={setActiveTab} />
+
+      {/* Figma-style avatar in top right */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, type: "spring", stiffness: 300, damping: 20 }}
+        className="fixed top-7 right-6 z-50 cursor-pointer"
+        onClick={() => setActiveTab("Contact")}
+      >
+        <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-md ring-2 ring-green-400">
+          <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
+        </div>
+      </motion.div>
 
       <main className="mx-auto max-w-3xl px-6 pt-28 pb-16">
         <AnimatePresence mode="wait">
@@ -1472,47 +1590,6 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* ─── PLAYGROUND TAB ─── */}
-          {activeTab === "Playground" && (
-            <motion.div
-              key="playground"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2 className="mb-2 text-sm font-medium tracking-wide text-gray-400 uppercase">
-                Experiments
-              </h2>
-              <p className="mb-10 text-3xl font-semibold tracking-tight text-gray-900">
-                Playground
-              </p>
-              <div className="grid grid-cols-3 gap-4 auto-rows-[200px]">
-                {playgroundItems.map((item, i) => (
-                  <motion.div
-                    key={item.title}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.06 }}
-                    whileHover={{ scale: 1.02 }}
-                    className={`group relative cursor-pointer overflow-hidden glass-card rounded-2xl p-6 ${item.span || ""}`}
-                  >
-                    <div className="absolute inset-0 flex items-center justify-center opacity-10 text-6xl">
-                      {item.emoji}
-                    </div>
-                    <div className="relative z-10 flex h-full flex-col justify-end">
-                      <span className="mb-1 inline-block w-fit rounded-full bg-white/60 backdrop-blur-sm px-2.5 py-0.5 text-xs font-medium text-gray-500 border border-white/50">
-                        {item.tag}
-                      </span>
-                      <h3 className="text-[15px] font-semibold text-gray-900">{item.title}</h3>
-                      <p className="mt-1 text-sm text-gray-500">{item.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
           {/* ─── RESUME TAB ─── */}
           {activeTab === "Resume" && (
             <motion.div
@@ -1553,17 +1630,51 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
+              className="-mx-6"
             >
-              <h2 className="mb-2 text-sm font-medium tracking-wide text-gray-400 uppercase">
-                Beyond the screen
-              </h2>
-              <p className="mb-8 text-3xl font-semibold tracking-tight text-gray-900">
-                Life outside of work
-              </p>
-              <div className="grid grid-cols-3 gap-3 auto-rows-[160px]">
-                {bentoItems.map((item, i) => (
-                  <BentoCard key={item.label} {...item} index={i} />
+              <div className="columns-3 gap-3 space-y-3">
+                {lifePhotos.map((photo, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.04 }}
+                    className="break-inside-avoid rounded-xl overflow-hidden"
+                  >
+                    <img
+                      src={photo}
+                      alt=""
+                      className="w-full object-cover hover:scale-105 transition-transform duration-500"
+                    />
+                  </motion.div>
                 ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─── CONTACT TAB ─── */}
+          {activeTab === "Contact" && (
+            <motion.div
+              key="contact"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col items-center justify-center min-h-[70vh]"
+            >
+              {/* Photo on top, fixed position */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
+                className="w-36 h-36 rounded-full overflow-hidden shadow-xl mb-10"
+              >
+                <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
+              </motion.div>
+
+              {/* Typewriter below — fixed height container prevents shifting */}
+              <div className="h-[100px]">
+                <ContactTypewriter />
               </div>
             </motion.div>
           )}
