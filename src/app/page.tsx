@@ -1429,7 +1429,7 @@ function MSPaint() {
     "#000000", "#808080", "#800000", "#808000", "#008000", "#008080", "#000080", "#800080",
     "#808040", "#004040", "#0080FF", "#004080", "#8000FF", "#804000",
     "#FFFFFF", "#C0C0C0", "#FF0000", "#FFFF00", "#00FF00", "#00FFFF", "#0000FF", "#FF00FF",
-    "#FFFF80", "#00FF80", "#80FFFF", "#0080FF", "#FF0080", "#FF8000",
+    "#FFFF80", "#00FF80", "#80FFFF", "#4080FF", "#FF0080", "#FF8000",
   ];
 
   const tools: { id: typeof tool; label: string }[] = [
@@ -2006,6 +2006,306 @@ function WeatherApp({ x, y, delay }: { x: string; y: string; delay: number }) {
       </AnimatePresence>
     </>
   );
+}
+
+// ─── Comical Resume Row — same as ContactInfoRow but grows huge then snaps back ───
+function ComicalResumeRow() {
+  const [scale, setScale] = useState(1);
+  const [showBox, setShowBox] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      // Wait for the ContactInfoRow to finish typing (~1s delay + 0.4 + 0.4 + 19chars*40ms = ~2.6s)
+      await sleep(4000);
+      if (cancelled) return;
+
+      while (!cancelled) {
+        // Select it — blue box
+        setShowBox(true);
+        await sleep(600);
+        if (cancelled) return;
+
+        // Grow comically
+        for (const s of [1.3, 1.6, 2.0, 2.4]) {
+          if (cancelled) return;
+          setScale(s);
+          await sleep(200);
+        }
+        await sleep(2000);
+        if (cancelled) return;
+
+        // Hide box while sitting large
+        setShowBox(false);
+        await sleep(3000);
+        if (cancelled) return;
+
+        // Show box before resizing
+        setShowBox(true);
+        await sleep(500);
+        if (cancelled) return;
+
+        // Gently resize back
+        setScale(1);
+        await sleep(800);
+        if (cancelled) return;
+
+        setShowBox(false);
+        await sleep(200);
+        if (cancelled) return;
+
+        setShowBox(false);
+        await sleep(10000);
+        if (cancelled) return;
+
+        // Loop the grow effect
+        setShowBox(true);
+        await sleep(600);
+      }
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, []);
+
+  return (
+    <motion.div
+      animate={{ scale }}
+      transition={{ type: "tween", duration: 0.6, ease: "easeInOut" }}
+      className="origin-left relative"
+    >
+      {showBox && (
+        <div className="absolute -inset-1 border border-[#0D99FF] rounded-[2px] pointer-events-none z-20">
+          <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+          <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+          <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+          <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+        </div>
+      )}
+      <ContactInfoRow
+        icon="/paper-icon.png"
+        text="Download Resume.pdf"
+        href="/Taylor_Breitzman_Resume.pdf"
+        delay={1}
+      />
+    </motion.div>
+  );
+}
+
+// ─── Resume Download Box — draws icon, types, selects, scales up comically, settles ───
+function ResumeDownloadBox() {
+  const [phase, setPhase] = useState<"hidden" | "drawIcon" | "showIcon" | "typing" | "selecting" | "growing" | "shrinking" | "done">("hidden");
+  const [typed, setTyped] = useState("");
+  const [scale, setScale] = useState(1);
+  const fullText = "Download Resume.pdf";
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      await sleep(1500);
+      if (cancelled) return;
+
+      while (!cancelled) {
+        setTyped("");
+        setScale(1);
+
+        // Draw icon box
+        setPhase("drawIcon");
+        await sleep(500);
+        if (cancelled) return;
+
+        // Show icon
+        setPhase("showIcon");
+        await sleep(400);
+        if (cancelled) return;
+
+        // Type text
+        setPhase("typing");
+        for (let i = 1; i <= fullText.length; i++) {
+          if (cancelled) return;
+          setTyped(fullText.slice(0, i));
+          await sleep(50);
+        }
+        await sleep(600);
+        if (cancelled) return;
+
+        // Select all — blue box appears
+        setPhase("selecting");
+        await sleep(800);
+        if (cancelled) return;
+
+        // Grow comically large
+        setPhase("growing");
+        for (const s of [1.2, 1.5, 1.8, 2.2, 2.5]) {
+          if (cancelled) return;
+          setScale(s);
+          await sleep(200);
+        }
+        await sleep(400);
+        if (cancelled) return;
+
+        // Shrink back
+        setPhase("shrinking");
+        setScale(1);
+        await sleep(600);
+        if (cancelled) return;
+
+        setPhase("done");
+        await sleep(6000);
+        if (cancelled) return;
+
+        setPhase("hidden");
+        await sleep(2000);
+      }
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (phase === "hidden") return null;
+
+  const showBox = phase === "selecting" || phase === "growing" || phase === "shrinking";
+  const showIconImg = phase !== "drawIcon";
+  const showHandles = phase === "drawIcon" || showBox;
+
+  return (
+    <a
+      href="/Taylor_Breitzman_Resume.pdf"
+      download
+      className="block hover:opacity-80 transition-opacity"
+      onClick={(e) => phase !== "done" && e.preventDefault()}
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, scale }}
+        transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        className="relative origin-left"
+      >
+        <div
+          className="relative px-3 py-2 rounded-[2px]"
+          style={{ border: showHandles ? "1px solid #0D99FF" : "1px solid transparent" }}
+        >
+          {/* Resize handles */}
+          {showHandles && (
+            <>
+              <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            </>
+          )}
+
+          <div className="flex items-center gap-2">
+            {/* Icon with draw-in */}
+            <div className="relative w-5 h-5 shrink-0">
+              {phase === "drawIcon" && (
+                <div className="absolute inset-0 border border-[#0D99FF] rounded-[2px]" />
+              )}
+              <img
+                src="/paper-icon.png"
+                alt=""
+                className="w-full h-full object-contain transition-opacity duration-200"
+                style={{ opacity: showIconImg ? 1 : 0 }}
+              />
+            </div>
+
+            {/* Text */}
+            <span className={`text-[14px] whitespace-nowrap font-medium ${showBox ? "text-gray-900" : "text-gray-700"}`}>
+              {typed}
+            </span>
+            {phase === "typing" && (
+              <motion.span
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+                className="inline-block w-[1px] h-[14px] bg-[#1D1D1F]"
+              />
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </a>
+  );
+}
+
+// ─── Contact Info Row — Figma-style draw icon then type text ───
+function ContactInfoRow({ icon, emoji, text, href, delay }: { icon?: string; emoji?: string; text: string; href?: string; delay: number }) {
+  const [visible, setVisible] = useState(false);
+  const [showIcon, setShowIcon] = useState(false);
+  const [typed, setTyped] = useState("");
+  const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      await sleep(delay * 1000);
+      if (cancelled) return;
+
+      setVisible(true);
+      await sleep(400);
+      if (cancelled) return;
+
+      setShowIcon(true);
+      await sleep(400);
+      if (cancelled) return;
+
+      setTyping(true);
+      for (let i = 1; i <= text.length; i++) {
+        if (cancelled) return;
+        setTyped(text.slice(0, i));
+        await sleep(40);
+      }
+      await sleep(200);
+      setTyping(false);
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, [delay, text]);
+
+  const row = (
+    <div
+      className="flex items-center gap-3 transition-opacity duration-300"
+      style={{ height: 36, opacity: visible ? 1 : 0 }}
+    >
+      {/* Icon */}
+      <div
+        className="relative shrink-0 rounded-[8px]"
+        style={{ width: 36, height: 36 }}
+      >
+        {icon && <img src={icon} alt="" className="w-full h-full object-cover rounded-[8px] transition-all duration-300" style={{ opacity: showIcon ? 1 : 0, transform: showIcon ? "scale(1)" : "scale(0.5)" }} />}
+        {emoji && <div className="w-full h-full flex items-center justify-center text-xl transition-all duration-300" style={{ opacity: showIcon ? 1 : 0, transform: showIcon ? "scale(1)" : "scale(0.5)" }}>{emoji}</div>}
+        {visible && !showIcon && (
+          <div className="absolute inset-0 border border-[#0D99FF] rounded-[8px]" />
+        )}
+      </div>
+
+      {/* Text */}
+      <div>
+        <span className="text-sm text-gray-700">{typed}</span>
+        {typing && (
+          <motion.span
+            animate={{ opacity: [1, 0] }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+            className="inline-block w-[1px] h-[12px] bg-[#1D1D1F] ml-[1px] align-text-bottom"
+          />
+        )}
+      </div>
+    </div>
+  );
+
+  if (href && !typing && typed.length === text.length) {
+    const isDownload = href.endsWith(".pdf");
+    return <a href={href} target={isDownload ? undefined : "_blank"} rel={isDownload ? undefined : "noopener noreferrer"} download={isDownload || undefined} className="hover:opacity-70 transition-opacity">{row}</a>;
+  }
+
+  return row;
 }
 
 // ─── Contact Photo Frame — draws, fills, rounds, rotates ───
@@ -4665,13 +4965,6 @@ function ProjectsView() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <h2 className="mb-2 text-sm font-medium tracking-wide text-gray-400 uppercase">
-              Case Studies
-            </h2>
-            <p className="mb-10 text-3xl font-semibold tracking-tight text-gray-900">
-              Selected Projects
-            </p>
-
             <div className="grid grid-cols-2 gap-5">
               {projects.map((p, i) => (
                 <motion.div
@@ -5894,7 +6187,13 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
+              className="relative"
             >
+              {/* Download resume — far left */}
+              <div className="absolute left-[-24vw] top-[30%]">
+                <ComicalResumeRow />
+              </div>
+
               <IDBadgeCoverflow />
               <div className="space-y-4">
                 {experiences.map((exp, i) => (
@@ -5902,7 +6201,6 @@ export default function Home() {
                 ))}
               </div>
 
-              <JourneyTimeline />
             </motion.div>
           )}
 
@@ -6081,16 +6379,37 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="flex flex-col items-center justify-center min-h-[70vh]"
+              className="relative min-h-[70vh]"
             >
-              {/* Figma-style photo frame animation */}
-              <div className="mb-10">
-                <ContactPhotoFrame />
+              {/* Left — contact info, absolutely positioned */}
+              <div className="absolute left-[-24vw] bottom-[-8%] flex flex-col gap-5">
+                <ContactInfoRow
+                  icon="/linkedin-icon.png"
+                  text="/in/taylorbreitzman"
+                  href="https://linkedin.com/in/taylorbreitzman"
+                  delay={1.5}
+                />
+                <ContactInfoRow
+                  icon="/mail-icon.png"
+                  text="projectairtaylor@gmail.com"
+                  href="mailto:projectairtaylor@gmail.com"
+                  delay={3}
+                />
+                <ContactInfoRow
+                  emoji="📍"
+                  text="San Francisco, CA"
+                  delay={4.5}
+                />
               </div>
 
-              {/* Typewriter below — fixed height container prevents shifting */}
-              <div className="h-[100px]">
-                <ContactTypewriter />
+              {/* Center — photo + typewriter, unchanged */}
+              <div className="flex flex-col items-center justify-center min-h-[70vh]">
+                <div className="mb-10">
+                  <ContactPhotoFrame />
+                </div>
+                <div className="h-[100px]">
+                  <ContactTypewriter />
+                </div>
               </div>
             </motion.div>
           )}
