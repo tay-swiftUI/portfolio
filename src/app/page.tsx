@@ -954,38 +954,49 @@ function IDBadgeCoverflow() {
               transition={{ type: "spring", stiffness: 250, damping: 22 }}
               style={{ zIndex: 100 - absOffset, transformStyle: "preserve-3d" }}
             >
-              {/* Lanyard — dangles with pendulum motion */}
+              {/* Lanyard — drops in and dangles */}
               <motion.div
                 className="flex flex-col items-center"
                 style={{ transformOrigin: "top center" }}
+                initial={{ y: -300, rotateZ: -15 + i * 8 }}
                 animate={{
-                  rotateZ: [0, -0.5 - i * 0.15, 0.4 + i * 0.1, -0.2, 0],
+                  y: 0,
+                  rotateZ: [-3 + i * 2, -1 + i * 1.5, -3 + i * 2],
                 }}
                 transition={{
-                  duration: 4 + i * 0.7,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  repeatType: "mirror",
+                  y: { delay: i * 0.2, type: "spring", stiffness: 80, damping: 10, mass: 1.2 },
+                  rotateZ: {
+                    delay: 1.5 + i * 0.2,
+                    duration: 3 + i * 0.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    repeatType: "mirror",
+                  },
                 }}
               >
-                {/* Strap — extends up past the viewport top to look like it's hanging from above */}
-                <div className="w-[26px] relative overflow-hidden" style={{ height: 160, marginTop: -90 }}>
-                  <div className="absolute inset-0 rounded-[3px]" style={{ background: "linear-gradient(180deg, #777, #999, #888, #999, #777)" }} />
-                  {/* Woven texture */}
-                  <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 3px), repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(0,0,0,0.05) 4px, rgba(0,0,0,0.05) 5px)" }} />
-                  {/* Company text on strap */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <p className="text-[6px] font-bold text-white/30 tracking-[3px] uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>{badge.company}</p>
+                {/* Strap — thick black lanyard with company logo */}
+                <div className="w-[32px] relative overflow-hidden rounded-[2px]" style={{ height: 180, marginTop: -100, background: "#1A1A1A" }}>
+                  {/* Subtle fabric texture */}
+                  <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 4px)" }} />
+                  {/* Company logo on strap — repeated */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-8">
+                    {badge.logo && (
+                      <>
+                        <img src={badge.logo} alt="" className="w-[16px] h-[16px] object-contain opacity-40 brightness-0 invert" />
+                        <img src={badge.logo} alt="" className="w-[16px] h-[16px] object-contain opacity-40 brightness-0 invert" />
+                      </>
+                    )}
                   </div>
-                  {/* Strap edge highlight */}
-                  <div className="absolute top-0 bottom-0 left-0 w-[1px] bg-white/10" />
-                  <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-black/10" />
+                  {/* Edge highlights */}
+                  <div className="absolute top-0 bottom-0 left-0 w-[1px] bg-white/5" />
+                  <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/5" />
                 </div>
-                {/* Metal clip / clasp */}
-                <div className="relative w-[28px] h-[20px] mb-[2px]">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[24px] h-[14px] rounded-b-[5px]" style={{ background: "linear-gradient(180deg, #D8D8D8, #A0A0A0, #B8B8B8)", boxShadow: "0 2px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4)" }} />
-                  {/* Clasp ring */}
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[10px] h-[10px] rounded-full border-[2px]" style={{ borderColor: "#A0A0A0", background: "linear-gradient(135deg, #C8C8C8, #909090)" }} />
+                {/* Metal clasp */}
+                <div className="relative w-[24px] h-[22px] mb-[3px]">
+                  {/* Clasp body */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[20px] h-[16px] rounded-b-[4px]" style={{ background: "linear-gradient(180deg, #3A3A3A, #2A2A2A)", boxShadow: "0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)" }} />
+                  {/* Hook ring */}
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[8px] h-[8px] rounded-full border-[2px]" style={{ borderColor: "#3A3A3A", background: "linear-gradient(135deg, #4A4A4A, #2A2A2A)" }} />
                 </div>
 
                 {/* Badge */}
@@ -1343,6 +1354,121 @@ function CDCase({ book, index }: { book: { title: string; author: string; color:
           <p className="text-[7px] text-white/60 mt-0.5">{book.author}</p>
         </div>
       </div>
+    </motion.div>
+  );
+}
+
+// ─── Figma Text Box ───
+function FigmaTextBox({ onClick }: { onClick: () => void }) {
+  const [phase, setPhase] = useState<"hidden" | "drawing" | "typing" | "selecting" | "italic" | "done">("hidden");
+  const [text, setText] = useState("");
+  const fullText = "Contact me";
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      // Wait before starting (after avatar appears)
+      await sleep(3500);
+      if (cancelled) return;
+
+      while (!cancelled) {
+        // Draw the box
+        setPhase("drawing");
+        await sleep(600);
+        if (cancelled) return;
+
+        // Type the text
+        setPhase("typing");
+        for (let i = 1; i <= fullText.length; i++) {
+          if (cancelled) return;
+          setText(fullText.slice(0, i));
+          await sleep(70);
+        }
+        await sleep(800);
+        if (cancelled) return;
+
+        // Select all text
+        setPhase("selecting");
+        await sleep(600);
+        if (cancelled) return;
+
+        // Italicize
+        setPhase("italic");
+        await sleep(3000);
+        if (cancelled) return;
+
+        // Reset
+        setPhase("done");
+        await sleep(8000);
+        if (cancelled) return;
+
+        // Clear and restart
+        setText("");
+        setPhase("hidden");
+        await sleep(1000);
+      }
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (phase === "hidden") return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      onClick={onClick}
+      className="cursor-pointer relative"
+    >
+      {/* Blue bounding box */}
+      <motion.div
+        className="relative border rounded-[2px] px-2 py-1"
+        initial={{ width: 0, height: 0, opacity: 0 }}
+        animate={{
+          width: "auto",
+          height: "auto",
+          opacity: 1,
+          borderColor: phase === "done" ? "transparent" : "#0D99FF",
+        }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        style={{ borderWidth: 1 }}
+      >
+        {/* Resize handles */}
+        {phase !== "done" && (
+          <>
+            <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+          </>
+        )}
+
+        {/* Text */}
+        <span
+          className={`text-lg whitespace-nowrap select-none ${
+            phase === "selecting" ? "bg-[#0D99FF]/20" : ""
+          }`}
+          style={{
+            color: phase === "done" ? "#666" : "#1D1D1F",
+            fontFamily: "var(--font-radley), Georgia, serif",
+          }}
+        >
+          {text}
+        </span>
+
+        {/* Blinking cursor */}
+        {(phase === "typing" || phase === "drawing") && (
+          <motion.span
+            animate={{ opacity: [1, 0] }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+            className="inline-block w-[1px] h-[12px] bg-[#1D1D1F] ml-[1px] align-text-bottom"
+          />
+        )}
+      </motion.div>
     </motion.div>
   );
 }
@@ -2895,17 +3021,21 @@ export default function Home() {
       <NavPill tabs={tabs} active={activeTab} onChange={setActiveTab} />
 
       {/* Figma-style avatar in top right */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1, type: "spring", stiffness: 300, damping: 20 }}
-        className="fixed top-7 right-6 z-50 cursor-pointer"
-        onClick={() => setActiveTab("Contact")}
-      >
-        <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-md">
-          <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
-        </div>
-      </motion.div>
+      {/* Avatar + Figma text box */}
+      <div className="fixed top-7 right-6 z-50 flex items-center gap-0">
+        <FigmaTextBox onClick={() => setActiveTab("Contact")} />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.5, type: "spring", stiffness: 300, damping: 20 }}
+          className="cursor-pointer"
+          onClick={() => setActiveTab("Contact")}
+        >
+          <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-md">
+            <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
+          </div>
+        </motion.div>
+      </div>
 
       <main className="mx-auto max-w-3xl px-6 pt-28 pb-16">
         <AnimatePresence mode="wait">
