@@ -251,7 +251,7 @@ function CursorLabel({
           height="16"
           viewBox="0 0 12 16"
           fill="none"
-          className="self-end mr-1 mt-1"
+          className="self-end mr-[-6px] mt-1"
           style={{ transform: "scaleX(-1)" }}
         >
           <path d="M1 1L1 15L11 8L1 1Z" fill={color} stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
@@ -524,11 +524,6 @@ function IPhoneMockup({
         </div>
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[40%] h-[4px] bg-gray-600 rounded-full" />
       </div>
-      <div className="mt-4 text-center">
-        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-        <p className="mt-0.5 text-xs text-gray-500">{description}</p>
-        <span className="mt-2 inline-block rounded-full bg-white/60 backdrop-blur-sm px-2 py-0.5 text-[10px] font-medium text-gray-500 border border-white/50">{tag}</span>
-      </div>
     </motion.div>
   );
 }
@@ -711,7 +706,7 @@ function CoverFlow() {
 // ─── iPod Nano ───
 function IPodNano() {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [screen, setScreen] = useState<"menu" | "coverflow" | "playing">("menu");
+  const [screen, setScreen] = useState<"menu" | "coverflow" | "playing">("coverflow");
   const [coverIndex, setCoverIndex] = useState(Math.floor(albums.length / 2));
 
   const menuItems = ["Music", "Videos", "Photos", "Podcasts", "Extras", "Settings", "Shuffle Songs", "Now Playing"];
@@ -746,7 +741,6 @@ function IPodNano() {
 
   const handleMenu = () => {
     if (screen === "playing") setScreen("coverflow");
-    else if (screen === "coverflow") setScreen("menu");
   };
 
   return (
@@ -761,7 +755,7 @@ function IPodNano() {
         style={{ background: "linear-gradient(180deg, #FE00AB, #D63B6E)" }}
       >
         {/* Screen */}
-        <div className="mx-4 mt-4 w-[188px] h-[155px] rounded-[4px] overflow-hidden bg-white">
+        <div className="mx-4 mt-4 w-[188px] h-[170px] rounded-[4px] overflow-hidden bg-white">
           <AnimatePresence mode="wait">
             {screen === "menu" && (
               <motion.div
@@ -811,8 +805,8 @@ function IPodNano() {
                 <div className="bg-gray-800/80 text-white text-[7px] font-bold px-2 py-0.5 text-center">
                   Cover Flow
                 </div>
-                {/* Mini coverflow */}
-                <div className="flex-1 flex items-center justify-center relative overflow-hidden" style={{ perspective: 200 }}>
+                {/* Coverflow */}
+                <div className="flex-1 flex items-center justify-center relative overflow-hidden" style={{ perspective: 300 }}>
                   {albums.map((album, i) => {
                     const offset = i - coverIndex;
                     const absOffset = Math.abs(offset);
@@ -820,29 +814,29 @@ function IPodNano() {
                     return (
                       <motion.div
                         key={album.title + i}
-                        className="absolute"
+                        className="absolute cursor-pointer"
+                        onClick={() => { setCoverIndex(i); if (isActive) setScreen("playing"); }}
                         animate={{
-                          x: isActive ? 0 : offset * 28 + (offset > 0 ? 15 : -15),
-                          rotateY: isActive ? 0 : offset > 0 ? -60 : 60,
-                          scale: isActive ? 1 : 0.6,
-                          opacity: absOffset > 2 ? 0 : 1 - absOffset * 0.3,
+                          x: isActive ? 0 : offset * 36 + (offset > 0 ? 22 : -22),
+                          rotateY: isActive ? 0 : offset > 0 ? -55 : 55,
+                          scale: isActive ? 1 : 0.65,
+                          opacity: absOffset > 2 ? 0 : 1 - absOffset * 0.25,
                         }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         style={{ zIndex: 50 - absOffset, transformStyle: "preserve-3d" }}
                       >
                         <div
-                          className="w-[55px] h-[55px] rounded-[2px] overflow-hidden"
+                          className="w-[82px] h-[82px] rounded-[3px] overflow-hidden"
                           style={{
-                            background: album.gradient,
-                            boxShadow: isActive ? "0 4px 12px rgba(0,0,0,0.5)" : "0 2px 6px rgba(0,0,0,0.3)",
+                            boxShadow: isActive ? "0 4px 16px rgba(0,0,0,0.5)" : "0 2px 8px rgba(0,0,0,0.3)",
                           }}
                         >
-                          <div className="w-full h-full flex items-center justify-center">
-                            <p className="text-[5px] text-white/80 font-bold text-center px-1">{album.artist}</p>
-                          </div>
+                          <img src={album.cover} alt={album.title} className="w-full h-full object-cover" />
                         </div>
                         {isActive && (
-                          <div className="w-[55px] h-[15px] mt-[1px] opacity-20" style={{ background: album.gradient, transform: "scaleY(-1)", maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)", WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)" }} />
+                          <div className="w-[82px] h-[20px] mt-[1px] opacity-20 overflow-hidden rounded-b-[3px]">
+                            <img src={album.cover} alt="" className="w-full h-[82px] object-cover" style={{ transform: "scaleY(-1)", maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)", WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)" }} />
+                          </div>
                         )}
                       </motion.div>
                     );
@@ -933,8 +927,8 @@ function IDBadgeCoverflow() {
   const [active, setActive] = useState(0);
 
   return (
-    <div className="relative py-4 mb-12">
-      <div className="flex items-center justify-center" style={{ perspective: 1000, height: 380 }}>
+    <div className="relative mb-12 -mt-[7.5rem]" style={{ clipPath: "inset(0px 0px 0px 0px)" }}>
+      <div className="flex items-center justify-center" style={{ perspective: 1000, height: 460 }}>
         {badgeData.map((badge, i) => {
           const offset = i - active;
           const absOffset = Math.abs(offset);
@@ -945,19 +939,27 @@ function IDBadgeCoverflow() {
               key={badge.company}
               onClick={() => setActive(i)}
               className="absolute cursor-pointer"
+              initial={{ y: -200, opacity: 0 }}
               animate={{
+                y: 0,
                 x: isActive ? 0 : offset * 90 + (offset > 0 ? 50 : -50),
                 rotateY: isActive ? 0 : offset > 0 ? -40 : 40,
                 scale: isActive ? 1 : 0.7,
                 opacity: absOffset > 2 ? 0 : 1 - absOffset * 0.25,
               }}
-              transition={{ type: "spring", stiffness: 250, damping: 22 }}
+              transition={{
+                y: { type: "spring", stiffness: 120, damping: 14, delay: i * 0.15 },
+                x: { type: "spring", stiffness: 250, damping: 22 },
+                rotateY: { type: "spring", stiffness: 250, damping: 22 },
+                scale: { type: "spring", stiffness: 250, damping: 22 },
+                opacity: { type: "spring", stiffness: 250, damping: 22 },
+              }}
               style={{ zIndex: 100 - absOffset, transformStyle: "preserve-3d" }}
             >
               {/* Lanyard */}
               <div className="flex flex-col items-center">
                 {/* Strap */}
-                <div className="w-[26px] relative overflow-hidden rounded-[2px]" style={{ height: 140, marginTop: -70, background: "#1A1A1A" }}>
+                <div className="w-[26px] relative overflow-hidden rounded-[2px]" style={{ height: 140, background: "#1A1A1A" }}>
                   <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 4px)" }} />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-8">
                     {badge.logo && (
@@ -1284,6 +1286,26 @@ function MSPaint() {
     if (!ctx) return;
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Pre-draw "UX is my passion"
+    ctx.save();
+    ctx.font = "italic bold 42px Comic Sans MS, cursive";
+    ctx.fillStyle = "#0000FF";
+    ctx.fillText("UX is", 60, 100);
+    ctx.font = "italic bold 52px Comic Sans MS, cursive";
+    ctx.fillStyle = "#FF00FF";
+    ctx.fillText("my", 120, 170);
+    ctx.font = "italic bold 38px Comic Sans MS, cursive";
+    ctx.fillStyle = "#FF0000";
+    ctx.fillText("passion", 80, 240);
+    // Add some wonky stars
+    ctx.font = "24px serif";
+    ctx.fillStyle = "#FFD700";
+    ctx.fillText("★", 30, 60);
+    ctx.fillText("★", 320, 90);
+    ctx.fillText("★", 280, 260);
+    ctx.fillStyle = "#00CC00";
+    ctx.fillText("♥", 350, 180);
+    ctx.restore();
   }, []);
 
   const getPos = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -1426,7 +1448,7 @@ function MSPaint() {
       <div className="flex items-center justify-between px-1 py-0.5" style={{ background: "linear-gradient(90deg, #0A246A, #3A6EA5)", borderTopLeftRadius: 3, borderTopRightRadius: 3 }}>
         <div className="flex items-center gap-1">
           <span className="text-[10px]">🎨</span>
-          <span className="text-[11px] font-bold text-white">untitled - Paint</span>
+          <span className="text-[11px] font-bold text-white">ux_passion.bmp - Paint</span>
         </div>
         <div className="flex gap-[2px]">
           <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>_</div>
@@ -1510,7 +1532,20 @@ function MSPaint() {
 
       {/* Status bar */}
       <div className="px-2 py-0.5 bg-[#ECE9D8] rounded-b-sm border-t border-gray-300">
-        <span className="text-[9px] text-gray-600">For Help, click Help Topics on the Help menu.</span>
+        <div className="flex items-center justify-between w-full">
+          <span className="text-[9px] text-gray-600">Draw something! ✨</span>
+          <button
+            onClick={() => {
+              const canvas = canvasRef.current;
+              if (!canvas) return;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) return;
+              ctx.fillStyle = "#FFFFFF";
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }}
+            className="text-[8px] text-blue-600 hover:underline"
+          >Clear Canvas</button>
+        </div>
       </div>
     </div>
   );
@@ -1585,13 +1620,10 @@ function XPDialog({ title, message, icon, buttons = ["OK"], defaultX = 0, defaul
 // ─── XP Dialog Stack ───
 function XPDialogStack() {
   const [dialogs, setDialogs] = useState([
-    { id: 1, title: "Windows XP", message: "Task failed successfully.", icon: "ℹ️", buttons: ["OK"], x: 0, y: 0 },
-    { id: 2, title: "Internet Explorer", message: "taylor.exe is not responding. She's too busy designing.", icon: "⚠️", buttons: ["Wait", "Close"], x: 30, y: 35 },
-    { id: 3, title: "Error", message: "You have mass amounts of talent. Delete anyway?", icon: "❓", buttons: ["Yes", "Obviously"], x: 55, y: 70 },
-    { id: 4, title: "My Computer", message: "Disk space low. Too many Figma files.", icon: "⚠️", buttons: ["OK"], x: 15, y: 110 },
-    { id: 5, title: "MSN Messenger", message: "designgirl2003 says: omg ur portfolio is so cute~*", icon: "💬", buttons: ["Reply", "Block"], x: 80, y: 50 },
-    { id: 6, title: "Windows Update", message: "A new version of taste is available. Install now?", icon: "🔄", buttons: ["Install", "Remind Later"], x: 45, y: 140 },
-    { id: 7, title: "Recycle Bin", message: "Are you sure you want to delete bad_code.swift?", icon: "🗑️", buttons: ["Yes", "No"], x: 100, y: 20 },
+    { id: 1, title: "Recycle Bin", message: "Are you sure you want to delete ex_boyfriend_pics.zip?", icon: "🗑️", buttons: ["Yes", "ABSOLUTELY"], x: 0, y: 0 },
+    { id: 2, title: "MSN Messenger", message: "ur crush is online. Act natural.", icon: "💬", buttons: ["OMG", "Play it cool"], x: 30, y: 35 },
+    { id: 3, title: "Webkinz", message: "Your Webkinz is starving. This is a formal warning.", icon: "⚠️", buttons: ["Feed it", "Neglect"], x: 55, y: 70 },
+    { id: 4, title: "Error", message: "Ctrl+Z cannot undo your last text.", icon: "❓", buttons: ["Cry", "OK"], x: 15, y: 110 },
   ]);
 
   const dismiss = (id: number) => setDialogs((d) => d.filter((x) => x.id !== id));
@@ -1624,17 +1656,1296 @@ function XPDialogStack() {
             fontFamily: "Tahoma, sans-serif",
           }}
           onClick={() => setDialogs([
-            { id: Date.now(), title: "Windows XP", message: "Task failed successfully.", icon: "ℹ️", buttons: ["OK"], x: Math.random() * 100, y: Math.random() * 80 },
-            { id: Date.now() + 1, title: "Internet Explorer", message: "taylor.exe is not responding. She's too busy designing.", icon: "⚠️", buttons: ["Wait", "Close"], x: 30 + Math.random() * 60, y: 30 + Math.random() * 60 },
-            { id: Date.now() + 2, title: "Error", message: "You have mass amounts of talent. Delete anyway?", icon: "❓", buttons: ["Yes", "Obviously"], x: 50 + Math.random() * 60, y: 60 + Math.random() * 60 },
-            { id: Date.now() + 3, title: "My Computer", message: "Disk space low. Too many Figma files.", icon: "⚠️", buttons: ["OK"], x: 10 + Math.random() * 60, y: 100 + Math.random() * 40 },
-            { id: Date.now() + 4, title: "MSN Messenger", message: "designgirl2003 says: omg ur portfolio is so cute~*", icon: "💬", buttons: ["Reply", "Block"], x: 70 + Math.random() * 40, y: 40 + Math.random() * 60 },
-            { id: Date.now() + 5, title: "Windows Update", message: "A new version of taste is available. Install now?", icon: "🔄", buttons: ["Install", "Remind Later"], x: 40 + Math.random() * 50, y: 120 + Math.random() * 30 },
-            { id: Date.now() + 6, title: "Recycle Bin", message: "Are you sure you want to delete bad_code.swift?", icon: "🗑️", buttons: ["Yes", "No"], x: 90 + Math.random() * 30, y: 10 + Math.random() * 50 },
+            { id: Date.now(), title: "Recycle Bin", message: "Are you sure you want to delete ex_boyfriend_pics.zip?", icon: "🗑️", buttons: ["Yes", "ABSOLUTELY"], x: Math.random() * 100, y: Math.random() * 80 },
+            { id: Date.now() + 1, title: "MSN Messenger", message: "ur crush is online. Act natural.", icon: "💬", buttons: ["OMG", "Play it cool"], x: 30 + Math.random() * 60, y: 30 + Math.random() * 60 },
+            { id: Date.now() + 2, title: "Webkinz", message: "Your Webkinz is starving. This is a formal warning.", icon: "⚠️", buttons: ["Feed it", "Neglect"], x: 50 + Math.random() * 60, y: 60 + Math.random() * 60 },
+            { id: Date.now() + 3, title: "Error", message: "Ctrl+Z cannot undo your last text.", icon: "❓", buttons: ["Cry", "OK"], x: 10 + Math.random() * 60, y: 100 + Math.random() * 40 },
           ])}
         >Spawn more errors</motion.button>
       )}
     </>
+  );
+}
+
+// ─── Interactive Book ───
+function InteractiveBook({ cover, title, author }: { cover: string; title: string; author: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      onClick={() => setOpen(!open)}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      className="cursor-pointer relative"
+      style={{ width: 160, height: 195, perspective: 800 }}
+    >
+      {/* Back cover — visible when open */}
+      <div
+        className="absolute top-[8px] left-0 rounded-[4px] overflow-hidden"
+        style={{
+          width: 126,
+          height: 174,
+          background: "linear-gradient(180deg, #E8E4DE, #D8D4CE)",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        }}
+      >
+        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.08)" }} />
+      </div>
+
+      {/* Pages — peeking out the right edge */}
+      <motion.div
+        className="absolute top-[10px] left-[2px]"
+        animate={{ x: open ? 4 : 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 22 }}
+        style={{ width: 124, height: 170 }}
+      >
+        {[0, 1, 2].map((p) => (
+          <motion.div
+            key={p}
+            className="absolute bg-white rounded-r-[2px]"
+            animate={{
+              x: open ? 6 + p * 3 : p * 0.5,
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 22, delay: open ? p * 0.03 : 0 }}
+            style={{
+              top: 2 + p,
+              width: 120,
+              height: 166 - p * 2,
+              boxShadow: "1px 0 2px rgba(0,0,0,0.04)",
+            }}
+          />
+        ))}
+      </motion.div>
+
+      {/* Front cover — opens like a real book */}
+      <motion.div
+        className="absolute top-[8px] left-0 rounded-[4px] overflow-hidden z-10"
+        animate={{
+          rotateY: open ? -30 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 250, damping: 20 }}
+        style={{
+          width: 126,
+          height: 174,
+          boxShadow: open
+            ? "4px 2px 16px rgba(0,0,0,0.15)"
+            : "0 4px 20px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.1)",
+          transformOrigin: "left center",
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <img src={cover} alt={title} className="w-full h-full object-cover" />
+        {/* Glossy overlay */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 40%, rgba(255,255,255,0.05) 60%, transparent 100%)" }} />
+        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.1), inset -2px 0 4px rgba(0,0,0,0.05)" }} />
+      </motion.div>
+
+      {/* Book shadow */}
+      <div className="absolute bottom-0 left-[5px] right-[5px] h-[6px] rounded-full" style={{ background: "radial-gradient(ellipse, rgba(0,0,0,0.1) 0%, transparent 70%)" }} />
+    </div>
+  );
+}
+
+// ─── iMessage Conversation ───
+function IMessageBubbles() {
+  const messages = [
+    { from: "them", text: "hey r u free to grab coffee?", delay: 0 },
+    { from: "me", text: "can't, vibe coding rn", delay: 0.3 },
+    { from: "them", text: "it's been 6 hours...", delay: 0.6 },
+    { from: "me", text: "wait it's dark outside???", delay: 0.9 },
+    { from: "them", text: "taylor.", delay: 1.2 },
+    { from: "me", text: "one more component i promise", delay: 1.5 },
+    { from: "them", text: "u said that 3 hrs ago 😭", delay: 1.8 },
+  ];
+
+  return (
+    <div className="w-[240px]">
+      {/* iMessage header */}
+      <div className="flex items-center justify-center gap-2 mb-3">
+        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+          <span className="text-[8px] text-white font-bold">BFF</span>
+        </div>
+        <span className="text-[11px] font-medium text-gray-600">iMessage</span>
+      </div>
+      {/* Messages */}
+      <div className="space-y-1.5">
+        {messages.map((msg, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.5, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: msg.delay, type: "spring", stiffness: 400, damping: 15 }}
+            className={`flex ${msg.from === "me" ? "justify-end" : "justify-start"}`}
+          >
+            <div
+              className={`px-3 py-1.5 rounded-2xl max-w-[180px] ${
+                msg.from === "me"
+                  ? "bg-blue-500 text-white rounded-br-[4px]"
+                  : "bg-gray-200 text-gray-900 rounded-bl-[4px]"
+              }`}
+            >
+              <p className="text-[11px] leading-relaxed">{msg.text}</p>
+            </div>
+          </motion.div>
+        ))}
+        {/* Typing indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.2 }}
+          className="flex justify-start"
+        >
+          <div className="bg-gray-200 rounded-2xl rounded-bl-[4px] px-3 py-2 flex gap-1">
+            {[0, 1, 2].map((d) => (
+              <motion.div
+                key={d}
+                className="w-[5px] h-[5px] rounded-full bg-gray-400"
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 0.6, repeat: Infinity, delay: d * 0.15 }}
+              />
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Claude Character (walks across bottom) ───
+function ClaudeWalker() {
+  return (
+    <div className="absolute bottom-[10px] left-0 right-0 h-[50px] z-30 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-200/40" />
+      <motion.div
+        className="absolute bottom-[2px]"
+        animate={{ x: ["-50px", "calc(100vw + 50px)"] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+      >
+        {/* Claude character — friendly little bot */}
+        <svg width="32" height="36" viewBox="0 0 32 36">
+          {/* Body */}
+          <rect x="6" y="8" width="20" height="16" rx="6" fill="#D97757" />
+          {/* Head highlight */}
+          <rect x="8" y="10" width="16" height="6" rx="3" fill="#E8956F" opacity="0.5" />
+          {/* Eyes */}
+          <motion.g animate={{ scaleY: [1, 0.1, 1] }} transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 3 }}>
+            <rect x="11" y="14" width="3" height="3" rx="0.5" fill="#5C3A2A" />
+            <rect x="18" y="14" width="3" height="3" rx="0.5" fill="#5C3A2A" />
+          </motion.g>
+          {/* Mouth */}
+          <rect x="13" y="19" width="6" height="1.5" rx="0.75" fill="#5C3A2A" />
+          {/* Legs — alternating */}
+          <motion.g animate={{ rotate: [0, 15, 0, -15, 0] }} transition={{ duration: 0.4, repeat: Infinity }} style={{ transformOrigin: "10px 24px" }}>
+            <rect x="9" y="24" width="3" height="8" rx="1.5" fill="#D97757" />
+          </motion.g>
+          <motion.g animate={{ rotate: [0, -15, 0, 15, 0] }} transition={{ duration: 0.4, repeat: Infinity }} style={{ transformOrigin: "20px 24px" }}>
+            <rect x="19" y="24" width="3" height="8" rx="1.5" fill="#D97757" />
+          </motion.g>
+          {/* Arms */}
+          <motion.g animate={{ rotate: [0, -20, 0, 20, 0] }} transition={{ duration: 0.4, repeat: Infinity }} style={{ transformOrigin: "6px 14px" }}>
+            <rect x="2" y="12" width="4" height="8" rx="2" fill="#D97757" />
+          </motion.g>
+          <motion.g animate={{ rotate: [0, 20, 0, -20, 0] }} transition={{ duration: 0.4, repeat: Infinity }} style={{ transformOrigin: "26px 14px" }}>
+            <rect x="26" y="12" width="4" height="8" rx="2" fill="#D97757" />
+          </motion.g>
+        </svg>
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── iOS Notification ───
+function IOSNotification() {
+  const [visible, setVisible] = useState(true);
+  if (!visible) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: 1, type: "spring", stiffness: 300, damping: 20 }}
+      onClick={() => setVisible(false)}
+      className="cursor-pointer"
+    >
+      <div
+        className="rounded-2xl px-4 py-3 flex items-start gap-3"
+        style={{
+          width: 300,
+          background: "rgba(255,255,255,0.85)",
+          backdropFilter: "blur(40px) saturate(180%)",
+          WebkitBackdropFilter: "blur(40px) saturate(180%)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.04)",
+        }}
+      >
+        <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-sm">
+          <span className="text-white text-sm">📱</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-bold text-gray-900">Screen Time</p>
+            <p className="text-[9px] text-gray-400">now</p>
+          </div>
+          <p className="text-[11px] text-gray-600 mt-0.5">You&apos;ve spent 4h 23m in Figma today. That&apos;s 127% more than your daily average.</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── macOS Folder — realistic Finder style ───
+function MacFolder({ label, x, y, delay }: { label: string; x: string; y: string; delay: number }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      className="absolute flex flex-col items-center cursor-pointer select-none"
+      style={{ left: x, top: y }}
+      onClick={() => setOpen(!open)}
+    >
+      <motion.div
+        whileTap={{ scale: 0.92 }}
+        whileHover={{ scale: 1.06 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+        className="relative"
+        style={{ width: 80, height: 68 }}
+      >
+        {/* Files springing out */}
+        <AnimatePresence>
+          {open && (
+            <>
+              <motion.div
+                initial={{ y: 10, opacity: 0, rotate: 0 }}
+                animate={{ y: -28, opacity: 1, rotate: -8 }}
+                exit={{ y: 10, opacity: 0, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                className="absolute left-[10px] top-[6px] w-[22px] h-[28px] bg-white rounded-[3px] z-0"
+                style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}
+              >
+                <div className="mt-3 mx-1.5 space-y-[2px]">
+                  <div className="h-[1.5px] bg-gray-200 rounded-full w-[80%]" />
+                  <div className="h-[1.5px] bg-gray-200 rounded-full w-[55%]" />
+                  <div className="h-[1.5px] bg-gray-200 rounded-full w-[70%]" />
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ y: 10, opacity: 0, rotate: 0 }}
+                animate={{ y: -22, opacity: 1, rotate: 6 }}
+                exit={{ y: 10, opacity: 0, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 15, delay: 0.04 }}
+                className="absolute left-[28px] top-[6px] w-[22px] h-[28px] rounded-[3px] z-0 overflow-hidden"
+                style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)", background: "linear-gradient(135deg, #E8F0FF, #D0E0FF)" }}
+              >
+                <div className="w-full h-[12px] bg-blue-300/30" />
+              </motion.div>
+              <motion.div
+                initial={{ y: 10, opacity: 0, rotate: 0, x: 0 }}
+                animate={{ y: -36, opacity: 1, rotate: -3, x: -4 }}
+                exit={{ y: 10, opacity: 0, rotate: 0, x: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 15, delay: 0.08 }}
+                className="absolute left-[18px] top-[6px] w-[20px] h-[24px] bg-white rounded-[3px] z-0"
+                style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
+              >
+                <div className="w-full h-full rounded-[3px] overflow-hidden">
+                  <div className="w-full h-[10px]" style={{ background: "linear-gradient(135deg, #FFD0D0, #FFB0B0)" }} />
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Folder icon — real macOS PNG */}
+        <img src="/mac-folder.png" alt="folder" className="absolute inset-0 w-full h-full object-contain z-10" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} />
+      </motion.div>
+      <span className="text-[10px] font-medium text-gray-600 mt-1.5 text-center">{label}</span>
+    </motion.div>
+  );
+}
+
+// ─── Weather App Icon — opens matcha weather ───
+function WeatherApp({ x, y, delay }: { x: string; y: string; delay: number }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay }}
+        className="absolute flex flex-col items-center cursor-pointer select-none"
+        style={{ left: x, top: y }}
+        onClick={() => setOpen(!open)}
+      >
+        <motion.div
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.06 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+        >
+          <img src="/weather-icon.png" alt="Weather" className="w-[56px] h-[56px] rounded-[14px] object-contain" style={{ boxShadow: "0 3px 10px rgba(0,0,0,0.12)" }} />
+        </motion.div>
+        <span className="text-[10px] font-medium text-gray-600 mt-1.5 text-center">Weather</span>
+      </motion.div>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 30 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[58vw] top-[5%] z-50"
+          >
+            <div className="rounded-xl overflow-hidden cursor-pointer" onClick={() => setOpen(false)} style={{ width: 260, boxShadow: "0 12px 40px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.06)" }}>
+              <div>
+                <img src="/matcha-weather.webp" alt="Matcha Weather Forecast" className="w-full object-contain rounded-xl" />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ─── Contact Photo Frame — draws, fills, rounds, rotates ───
+function ContactPhotoFrame() {
+  const [phase, setPhase] = useState<"hidden" | "drawing" | "empty" | "filling" | "rounding" | "rotating" | "done">("hidden");
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      while (!cancelled) {
+        setPhase("hidden");
+        await sleep(1000);
+        if (cancelled) return;
+
+        setPhase("drawing");
+        await sleep(1000);
+        if (cancelled) return;
+
+        setPhase("empty");
+        await sleep(800);
+        if (cancelled) return;
+
+        setPhase("filling");
+        await sleep(1200);
+        if (cancelled) return;
+
+        setPhase("rounding");
+        await sleep(1200);
+        if (cancelled) return;
+
+        setPhase("rotating");
+        await sleep(1000);
+        if (cancelled) return;
+
+        setPhase("done");
+        await sleep(4000);
+        if (cancelled) return;
+      }
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, []);
+
+  const showPhoto = phase !== "hidden" && phase !== "drawing" && phase !== "empty";
+  const isRounded = phase === "rounding" || phase === "rotating" || phase === "done";
+  const isRotated = phase === "rotating" || phase === "done";
+  const showHandles = phase !== "done" && phase !== "hidden";
+  const isVisible = phase !== "hidden";
+
+  return (
+    <div className="relative" style={{ width: 160, height: 160 }}>
+      <motion.div
+        className="relative overflow-hidden"
+        animate={{
+          width: isVisible ? 160 : 0,
+          height: isVisible ? 160 : 0,
+          borderRadius: isRounded ? 9999 : 4,
+          rotate: isRotated ? -6 : 0,
+          opacity: isVisible ? 1 : 0,
+        }}
+        transition={{
+          width: { duration: 0.5, ease: "easeOut" },
+          height: { duration: 0.5, ease: "easeOut" },
+          borderRadius: { duration: 0.6, ease: "easeInOut" },
+          rotate: { type: "spring", stiffness: 200, damping: 15 },
+          opacity: { duration: 0.3 },
+        }}
+        style={{ boxShadow: phase === "done" ? "0 8px 30px rgba(0,0,0,0.12)" : "none" }}
+      >
+        {/* Blue bounding box */}
+        {showHandles && (
+          <div className="absolute inset-0 border border-[#0D99FF] z-20" style={{ borderRadius: "inherit" }}>
+            {!isRounded && <>
+              <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            </>}
+          </div>
+        )}
+
+        {/* Empty checkerboard */}
+        {(phase === "empty" || phase === "drawing") && (
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: "linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)",
+              backgroundSize: "16px 16px",
+              backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0px",
+            }}
+          />
+        )}
+
+        {/* Photo */}
+        {showPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full h-full"
+          >
+            <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
+          </motion.div>
+        )}
+
+        {/* Crosshair during drawing */}
+        {phase === "drawing" && (
+          <motion.div
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 1, repeat: Infinity }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <div className="w-[20px] h-[1px] bg-[#0D99FF]" />
+            <div className="absolute w-[1px] h-[20px] bg-[#0D99FF]" />
+          </motion.div>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Figma Photo Frame — draws rectangle then fills with photo ───
+function FigmaPhotoFrame() {
+  const [phase, setPhase] = useState<"hidden" | "drawing" | "empty" | "filling" | "bw" | "saturate" | "normal" | "done">("hidden");
+  const showPhoto = phase !== "hidden" && phase !== "drawing" && phase !== "empty";
+  const [filter, setFilter] = useState("none");
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      await sleep(2000);
+      if (cancelled) return;
+
+      while (!cancelled) {
+        setFilter("none");
+        setPhase("drawing");
+        await sleep(800);
+        if (cancelled) return;
+
+        setPhase("empty");
+        await sleep(1000);
+        if (cancelled) return;
+
+        setPhase("filling");
+        await sleep(800);
+        if (cancelled) return;
+
+        // Go black and white
+        setPhase("bw");
+        setFilter("grayscale(1) contrast(1.1)");
+        await sleep(1500);
+        if (cancelled) return;
+
+        // Boost saturation
+        setPhase("saturate");
+        setFilter("saturate(1.4) contrast(1.05)");
+        await sleep(1500);
+        if (cancelled) return;
+
+        // Back to normal with slight warmth
+        setPhase("normal");
+        setFilter("sepia(0.1) saturate(1.1)");
+        await sleep(1200);
+        if (cancelled) return;
+
+        setPhase("done");
+        setFilter("none");
+        await sleep(6000);
+        if (cancelled) return;
+
+        setPhase("hidden");
+        await sleep(3000);
+      }
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (phase === "hidden") return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="absolute left-[2vw] top-[20%]"
+    >
+      <motion.div
+        className="relative overflow-hidden"
+        initial={{ width: 0, height: 0 }}
+        animate={{
+          width: phase === "drawing" ? 180 : 180,
+          height: phase === "drawing" ? 220 : 220,
+        }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        {/* Blue bounding box */}
+        {phase !== "done" && (
+          <div className="absolute inset-0 border border-[#0D99FF] rounded-[2px]">
+            <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+          </div>
+        )}
+
+        {/* Empty state — checkerboard */}
+        {(phase === "empty" || phase === "drawing") && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="w-full h-full"
+            style={{
+              backgroundImage: "linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)",
+              backgroundSize: "16px 16px",
+              backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0px",
+            }}
+          />
+        )}
+
+        {/* Photo fading in with filter cycling */}
+        {showPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full h-full"
+          >
+            <img
+              src="/taylor-selfie.jpg"
+              alt="Taylor"
+              className="w-full h-full object-cover rounded-[2px] transition-[filter] duration-500"
+              style={{ filter }}
+            />
+          </motion.div>
+        )}
+
+        {/* Figma crosshair in center during drawing */}
+        {phase === "drawing" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 1, repeat: Infinity }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <div className="w-[20px] h-[1px] bg-[#0D99FF]" />
+            <div className="absolute w-[1px] h-[20px] bg-[#0D99FF]" />
+          </motion.div>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─── Figma "Let's work together" text box ───
+function FigmaWorkTogether() {
+  const [phase, setPhase] = useState<"hidden" | "drawing" | "typing" | "selecting" | "fontChange" | "bold" | "done">("hidden");
+  const [text, setText] = useState("");
+  const [fontStyle, setFontStyle] = useState<"normal" | "serif" | "cursive">("normal");
+  const fullText = "Let's work together";
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      await sleep(2000);
+      if (cancelled) return;
+
+      while (!cancelled) {
+        setFontStyle("normal");
+        setPhase("drawing");
+        await sleep(500);
+        if (cancelled) return;
+
+        // Type
+        setPhase("typing");
+        for (let i = 1; i <= fullText.length; i++) {
+          if (cancelled) return;
+          setText(fullText.slice(0, i));
+          await sleep(60);
+        }
+        await sleep(600);
+        if (cancelled) return;
+
+        // Add !!!
+        for (const char of "!!!") {
+          if (cancelled) return;
+          setText((prev) => prev + char);
+          await sleep(150);
+        }
+        await sleep(800);
+        if (cancelled) return;
+
+        // Select "work"
+        setPhase("selecting");
+        await sleep(800);
+        if (cancelled) return;
+
+        // Change font to cursive
+        setPhase("fontChange");
+        setFontStyle("cursive");
+        await sleep(1200);
+        if (cancelled) return;
+
+        // Change to serif
+        setFontStyle("serif");
+        await sleep(1200);
+        if (cancelled) return;
+
+        // Bold phase
+        setPhase("bold");
+        await sleep(3000);
+        if (cancelled) return;
+
+        // Done
+        setPhase("done");
+        await sleep(5000);
+        if (cancelled) return;
+
+        // Reset
+        setText("");
+        setPhase("hidden");
+        await sleep(2000);
+      }
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (phase === "hidden") return null;
+
+  const renderText = () => {
+    const full = text;
+    const workIdx = full.indexOf("work");
+    if (workIdx === -1 || phase === "typing" || phase === "drawing") {
+      return <span>{full}</span>;
+    }
+    const before = full.slice(0, workIdx);
+    const word = "work";
+    const after = full.slice(workIdx + 4);
+    return (
+      <>
+        <span>{before}</span>
+        <span
+          className={phase === "selecting" ? "bg-[#0D99FF]/20" : ""}
+          style={{
+            fontFamily: fontStyle === "cursive" ? "var(--font-radley), Georgia, serif" : fontStyle === "serif" ? "var(--font-playfair), Georgia, serif" : "inherit",
+            fontWeight: phase === "bold" || phase === "done" ? 700 : 400,
+            fontStyle: fontStyle === "cursive" ? "italic" : "normal",
+          }}
+        >{word}</span>
+        <span>{after}</span>
+      </>
+    );
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="relative"
+    >
+      <motion.div
+        className="relative border rounded-[2px] px-3 py-2"
+        initial={{ width: 0, height: 0, opacity: 0 }}
+        animate={{
+          width: "auto",
+          height: "auto",
+          opacity: 1,
+          borderColor: phase === "done" ? "transparent" : "#0D99FF",
+        }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        style={{ borderWidth: 1 }}
+      >
+        {phase !== "done" && (
+          <>
+            <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+          </>
+        )}
+
+        <span className="text-xl whitespace-nowrap select-none text-gray-900">
+          {renderText()}
+        </span>
+
+        {(phase === "typing" || phase === "drawing") && (
+          <motion.span
+            animate={{ opacity: [1, 0] }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+            className="inline-block w-[1px] h-[14px] bg-[#1D1D1F] ml-[1px] align-text-bottom"
+          />
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─── About Me Folder — opens iOS Notes ───
+function AboutMeFolder({ x, y, delay }: { x: string; y: string; delay: number }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay }}
+        className="absolute flex flex-col items-center cursor-pointer select-none"
+        style={{ left: x, top: y }}
+        onClick={() => setOpen(!open)}
+      >
+        <motion.div
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.06 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+          className="relative"
+          style={{ width: 80, height: 68 }}
+        >
+          <img src="/mac-folder.png" alt="folder" className="absolute inset-0 w-full h-full object-contain z-10" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} />
+        </motion.div>
+        <span className="text-[10px] font-medium text-gray-600 mt-1.5 text-center">about me</span>
+      </motion.div>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 30 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[35vw] top-[5%] z-50"
+          >
+            <div
+              className="rounded-xl overflow-hidden"
+              style={{
+                width: 280,
+                background: "#FFFFFF",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.06)",
+              }}
+            >
+              {/* macOS titlebar */}
+              <div className="flex items-center px-3 py-2.5 border-b border-gray-200 bg-[#F6F6F6]">
+                <div className="flex items-center gap-1.5">
+                  <button onClick={() => setOpen(false)} className="w-[12px] h-[12px] rounded-full" style={{ background: "#FF5F56" }} />
+                  <div className="w-[12px] h-[12px] rounded-full" style={{ background: "#FFBD2E" }} />
+                  <div className="w-[12px] h-[12px] rounded-full" style={{ background: "#27C93F" }} />
+                </div>
+                <span className="flex-1 text-center text-[12px] font-bold text-gray-700">About Me</span>
+              </div>
+              {/* Note content */}
+              <div className="px-4 py-4" style={{ background: "#FFFFFF", minHeight: 240 }}>
+                <p className="text-[18px] font-bold text-gray-900 mb-1">about me!</p>
+                <p className="text-[10px] text-gray-400 mb-4">April 22, 2026</p>
+                <div className="space-y-2.5 text-[13px] text-gray-700" style={{ lineHeight: 1.6 }}>
+                  <p>- design engineer @ EA</p>
+                  <p>- previously spotify, nike, sidework</p>
+                  <p>- building design systems in SwiftUI</p>
+                  <p>- based in vancouver</p>
+                  <p>- pickleball on sundays</p>
+                  <p>- strawberry matcha enthusiast</p>
+                  <p>- currently reading sarah j maas</p>
+                  <p>- vibe coding with claude at 2am</p>
+                  <p>- applying to google material design</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ─── Now Playing Pill ───
+function NowPlayingPill() {
+  const tracks = [
+    { title: "Risk", artist: "Gracie Abrams", cover: "/gracie.png" },
+    { title: "Cruel Summer", artist: "Taylor Swift", cover: "/taylor-swift-1989.png" },
+  ];
+  const [trackIdx, setTrackIdx] = useState(0);
+  const track = tracks[trackIdx];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.7, type: "spring" }}
+      className="absolute left-[36vw] bottom-[26%]"
+    >
+      <div
+        className="rounded-[28px] pl-2 pr-3 py-2 flex items-center gap-3"
+        style={{
+          width: 300,
+          background: "rgba(255,255,255,0.85)",
+          backdropFilter: "blur(40px) saturate(180%)",
+          WebkitBackdropFilter: "blur(40px) saturate(180%)",
+          border: "1px solid rgba(255,255,255,0.6)",
+          boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.08)",
+        }}
+      >
+        {/* Album art */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={track.cover}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="w-12 h-12 rounded-full overflow-hidden shrink-0 shadow-md"
+          >
+            <img src={track.cover} alt={track.title} className="w-full h-full object-cover" />
+          </motion.div>
+        </AnimatePresence>
+        {/* Song info */}
+        <div className="flex-1 min-w-0">
+          <AnimatePresence mode="wait">
+            <motion.div key={track.title} initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} transition={{ duration: 0.15 }}>
+              <p className="text-[13px] font-semibold text-gray-900 truncate">{track.title}</p>
+              <p className="text-[11px] text-gray-500 truncate">{track.artist}</p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+        {/* Controls */}
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.85 }}
+            onClick={() => setTrackIdx((i) => (i - 1 + tracks.length) % tracks.length)}
+            className="text-gray-400 hover:text-gray-700"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.85 }}
+            onClick={() => setTrackIdx((i) => (i + 1) % tracks.length)}
+            className="text-gray-400 hover:text-gray-700"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+          </motion.button>
+          {/* Waveform */}
+          <div className="flex items-end gap-[2px] h-[18px] ml-1">
+            {[0, 1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                className="w-[3px] rounded-full bg-pink-500"
+                animate={{ height: [4, 10 + Math.random() * 6, 4, 12 + Math.random() * 4, 6] }}
+                transition={{ duration: 0.8 + i * 0.1, repeat: Infinity, ease: "easeInOut" }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Xcode Crash Dialog ───
+function XcodeCrash() {
+  const [visible, setVisible] = useState(true);
+
+  const dismiss = () => {
+    setVisible(false);
+    setTimeout(() => setVisible(true), 3000);
+  };
+
+  if (!visible) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ delay: 1.2, type: "spring", stiffness: 300, damping: 20 }}
+      className="absolute right-[6vw] bottom-[38%] z-40 cursor-pointer"
+      onClick={dismiss}
+    >
+      <div
+        className="rounded-2xl px-4 py-3 flex items-start gap-3"
+        style={{
+          width: 300,
+          background: "rgba(255,255,255,0.85)",
+          backdropFilter: "blur(40px) saturate(180%)",
+          WebkitBackdropFilter: "blur(40px) saturate(180%)",
+          border: "1px solid rgba(255,255,255,0.6)",
+          boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.08)",
+        }}
+      >
+        <div className="w-9 h-9 rounded-[10px] overflow-hidden shrink-0 shadow-sm">
+          <img src="/xcode-icon.webp" alt="Xcode" className="w-full h-full object-cover" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-bold text-gray-900">Xcode</p>
+            <p className="text-[9px] text-gray-400">now</p>
+          </div>
+          <p className="text-[11px] text-gray-600 mt-0.5">Xcode quit unexpectedly. It saw your code and chose peace.</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Image Folder — opens a preview window with an image ───
+function ImageFolder({ x, y, delay, label, image }: { x: string; y: string; delay: number; label: string; image: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay }}
+        className="absolute flex flex-col items-center cursor-pointer select-none"
+        style={{ left: x, top: y }}
+        onClick={() => setOpen(!open)}
+      >
+        <motion.div
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.06 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+          className="relative"
+          style={{ width: 80, height: 68 }}
+        >
+          <img src="/mac-folder.png" alt="folder" className="absolute inset-0 w-full h-full object-contain z-10" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} />
+        </motion.div>
+        <span className="text-[10px] font-medium text-gray-600 mt-1.5 text-center">{label}</span>
+      </motion.div>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 30 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[38vw] top-[5%] z-50"
+          >
+            <div className="rounded-xl overflow-hidden" style={{ width: 240, boxShadow: "0 12px 40px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.06)" }}>
+              {/* macOS Preview toolbar */}
+              <div className="flex items-center justify-between px-3 py-1.5 bg-[#F6F6F6] border-b border-gray-200">
+                <div className="flex gap-[6px]">
+                  <button onClick={() => setOpen(false)} className="w-[10px] h-[10px] rounded-full bg-[#FF5F56] hover:brightness-90" />
+                  <div className="w-[10px] h-[10px] rounded-full bg-[#FFBD2E]" />
+                  <div className="w-[10px] h-[10px] rounded-full bg-[#27C93F]" />
+                </div>
+                <span className="text-[9px] text-gray-500">{label}</span>
+                <div style={{ width: 40 }} />
+              </div>
+              {/* Image */}
+              <div className="bg-black">
+                <img src={image} alt={label} className="w-full object-contain" />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ─── Notes Folder — opens iOS Notes ───
+function NotesFolder({ x, y, delay }: { x: string; y: string; delay: number }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay }}
+        className="absolute flex flex-col items-center cursor-pointer select-none"
+        style={{ left: x, top: y }}
+        onClick={() => setOpen(!open)}
+      >
+        <motion.div
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.06 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+          className="relative"
+          style={{ width: 80, height: 68 }}
+        >
+          <img src="/mac-folder.png" alt="folder" className="absolute inset-0 w-full h-full object-contain z-10" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} />
+        </motion.div>
+        <span className="text-[10px] font-medium text-gray-600 mt-1.5 text-center">notes</span>
+      </motion.div>
+
+      {/* iOS Notes window */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 30 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[25vw] top-[6%] z-50"
+          >
+            <div
+              className="rounded-xl overflow-hidden"
+              style={{
+                width: 280,
+                background: "#FFFFFF",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.06)",
+              }}
+            >
+              {/* macOS-style titlebar */}
+              <div className="flex items-center px-3 py-2.5 border-b border-gray-200 bg-[#F6F6F6]">
+                <div className="flex items-center gap-1.5">
+                  <button onClick={() => setOpen(false)} className="w-[12px] h-[12px] rounded-full" style={{ background: "#FF5F56" }} />
+                  <div className="w-[12px] h-[12px] rounded-full" style={{ background: "#FFBD2E" }} />
+                  <div className="w-[12px] h-[12px] rounded-full" style={{ background: "#27C93F" }} />
+                </div>
+                <span className="flex-1 text-center text-[12px] font-bold text-gray-700">New Note</span>
+              </div>
+              {/* Note content */}
+              <div className="px-4 py-4" style={{ background: "#FFFFFF", minHeight: 220 }}>
+                <p className="text-[18px] font-bold text-gray-900 mb-1">things i love</p>
+                <p className="text-[10px] text-gray-400 mb-4">April 22, 2026</p>
+                <div className="space-y-2.5 text-[13px] text-gray-700" style={{ lineHeight: 1.6 }}>
+                  <p>- design systems (obviously)</p>
+                  <p>- strawberry matcha from komeya</p>
+                  <p>- pickleball on sundays</p>
+                  <p>- when figma auto-layout just works</p>
+                  <p>- vibe coding at 2am</p>
+                  <p>- sarah j maas books</p>
+                  <p>- gracie abrams on repeat</p>
+                  <p>- the feeling when a PR gets approved</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ─── macOS App Folder — springs out app icons ───
+function MacAppFolder({ x, y, delay }: { x: string; y: string; delay: number }) {
+  const [open, setOpen] = useState(false);
+
+  const apps = [
+    { name: "Spotify", icon: "/logos/spotify.png", x: -30, y: -45, rotate: -10 },
+    { name: "Pinterest", icon: "/pinterest-icon.avif", x: 25, y: -40, rotate: 8 },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      className="absolute flex flex-col items-center cursor-pointer select-none"
+      style={{ left: x, top: y }}
+      onClick={() => setOpen(!open)}
+    >
+      <motion.div
+        whileTap={{ scale: 0.92 }}
+        whileHover={{ scale: 1.06 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+        className="relative"
+        style={{ width: 80, height: 68 }}
+      >
+        {/* App icons springing out */}
+        <AnimatePresence>
+          {open && apps.map((app, i) => (
+            <motion.div
+              key={app.name}
+              initial={{ y: 10, opacity: 0, scale: 0.3, rotate: 0 }}
+              animate={{ y: app.y, x: app.x, opacity: 1, scale: 1, rotate: app.rotate }}
+              exit={{ y: 10, x: 0, opacity: 0, scale: 0.3, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 500, damping: 15, delay: i * 0.05 }}
+              className="absolute left-[12px] top-[4px] z-0"
+            >
+              <div className="w-[36px] h-[36px] rounded-[10px] overflow-hidden shadow-lg" style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
+                <img src={app.icon} alt={app.name} className="w-full h-full object-cover" />
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {/* Folder icon */}
+        <img src="/mac-folder.png" alt="folder" className="absolute inset-0 w-full h-full object-contain z-10" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} />
+      </motion.div>
+      <span className="text-[10px] font-medium text-gray-600 mt-1.5 text-center">fav apps</span>
+    </motion.div>
+  );
+}
+
+// ─── Spotify Player ───
+function SpotifyPlayer() {
+  const [playing, setPlaying] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!playing) return;
+    const interval = setInterval(() => {
+      setProgress((p) => (p >= 100 ? 0 : p + 0.5));
+    }, 100);
+    return () => clearInterval(interval);
+  }, [playing]);
+
+  return (
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{
+        width: 280,
+        background: "linear-gradient(180deg, #2A1A3A, #1A1A2E, #121212)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+      }}
+    >
+      {/* Album art */}
+      <div className="relative">
+        <div className="w-full aspect-square bg-gradient-to-br from-[#3D2C4E] to-[#1A1020] flex items-center justify-center p-6">
+          <div className="w-full h-full rounded-md overflow-hidden relative">
+            <img src="/gracie.png" alt="The Secret of Us" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+
+      {/* Song info */}
+      <div className="px-5 pt-4 pb-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[14px] font-bold text-white">Risk</p>
+            <p className="text-[12px] text-gray-400">Gracie Abrams</p>
+          </div>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            className="text-green-500"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="px-5 pb-1">
+        <div className="w-full h-[3px] bg-gray-700 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-white rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="flex justify-between mt-1">
+          <span className="text-[9px] text-gray-500">{Math.floor(progress * 2.16 / 60)}:{String(Math.floor(progress * 2.16 % 60)).padStart(2, "0")}</span>
+          <span className="text-[9px] text-gray-500">3:36</span>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center justify-center gap-6 px-5 pb-5 pt-2">
+        <button className="text-gray-400 hover:text-white transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+        </button>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setPlaying(!playing)}
+          className="w-10 h-10 rounded-full bg-white flex items-center justify-center"
+        >
+          {playing ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#121212"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#121212"><path d="M8 5v14l11-7z"/></svg>
+          )}
+        </motion.button>
+        <button className="text-gray-400 hover:text-white transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── AirDrop Popup ───
+function AirDropPopup() {
+  const [accepted, setAccepted] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  if (dismissed) return null;
+
+  return (
+    <motion.div
+      layout
+      className="rounded-[20px] overflow-hidden"
+      style={{
+        width: 260,
+        background: "rgba(255,255,255,0.85)",
+        backdropFilter: "blur(40px) saturate(180%)",
+        WebkitBackdropFilter: "blur(40px) saturate(180%)",
+        boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 0 0 0.5px rgba(0,0,0,0.06)",
+      }}
+    >
+      {/* Header */}
+      <div className="pt-5 pb-2 text-center">
+        <p className="text-[15px] font-bold text-gray-900">AirDrop</p>
+        <p className="text-[12px] text-gray-500 mt-0.5">Taylor would like to share a file</p>
+      </div>
+
+      {/* File preview — orange shimmer gradient */}
+      <div className="mx-4 mb-3 rounded-xl overflow-hidden relative" style={{ height: 180, background: "linear-gradient(135deg, #FF9A56, #FF6B35, #FF4444, #FF6B35, #FFAA66)" }}>
+        {/* Shimmer */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.5) 45%, rgba(255,255,255,0.2) 55%, transparent 70%)",
+          }}
+          animate={{ x: ["-100%", "200%"] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 3 }}
+        />
+      </div>
+
+      {/* Buttons */}
+      {!accepted ? (
+        <div className="flex border-t border-gray-200/60">
+          <button
+            onClick={() => setDismissed(true)}
+            className="flex-1 py-3 text-[14px] text-blue-500 font-medium border-r border-gray-200/60 active:bg-gray-100/50"
+          >
+            Decline
+          </button>
+          <button
+            onClick={() => setAccepted(true)}
+            className="flex-1 py-3 text-[14px] text-blue-500 font-bold active:bg-gray-100/50"
+          >
+            Accept
+          </button>
+        </div>
+      ) : (
+        <div className="py-3 text-center">
+          <p className="text-[12px] text-gray-500">Saved to Photos</p>
+        </div>
+      )}
+    </motion.div>
   );
 }
 
@@ -1795,9 +3106,18 @@ function LimewireDownload() {
             <span className="text-[8px] text-gray-500">2.1 MB of 2.9 MB</span>
           </div>
         </div>
-        <div className="flex items-center gap-3 text-[8px] text-gray-500">
-          <span>⬇️ 14.2 KB/s</span>
-          <span>ETA: forever lol</span>
+        <div className="flex items-center justify-between text-[8px] text-gray-500">
+          <div className="flex items-center gap-3">
+            <span>⬇️ 14.2 KB/s</span>
+            <span>ETA: forever lol</span>
+          </div>
+          <a
+            href="/Taylor_Breitzman_Resume.pdf"
+            download
+            onClick={(e) => e.stopPropagation()}
+            className="px-2 py-0.5 text-[8px] font-bold text-white rounded-sm hover:brightness-110"
+            style={{ background: "linear-gradient(180deg, #00AA00, #008800)", border: "1px solid #006600" }}
+          >Actually Download</a>
         </div>
       </div>
     </div>
@@ -1871,13 +3191,152 @@ function XPFolderIcon({ label, x, y, delay, onClick, onDoubleClick }: { label: s
 // ─── XP Folders with openable Typography folder ───
 function XPFolders() {
   const [typoOpen, setTypoOpen] = useState(false);
+  const [untitledOpen, setUntitledOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
     <>
-      <XPFolderIcon label="My Music" x="30vw" y="6%" delay={0.3} />
-      <XPFolderIcon label="My Pictures" x="38vw" y="5%" delay={0.38} />
+      <XPFolderIcon label="Notes" x="30vw" y="6%" delay={0.3} onClick={() => setNotesOpen(true)} />
+      <XPFolderIcon label="About Me" x="38vw" y="5%" delay={0.38} onClick={() => setAboutOpen(true)} />
       <XPFolderIcon label="Typography" x="34vw" y="22%" delay={0.46} onClick={() => setTypoOpen(true)} />
-      <XPFolderIcon label="Untitled" x="46vw" y="8%" delay={0.54} />
+      <XPFolderIcon label="Untitled" x="46vw" y="8%" delay={0.54} onClick={() => setUntitledOpen(true)} />
+
+      {/* Untitled — Windows Picture Viewer */}
+      <AnimatePresence>
+        {untitledOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 40 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[30vw] top-[5%] z-50"
+          >
+            <div className="rounded-t-lg overflow-hidden shadow-2xl" style={{ width: 360, border: "1px solid #0054E3", fontFamily: "Tahoma, sans-serif" }}>
+              {/* Title bar */}
+              <div className="flex items-center justify-between px-2 py-1" style={{ background: "linear-gradient(180deg, #0A246A, #3A6EA5, #0A246A)" }}>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px]">🖼️</span>
+                  <span className="text-[11px] font-bold text-white">Windows Picture and Fax Viewer</span>
+                </div>
+                <div className="flex gap-[2px]">
+                  <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>_</div>
+                  <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>□</div>
+                  <button
+                    onClick={() => setUntitledOpen(false)}
+                    className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-white font-bold hover:brightness-110"
+                    style={{ background: "linear-gradient(180deg, #E08070, #C84030)", border: "1px solid #993322" }}
+                  >✕</button>
+                </div>
+              </div>
+              {/* Image area */}
+              <div className="bg-[#2B2B2B] flex items-center justify-center p-2">
+                <img src="/lol.jpg" alt="pain is temporary, swag is forever" className="max-w-full max-h-[320px] object-contain" />
+              </div>
+              {/* Toolbar */}
+              <div className="bg-[#ECE9D8] px-2 py-1 flex items-center justify-center gap-1 border-t border-gray-400">
+                {["⏮", "◀", "▶", "⏭", "⊕", "⊖", "🖨️", "💾", "🗑️"].map((btn, i) => (
+                  <div key={i} className="w-[22px] h-[18px] rounded-sm text-[10px] flex items-center justify-center" style={{ background: "linear-gradient(180deg, #F5F5F5, #E0E0E0)", border: "1px solid #999" }}>{btn}</div>
+                ))}
+              </div>
+              {/* Status bar */}
+              <div className="px-2 py-0.5 bg-[#ECE9D8] border-t border-gray-300 flex justify-between">
+                <span className="text-[8px] text-gray-500">lol.jpg — 420 x 420 pixels</span>
+                <span className="text-[8px] text-gray-500">69 KB</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Notes — Notepad window */}
+      <AnimatePresence>
+        {notesOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 40 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[22vw] top-[6%] z-50"
+          >
+            <div className="rounded-t-sm overflow-hidden shadow-2xl" style={{ width: 300, border: "1px solid #0054E3", fontFamily: "Tahoma, sans-serif" }}>
+              <div className="flex items-center justify-between px-2 py-1" style={{ background: "linear-gradient(180deg, #0A246A, #3A6EA5, #0A246A)" }}>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px]">📝</span>
+                  <span className="text-[11px] font-bold text-white">notes.txt - Notepad</span>
+                </div>
+                <div className="flex gap-[2px]">
+                  <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>_</div>
+                  <button onClick={() => setNotesOpen(false)} className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-white font-bold" style={{ background: "linear-gradient(180deg, #E08070, #C84030)", border: "1px solid #993322" }}>✕</button>
+                </div>
+              </div>
+              <div className="flex gap-3 px-2 py-0.5 bg-[#ECE9D8] border-b border-gray-400">
+                {["File", "Edit", "Format", "View", "Help"].map((m) => (
+                  <span key={m} className="text-[10px] text-gray-700">{m}</span>
+                ))}
+              </div>
+              <div className="bg-white p-3 text-[11px] text-gray-800 leading-relaxed" style={{ minHeight: 180, fontFamily: "Courier New, monospace" }}>
+                <p>things on my mind rn:</p>
+                <p className="mt-2">- need to finish that SwiftUI animation</p>
+                <p>- pickleball rematch on sunday</p>
+                <p>- strawberry matcha &gt; regular matcha</p>
+                <p>- why does xcode keep crashing</p>
+                <p>- new gracie abrams album on repeat</p>
+                <p>- should i learn rust or is that overkill</p>
+                <p>- remember to water the plants</p>
+                <p className="mt-2">- &quot;it wont work&quot;</p>
+                <p>- it will. im literally crazy.</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* About Me — WordPad window */}
+      <AnimatePresence>
+        {aboutOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 40 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[28vw] top-[4%] z-50"
+          >
+            <div className="rounded-t-sm overflow-hidden shadow-2xl" style={{ width: 320, border: "1px solid #0054E3", fontFamily: "Tahoma, sans-serif" }}>
+              <div className="flex items-center justify-between px-2 py-1" style={{ background: "linear-gradient(180deg, #0A246A, #3A6EA5, #0A246A)" }}>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px]">📄</span>
+                  <span className="text-[11px] font-bold text-white">about_me.doc - WordPad</span>
+                </div>
+                <div className="flex gap-[2px]">
+                  <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>_</div>
+                  <button onClick={() => setAboutOpen(false)} className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-white font-bold" style={{ background: "linear-gradient(180deg, #E08070, #C84030)", border: "1px solid #993322" }}>✕</button>
+                </div>
+              </div>
+              <div className="flex gap-3 px-2 py-0.5 bg-[#ECE9D8] border-b border-gray-400">
+                {["File", "Edit", "View", "Insert", "Format", "Help"].map((m) => (
+                  <span key={m} className="text-[10px] text-gray-700">{m}</span>
+                ))}
+              </div>
+              <div className="bg-white p-4 text-[11px] text-gray-800 leading-relaxed" style={{ minHeight: 200 }}>
+                <p className="text-[14px] font-bold" style={{ fontFamily: "Comic Sans MS, cursive" }}>~*~ aBouT mE ~*~</p>
+                <p className="mt-3">★ taylor breitzman</p>
+                <p>★ design engineer from vancouver</p>
+                <p>★ building design systems @ EA</p>
+                <p>★ swiftui + figma enthusiast</p>
+                <p>★ previously: spotify, nike, sidework</p>
+                <p className="mt-2">★ obsessed with:</p>
+                <p>&nbsp;&nbsp;- clean component APIs</p>
+                <p>&nbsp;&nbsp;- pixel-perfect designs</p>
+                <p>&nbsp;&nbsp;- pickleball (getting competitive)</p>
+                <p>&nbsp;&nbsp;- sarah j maas books</p>
+                <p>&nbsp;&nbsp;- strawberry matcha</p>
+                <p className="mt-2" style={{ fontFamily: "Comic Sans MS, cursive" }}>~*~ dOnT fOrGeT tO sIgN mY gUeStBoOk ~*~</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Typography XP window */}
       <AnimatePresence>
@@ -1942,14 +3401,16 @@ function BigCDCase({ cover, title }: { cover: string; title: string }) {
   return (
     <div
       onClick={() => setOpen(!open)}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
       className="relative cursor-pointer"
       style={{ width: 180, height: 180 }}
     >
       {/* Disc — slides out right */}
       <motion.div
         className="absolute top-[10px]"
-        animate={{ x: open ? 80 : 0, rotate: open ? 90 : 0 }}
-        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        animate={{ x: open ? 80 : 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 22 }}
         style={{ left: 40 }}
       >
         <div
@@ -2304,50 +3765,6 @@ function PrototypesView() {
 
   return (
     <div>
-      <div className="flex items-end justify-between mb-10">
-        <div>
-          <h2 className="mb-2 text-sm font-medium tracking-wide text-gray-400 uppercase">
-            iOS Prototypes
-          </h2>
-          <p className="text-3xl font-semibold tracking-tight text-gray-900">
-            Built for iPhone
-          </p>
-        </div>
-
-        {/* View toggle */}
-        <div className="flex items-center gap-1 rounded-full bg-gray-100 p-1">
-          <button
-            onClick={() => setView("carousel")}
-            className={`relative rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              view === "carousel" ? "text-white" : "text-gray-500"
-            }`}
-          >
-            {view === "carousel" && (
-              <motion.div
-                layoutId="view-toggle"
-                className="absolute inset-0 rounded-full bg-black"
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              />
-            )}
-            <span className="relative z-10">Carousel</span>
-          </button>
-          <button
-            onClick={() => setView("grid")}
-            className={`relative rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              view === "grid" ? "text-white" : "text-gray-500"
-            }`}
-          >
-            {view === "grid" && (
-              <motion.div
-                layoutId="view-toggle"
-                className="absolute inset-0 rounded-full bg-black"
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              />
-            )}
-            <span className="relative z-10">Grid</span>
-          </button>
-        </div>
-      </div>
 
       <AnimatePresence mode="wait">
         {view === "carousel" ? (
@@ -2464,7 +3881,7 @@ function PrototypesView() {
                   transition={{ duration: 0.3, delay: i * 0.04 }}
                   whileHover={{ y: -4 }}
                   onClick={() => { setCurrent(i); setView("carousel"); }}
-                  className="cursor-pointer"
+                  className="cursor-pointer flex flex-col items-center"
                 >
                   <IPhoneMockup
                     title={p.title}
@@ -2474,6 +3891,11 @@ function PrototypesView() {
                     gifSrc={p.gifSrc}
                     videoSrc={p.videoSrc}
                   />
+                  <div className="mt-4 text-center">
+                    <p className="text-sm font-semibold text-gray-900">{p.title}</p>
+                    <p className="text-xs text-gray-500 mt-1">{p.description}</p>
+                    <span className="mt-2 inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-[10px] font-medium text-gray-500">{p.tag}</span>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -2591,15 +4013,15 @@ const y2kUIs = [
 ];
 
 const albums = [
-  { title: "SOS", artist: "SZA", color: "#1a1a2e", gradient: "linear-gradient(135deg, #1a1a2e, #4a2c6e)" },
-  { title: "Ctrl", artist: "SZA", color: "#8B6914", gradient: "linear-gradient(135deg, #8B6914, #C4A34A)" },
-  { title: "RENAISSANCE", artist: "Beyoncé", color: "#C0C0C0", gradient: "linear-gradient(135deg, #888, #CCC)" },
-  { title: "Midnights", artist: "Taylor Swift", color: "#1B365D", gradient: "linear-gradient(135deg, #1B365D, #4A6B8A)" },
-  { title: "Blonde", artist: "Frank Ocean", color: "#E8E0D0", gradient: "linear-gradient(135deg, #E8E0D0, #F5F0E5)" },
-  { title: "good kid, m.A.A.d city", artist: "Kendrick Lamar", color: "#2C1810", gradient: "linear-gradient(135deg, #2C1810, #5A3A2A)" },
-  { title: "After Hours", artist: "The Weeknd", color: "#8B0000", gradient: "linear-gradient(135deg, #8B0000, #DC143C)" },
-  { title: "IGOR", artist: "Tyler, The Creator", color: "#FFB6C1", gradient: "linear-gradient(135deg, #FFB6C1, #FF69B4)" },
-  { title: "Happier Than Ever", artist: "Billie Eilish", color: "#D4C5A9", gradient: "linear-gradient(135deg, #B8A88A, #D4C5A9)" },
+  { title: "SOS", artist: "SZA", color: "#1a1a2e", gradient: "linear-gradient(135deg, #1a1a2e, #4a2c6e)", cover: "/hannah.jpg" },
+  { title: "Ctrl", artist: "SZA", color: "#8B6914", gradient: "linear-gradient(135deg, #8B6914, #C4A34A)", cover: "/hannah.jpg" },
+  { title: "RENAISSANCE", artist: "Beyoncé", color: "#C0C0C0", gradient: "linear-gradient(135deg, #888, #CCC)", cover: "/hannah.jpg" },
+  { title: "Midnights", artist: "Taylor Swift", color: "#1B365D", gradient: "linear-gradient(135deg, #1B365D, #4A6B8A)", cover: "/hannah.jpg" },
+  { title: "Blonde", artist: "Frank Ocean", color: "#E8E0D0", gradient: "linear-gradient(135deg, #E8E0D0, #F5F0E5)", cover: "/hannah.jpg" },
+  { title: "good kid, m.A.A.d city", artist: "Kendrick Lamar", color: "#2C1810", gradient: "linear-gradient(135deg, #2C1810, #5A3A2A)", cover: "/hannah.jpg" },
+  { title: "After Hours", artist: "The Weeknd", color: "#8B0000", gradient: "linear-gradient(135deg, #8B0000, #DC143C)", cover: "/hannah.jpg" },
+  { title: "IGOR", artist: "Tyler, The Creator", color: "#FFB6C1", gradient: "linear-gradient(135deg, #FFB6C1, #FF69B4)", cover: "/hannah.jpg" },
+  { title: "Happier Than Ever", artist: "Billie Eilish", color: "#D4C5A9", gradient: "linear-gradient(135deg, #B8A88A, #D4C5A9)", cover: "/hannah.jpg" },
 ];
 
 const books = [
@@ -3709,7 +5131,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("Home");
   const [aboutMode, setAboutMode] = useState<"modern" | "y2k">("modern");
   const [meMode, setMeMode] = useState<"modern" | "y2k">("modern");
-  const tabs = ["Home", "Projects", "Prototypes", "Resume", "About", "Me", "Contact"];
+  const tabs = ["Home", "Vibes", "Prototypes", "Projects", "Resume", "Contact"];
 
   return (
     <>
@@ -3734,7 +5156,7 @@ export default function Home() {
 
       {/* ─── ME TAB — full-bleed canvas, outside main ─── */}
       <AnimatePresence>
-      {activeTab === "Me" && (
+      {activeTab === "Vibes" && (
         <motion.div
           key="me-canvas"
           initial={{ opacity: 0 }}
@@ -3778,238 +5200,316 @@ export default function Home() {
             {/* Subtle grid dots */}
             <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle, #C0C0C0 0.5px, transparent 0.5px)", backgroundSize: "28px 28px" }} />
 
-            {/* ── AirDrop avatar — dead center ── */}
+            {/* ── Interactive Books — top left ── */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10"
-            >
-              <div className="relative">
-                <div className="w-28 h-28 rounded-full overflow-hidden shadow-xl ring-4 ring-white">
-                  <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
-                </div>
-                <motion.div
-                  className="absolute inset-0 rounded-full border-2 border-blue-400/30"
-                  animate={{ scale: [1, 1.8], opacity: [0.5, 0] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
-                />
-                <motion.div
-                  className="absolute inset-0 rounded-full border-2 border-blue-400/20"
-                  animate={{ scale: [1, 2.4], opacity: [0.3, 0] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut", delay: 0.6 }}
-                />
-              </div>
-              <p className="mt-4 text-base font-bold text-gray-900">Taylor Breitzman</p>
-              <p className="text-xs text-gray-400">Design Engineer</p>
-            </motion.div>
-
-            {/* ── Reading folder — far top-left ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20, rotate: -5 }}
+              animate={{ opacity: 1, y: 0, rotate: -5 }}
               transition={{ delay: 0.15 }}
-              className="absolute left-[4vw] top-[6%]"
+              className="absolute left-[4vw] top-[5%]"
             >
-              <div className="w-[170px] rounded-2xl p-3 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.65)", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04)" }}>
-                <div className="grid grid-cols-3 gap-1.5 mb-2">
-                  {books.slice(0, 9).map((book) => (
-                    <motion.div
-                      key={book.title}
-                      whileHover={{ scale: 1.1, y: -2 }}
-                      className="w-full aspect-[2/3] rounded-lg overflow-hidden shadow-sm cursor-pointer"
-                    >
-                      {book.cover ? (
-                        <img src={book.cover} alt={book.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full" style={{ background: book.color }} />
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-                <p className="text-[10px] font-medium text-gray-700 text-center">Reading</p>
-              </div>
+              <InteractiveBook cover="/books/project-hail-mary-alt.jpg" title="Project Hail Mary" author="Andy Weir" />
             </motion.div>
-
-            {/* ── Now Playing — far top-right ── */}
             <motion.div
-              initial={{ opacity: 0, y: 30, rotate: 3 }}
+              initial={{ opacity: 0, y: 20, rotate: 3 }}
               animate={{ opacity: 1, y: 0, rotate: 3 }}
               transition={{ delay: 0.2 }}
-              className="absolute right-[4vw] top-[4%]"
+              className="absolute left-[14vw] top-[8%]"
             >
-              <div className="w-[220px] rounded-2xl overflow-hidden backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.7)", boxShadow: "0 8px 32px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.04)" }}>
-                <div className="w-full h-[130px] relative" style={{ background: albums[0].gradient }}>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <p className="text-white/80 font-bold text-lg">{albums[0].artist}</p>
-                  </div>
-                  <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-5 items-center">
-                    <span className="text-white/60 text-xs">⏮</span>
-                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-white text-sm ml-0.5">▶</span>
-                    </div>
-                    <span className="text-white/60 text-xs">⏭</span>
-                  </div>
-                </div>
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold text-gray-900">{albums[0].title}</p>
-                  <p className="text-[11px] text-gray-400">{albums[0].artist}</p>
-                  <div className="mt-2 w-full h-[2px] bg-gray-200 rounded-full">
-                    <motion.div className="h-full bg-pink-400 rounded-full" animate={{ width: ["0%", "100%"] }} transition={{ duration: 12, repeat: Infinity }} />
-                  </div>
-                </div>
-              </div>
+              <InteractiveBook cover="/books/fourth-wing.jpg" title="Fourth Wing" author="Rebecca Yarros" />
             </motion.div>
-
-            {/* ── Vinyl — far right, middle ── */}
             <motion.div
-              initial={{ opacity: 0, rotate: -10 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              transition={{ delay: 0.3 }}
-              className="absolute right-[6vw] top-[50%] -translate-y-1/2"
-            >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                className="w-[140px] h-[140px] rounded-full relative"
-                style={{ background: "conic-gradient(from 0deg, #1a1a1a, #333, #1a1a1a, #2a2a2a, #1a1a1a)", boxShadow: "0 6px 24px rgba(0,0,0,0.2)" }}
-              >
-                <div className="absolute inset-[8px] rounded-full border border-white/[0.03]" />
-                <div className="absolute inset-[16px] rounded-full border border-white/[0.03]" />
-                <div className="absolute inset-[24px] rounded-full border border-white/[0.03]" />
-                <div className="absolute inset-[32px] rounded-full border border-white/[0.03]" />
-                <div className="absolute inset-0 m-auto w-[44px] h-[44px] rounded-full flex items-center justify-center" style={{ background: albums[2].gradient }}>
-                  <div className="w-[6px] h-[6px] rounded-full bg-black/40" />
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* ── Music folder — far left, lower ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20, rotate: -2 }}
+              animate={{ opacity: 1, y: 0, rotate: -2 }}
               transition={{ delay: 0.25 }}
-              className="absolute left-[3vw] bottom-[12%]"
+              className="absolute left-[3vw] top-[38%]"
             >
-              <div className="w-[150px] rounded-2xl p-3 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.65)", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04)" }}>
-                <div className="grid grid-cols-3 gap-1.5 mb-2">
-                  {albums.slice(0, 9).map((album) => (
-                    <div key={album.title} className="w-full aspect-square rounded-md" style={{ background: album.gradient }} />
-                  ))}
-                </div>
-                <p className="text-[10px] font-medium text-gray-700 text-center">Music</p>
-              </div>
+              <InteractiveBook cover="/books/acomaf.jpg" title="A Court of Mist and Fury" author="Sarah J. Maas" />
             </motion.div>
-
-            {/* ── Floating book — bottom center-left ── */}
             <motion.div
-              initial={{ opacity: 0, y: 20, rotate: -8 }}
-              animate={{ opacity: 1, y: 0, rotate: -8 }}
-              whileHover={{ rotate: 0, scale: 1.05 }}
-              transition={{ delay: 0.35 }}
-              className="absolute left-[25vw] bottom-[8%] cursor-pointer"
+              initial={{ opacity: 0, y: 20, rotate: 4 }}
+              animate={{ opacity: 1, y: 0, rotate: 4 }}
+              transition={{ delay: 0.3 }}
+              className="absolute left-[13vw] top-[40%]"
             >
-              <div className="w-[110px] rounded-lg shadow-xl overflow-hidden" style={{ height: 155 }}>
-                <img src={books[0].cover} alt={books[0].title} className="w-full h-full object-cover" />
-              </div>
-              <div className="mt-2 px-1">
-                <p className="text-[9px] font-bold text-gray-700">{books[0].title}</p>
-                <p className="text-[8px] text-gray-400">{books[0].author}</p>
-              </div>
+              <InteractiveBook cover="/books/one-golden-summer-alt.jpg" title="One Golden Summer" author="Carley Fortune" />
             </motion.div>
 
-            {/* ── Photo stack — bottom right ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20, rotate: 5 }}
-              animate={{ opacity: 1, y: 0, rotate: 5 }}
-              transition={{ delay: 0.4 }}
-              className="absolute right-[20vw] bottom-[6%]"
-            >
-              <div className="relative w-[130px] h-[150px]">
-                <div className="absolute top-2 left-2 w-[115px] h-[135px] bg-white rounded-md shadow-md rotate-[-6deg] p-1.5">
-                  <div className="w-full h-[95px] bg-gray-100 rounded-sm overflow-hidden">
-                    <img src="/taylor.jpeg" alt="" className="w-full h-full object-cover" />
-                  </div>
-                  <p className="text-[7px] text-gray-400 mt-1.5 text-center">Summer 2025</p>
-                </div>
-                <div className="absolute top-0 left-5 w-[115px] h-[135px] bg-white rounded-md shadow-lg rotate-[4deg] p-1.5">
-                  <div className="w-full h-[95px] bg-gray-200 rounded-sm" />
-                  <p className="text-[7px] text-gray-400 mt-1.5 text-center">Drop photos here</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ── AirDrop notification — left of center ── */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-              className="absolute left-[18vw] top-[38%]"
-            >
-              <div className="rounded-2xl px-4 py-3 backdrop-blur-xl flex items-center gap-3" style={{ background: "rgba(255,255,255,0.8)", boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.04)" }}>
-                <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold text-gray-900">AirDrop</p>
-                  <p className="text-[9px] text-gray-400">Taylor wants to share interests</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ── Sticker pills — scattered across canvas ── */}
-            {[
-              { label: "SwiftUI", x: "38vw", y: "25%", rotate: -4, bg: "#007AFF" },
-              { label: "Figma", x: "55vw", y: "75%", rotate: 6, bg: "#A259FF" },
-              { label: "Design Systems", x: "65vw", y: "30%", rotate: -2, bg: "#FF6B6B" },
-              { label: "iOS", x: "30vw", y: "70%", rotate: 8, bg: "#34C759" },
-              { label: "React", x: "72vw", y: "80%", rotate: -5, bg: "#61DAFB" },
-              { label: "TypeScript", x: "22vw", y: "18%", rotate: 3, bg: "#3178C6" },
-            ].map((sticker, i) => (
-              <motion.div
-                key={sticker.label}
-                initial={{ opacity: 0, scale: 0, rotate: sticker.rotate }}
-                animate={{ opacity: 1, scale: 1, rotate: sticker.rotate }}
-                whileHover={{ scale: 1.2, rotate: 0 }}
-                transition={{ delay: 0.5 + i * 0.06, type: "spring", stiffness: 300, damping: 15 }}
-                className="absolute cursor-pointer"
-                style={{ left: sticker.x, top: sticker.y }}
-              >
-                <div className="rounded-full px-3.5 py-1.5 shadow-lg" style={{ background: sticker.bg }}>
-                  <span className="text-[11px] font-bold text-white">{sticker.label}</span>
-                </div>
-              </motion.div>
-            ))}
-
-            {/* ── "Currently" widget — right of center ── */}
+            {/* ── Find My — top right ── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
-              className="absolute right-[28vw] top-[28%]"
+              whileHover={{ scale: 1.03, y: -3 }}
+              transition={{ delay: 0.3 }}
+              className="absolute right-[5vw] top-[6%]"
             >
-              <div className="w-[180px] rounded-2xl p-4 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.7)", boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
-                <p className="text-[9px] font-bold text-gray-400 tracking-wider uppercase mb-3">Currently</p>
-                <div className="space-y-2.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">📍</span>
-                    <span className="text-[11px] text-gray-700">Vancouver, BC</span>
+              <div
+                className="rounded-2xl overflow-hidden"
+                style={{
+                  width: 260,
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.1), 0 0 0 0.5px rgba(0,0,0,0.04)",
+                }}
+              >
+                {/* Map area */}
+                <div className="relative h-[180px]" style={{ background: "linear-gradient(135deg, #E8F4E8, #D4ECD4, #C8E0C8)" }}>
+                  {/* Fake map grid — roads */}
+                  <div className="absolute inset-0 opacity-30">
+                    <div className="absolute top-[30%] left-0 right-0 h-[2px] bg-white" />
+                    <div className="absolute top-[60%] left-0 right-0 h-[2px] bg-white" />
+                    <div className="absolute top-0 bottom-0 left-[25%] w-[2px] bg-white" />
+                    <div className="absolute top-0 bottom-0 left-[55%] w-[2px] bg-white" />
+                    <div className="absolute top-0 bottom-0 left-[80%] w-[2px] bg-white" />
+                    <div className="absolute top-[15%] left-[10%] right-[30%] h-[1px] bg-white/50 rotate-[15deg]" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">💼</span>
-                    <span className="text-[11px] text-gray-700">EA (Parasoul)</span>
+                  {/* Parks / blocks */}
+                  <div className="absolute top-[40%] left-[15%] w-[30px] h-[20px] rounded-[3px] bg-[#A8D5A0]/40" />
+                  <div className="absolute top-[20%] right-[20%] w-[40px] h-[25px] rounded-[3px] bg-[#A8D5A0]/40" />
+                  {/* Location pin — iOS Find My style */}
+                  <motion.div
+                    className="absolute top-[28%] left-[42%]"
+                    animate={{ y: [0, -3, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <div className="flex flex-col items-center">
+                      {/* Avatar */}
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-[3px] border-white shadow-xl">
+                        <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
+                      </div>
+                      {/* Pin point */}
+                      <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-white -mt-[1px]" />
+                    </div>
+                  </motion.div>
+                  {/* Blue pulse ring */}
+                  <motion.div
+                    className="absolute top-[35%] left-[47%] -translate-x-1/2 w-14 h-14 rounded-full border border-blue-400/20"
+                    animate={{ scale: [1, 2.2], opacity: [0.4, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  {/* Pickleball court label */}
+                  <div className="absolute top-[62%] left-[35%] bg-white/90 rounded-lg px-2 py-1 shadow-sm">
+                    <span className="text-[8px] text-gray-700 font-medium">🏓 Pickleball Courts</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">📖</span>
-                    <span className="text-[11px] text-gray-700">{books[0].title.split(" ").slice(0, 4).join(" ")}</span>
+                </div>
+                {/* Info bar */}
+                <div
+                  className="px-4 py-3 flex items-center justify-between"
+                  style={{
+                    background: "rgba(255,255,255,0.85)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                  }}
+                >
+                  <div>
+                    <p className="text-[12px] font-bold text-gray-900">Taylor B.</p>
+                    <p className="text-[10px] text-gray-400">Pickleball Courts  ·  Now</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">🎵</span>
-                    <span className="text-[11px] text-gray-700">{albums[0].artist} — {albums[0].title}</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center">
+                      <span className="text-[12px]">📍</span>
+                    </div>
+                    <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center">
+                      <span className="text-[10px] text-white">↗</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </motion.div>
+
+            {/* ── AirDrop popup — right of profile ── */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              whileHover={{ scale: 1.03, y: -3 }}
+              transition={{ delay: 0.5, type: "spring", stiffness: 300, damping: 20 }}
+              className="absolute left-[58%] top-[35%]"
+            >
+              <AirDropPopup />
+            </motion.div>
+
+            {/* ── Summer Fridays lip balm — right of slack, interactive ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: -15 }}
+              animate={{ opacity: 1, y: 0, rotate: -15 }}
+              whileHover={{ rotate: 0, scale: 1.1 }}
+              whileTap={{ scale: 0.95, rotate: 5 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="absolute left-[26vw] bottom-[16%] cursor-pointer"
+              drag
+              dragConstraints={{ left: -50, right: 50, top: -50, bottom: 50 }}
+              dragElastic={0.3}
+            >
+              <img src="/summer-fridays.png" alt="Summer Fridays Lip Butter Balm" className="h-[240px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
+            </motion.div>
+
+            {/* ── Slack notification — bottom left ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ delay: 0.7 }}
+              className="absolute left-[4vw] bottom-[18%]"
+            >
+              <div
+                className="rounded-2xl px-4 py-3 flex items-start gap-3"
+                style={{
+                  width: 300,
+                  background: "rgba(255,255,255,0.5)",
+                  backdropFilter: "blur(40px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                  border: "1px solid rgba(255,255,255,0.6)",
+                  boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06)",
+                }}
+              >
+                <div className="w-8 h-8 rounded-[8px] overflow-hidden shrink-0">
+                  <img src="/slack-icon.png" alt="Slack" className="w-full h-full object-contain" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-gray-900">#design-system</span>
+                    <span className="text-[9px] text-gray-400">2m ago</span>
+                  </div>
+                  <p className="text-[11px] text-gray-600 mt-0.5"><span className="font-medium">Taylor:</span> just pushed 12 new components 🚀</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ── Xcode crash dialog ── */}
+            <XcodeCrash />
+
+            {/* ── Terminal window — bottom right ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.02, y: -3 }}
+              transition={{ delay: 0.65 }}
+              className="absolute right-[5vw] bottom-[12%]"
+            >
+              <div
+                className="rounded-xl overflow-hidden"
+                style={{
+                  width: 300,
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+                }}
+              >
+                {/* Title bar */}
+                <div className="flex items-center gap-1.5 px-3 py-2" style={{ background: "#2D2D2D" }}>
+                  <div className="w-[10px] h-[10px] rounded-full bg-[#FF5F56]" />
+                  <div className="w-[10px] h-[10px] rounded-full bg-[#FFBD2E]" />
+                  <div className="w-[10px] h-[10px] rounded-full bg-[#27C93F]" />
+                  <span className="text-[10px] text-gray-400 ml-2">taylor — zsh — 80×24</span>
+                </div>
+                {/* Terminal content */}
+                <div className="px-3 py-3 font-mono" style={{ background: "#1A1A1A" }}>
+                  <p className="text-[10px] text-gray-500">Last login: Tue Apr 22 on ttys001</p>
+                  <p className="text-[10px] text-green-400 mt-1">taylor@macbook <span className="text-blue-400">~/portfolio</span> $</p>
+                  <p className="text-[10px] text-gray-300 mt-0.5">npx next build</p>
+                  <p className="text-[10px] text-gray-500 mt-1">▲ Next.js 16.2.4 (Turbopack)</p>
+                  <p className="text-[10px] text-green-400 mt-0.5">✓ Compiled successfully in 1.2s</p>
+                  <p className="text-[10px] text-green-400">✓ Generating static pages (4/4)</p>
+                  <p className="text-[10px] text-gray-300 mt-1.5">
+                    <span className="text-green-400">taylor@macbook</span> <span className="text-blue-400">~/portfolio</span> $
+                    <motion.span
+                      className="text-gray-300 ml-0.5"
+                      animate={{ opacity: [1, 0] }}
+                      transition={{ duration: 0.8, repeat: Infinity }}
+                    >▊</motion.span>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ── Screen Time — liquid glass, bottom ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ delay: 0.8, type: "spring", stiffness: 300, damping: 20 }}
+              className="absolute left-1/2 -translate-x-1/2 bottom-[4%] cursor-pointer"
+            >
+              <div
+                className="rounded-2xl px-4 py-3"
+                style={{
+                  width: 320,
+                  background: "rgba(255,255,255,0.5)",
+                  backdropFilter: "blur(40px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                  border: "1px solid rgba(255,255,255,0.6)",
+                  boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06)",
+                }}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-bold text-gray-500 tracking-wide uppercase">Screen Time</span>
+                  <span className="text-[10px] text-gray-400">11m ago</span>
+                </div>
+                <p className="text-[12px] font-bold text-gray-900">Weekly Report Available</p>
+                <p className="text-[11px] text-gray-500 mt-0.5">You averaged 29,030,230,213,023 hours on Claude Code last week.</p>
+                <p className="text-[10px] text-blue-500 mt-1">41 more notifications</p>
+              </div>
+            </motion.div>
+
+            {/* ── Focus Mode pill — top center ── */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ delay: 0.6 }}
+              className="absolute left-1/2 -translate-x-1/2 top-[3%]"
+            >
+              <div
+                className="rounded-full px-4 py-2 flex items-center gap-2"
+                style={{
+                  background: "rgba(255,255,255,0.5)",
+                  backdropFilter: "blur(40px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                  border: "1px solid rgba(255,255,255,0.6)",
+                  boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04)",
+                }}
+              >
+                <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+                </div>
+                <span className="text-[11px] font-medium text-gray-700">Do Not Disturb</span>
+                <span className="text-[11px] text-gray-400">Coding</span>
+              </div>
+            </motion.div>
+
+            {/* ── Apple Music Now Playing — Live Activity style ── */}
+            <NowPlayingPill />
+
+            {/* ── Siri Suggestion ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileHover={{ scale: 1.04, y: -2 }}
+              whileTap={{ scale: 0.96 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              className="absolute left-[4vw] bottom-[8%]"
+            >
+              <div
+                className="rounded-2xl px-4 py-2.5 flex items-center gap-2.5"
+                style={{
+                  background: "rgba(255,255,255,0.5)",
+                  backdropFilter: "blur(40px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                  border: "1px solid rgba(255,255,255,0.6)",
+                  boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04)",
+                }}
+              >
+                <div>
+                  <p className="text-[9px] text-gray-400 uppercase tracking-wider font-medium">Siri Suggestion</p>
+                  <p className="text-[11px] font-medium text-gray-700">Walk away from the terminal and touch grass</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ── macOS Folders — interactive ── */}
+            <NotesFolder x="32vw" y="8%" delay={0.3} />
+            <AboutMeFolder x="42vw" y="6%" delay={0.38} />
+            <ImageFolder x="48vw" y="20%" delay={0.46} label="untitled" image="/meme.webp" />
+            <MacAppFolder x="37vw" y="24%" delay={0.46} />
+            <WeatherApp x="68vw" y="6%" delay={0.5} />
 
           </div>
 
@@ -4028,17 +5528,6 @@ export default function Home() {
           >
             {/* Sparkle grid */}
             <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle, #FF69B4 0.5px, transparent 0.5px)", backgroundSize: "32px 32px" }} />
-
-            {/* Floating stars */}
-            {[...Array(12)].map((_, i) => (
-              <motion.div
-                key={`star-${i}`}
-                className="absolute text-pink-300/40"
-                style={{ left: `${5 + i * 8}%`, top: `${8 + (i % 4) * 22}%`, fontSize: 10 + (i % 3) * 8 }}
-                animate={{ y: [0, -10, 0], rotate: [0, 180, 360], opacity: [0.2, 0.5, 0.2] }}
-                transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: "easeInOut" }}
-              >✦</motion.div>
-            ))}
 
             {/* ── Sparkle cursor trail ── */}
             <SparkleTrail />
@@ -4186,69 +5675,104 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 30, rotate: -6 }}
               animate={{ opacity: 1, y: 0, rotate: -6 }}
+              whileHover={{ scale: 1.06, y: -4, rotate: 0 }}
+              whileTap={{ scale: 0.95 }}
               transition={{ delay: 0.35 }}
-              className="absolute left-[4vw] top-[58%]"
+              className="absolute left-[4vw] top-[58%] cursor-pointer"
             >
               <BigCDCase cover="/hannah.jpg" title="Hannah Montana" />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 30, rotate: 4 }}
               animate={{ opacity: 1, y: 0, rotate: 4 }}
+              whileHover={{ scale: 1.06, y: -4, rotate: 0 }}
+              whileTap={{ scale: 0.95 }}
               transition={{ delay: 0.45 }}
-              className="absolute left-[16vw] top-[66%]"
+              className="absolute left-[16vw] top-[66%] cursor-pointer"
             >
               <BigCDCase cover="/avril.jpg" title="Avril Lavigne - Let Go" />
             </motion.div>
 
+            {/* ── Baby Lips — physical object, corner ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: 12 }}
+              animate={{ opacity: 1, y: 0, rotate: 12 }}
+              whileHover={{ rotate: 0, scale: 1.1 }}
+              whileTap={{ scale: 0.95, rotate: 5 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="absolute right-[28vw] top-[55%] cursor-pointer"
+              drag
+              dragConstraints={{ left: -300, right: 300, top: -300, bottom: 300 }}
+              dragElastic={0.3}
+            >
+              <img src="/baby-lips.png" alt="Maybelline Baby Lips" className="h-[220px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
+            </motion.div>
+
+
+            {/* ── Friendship bracelet beads ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="absolute right-[28vw] top-[82%] rotate-[-6deg]"
+            >
+              <div className="flex items-center gap-[3px] relative">
+                {/* Elastic string */}
+                <div className="absolute top-1/2 left-[4px] right-[4px] h-[3px] -translate-y-1/2 z-0 rounded-full" style={{ background: "linear-gradient(90deg, transparent, #F0B0C8 8%, #E890B0 50%, #F0B0C8 92%, transparent)" }} />
+                {["T", "A", "Y", "L", "O", "R"].map((letter, i) => {
+                  const isCharm = false;
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ scale: 0, rotate: Math.random() * 20 - 10 }}
+                      animate={{ scale: 1, rotate: (i % 2 === 0 ? -2 : 3) }}
+                      transition={{ delay: 0.7 + i * 0.06, type: "spring", stiffness: 400, damping: 12 }}
+                      className="relative z-10 flex items-center justify-center shrink-0"
+                      style={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: "50%",
+                        background: isCharm
+                          ? letter === "♡" ? "linear-gradient(145deg, #FF85C0, #FF3399, #CC1177)" : "linear-gradient(145deg, #FFE44D, #FFB800, #CC9400)"
+                          : "radial-gradient(circle at 35% 30%, #FFFFFF, #F5F5F5 40%, #E0E0E0 80%, #D0D0D0)",
+                        boxShadow: isCharm
+                          ? "0 3px 8px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.15)"
+                          : "0 3px 8px rgba(0,0,0,0.15), inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)",
+                      }}
+                    >
+                      {/* Hole through bead */}
+                      {!isCharm && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-[6px] h-[6px] rounded-full absolute" style={{ background: "radial-gradient(circle, rgba(0,0,0,0.06) 0%, transparent 70%)", top: 2 }} />
+                        </div>
+                      )}
+                      <span
+                        className="font-black select-none"
+                        style={{
+                          fontSize: isCharm ? 14 : 16,
+                          color: isCharm ? "white" : "#2A2A2A",
+                          fontFamily: "system-ui, -apple-system, sans-serif",
+                          textShadow: isCharm ? "0 1px 2px rgba(0,0,0,0.2)" : "none",
+                          letterSpacing: "-0.5px",
+                        }}
+                      >{letter}</span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+
             {/* ── Chrome Dino running across bottom ── */}
-            <div className="absolute bottom-[6px] left-0 right-0 h-[50px] z-30 pointer-events-none">
+            <div className="absolute bottom-[6px] left-0 right-0 h-[80px] z-30 pointer-events-none">
               {/* Ground line */}
               <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-400/30" />
               {/* Dino */}
               <motion.div
                 className="absolute bottom-[2px]"
-                animate={{ x: ["-60px", "calc(100vw + 60px)"] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                animate={{ x: ["-80px", "calc(100vw + 80px)"] }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
               >
-                {/* Pixel dino using box shadows on a single pixel */}
-                <div className="relative" style={{ width: 40, height: 44, imageRendering: "pixelated" }}>
-                  <svg width="40" height="44" viewBox="0 0 20 22" shapeRendering="crispEdges">
-                    {/* Head */}
-                    <rect x="8" y="0" width="12" height="2" fill="#535353" />
-                    <rect x="8" y="2" width="12" height="2" fill="#535353" />
-                    <rect x="14" y="2" width="2" height="2" fill="#FFFDFB" />
-                    <rect x="8" y="4" width="12" height="2" fill="#535353" />
-                    <rect x="10" y="6" width="10" height="2" fill="#535353" />
-                    {/* Neck + body */}
-                    <rect x="4" y="8" width="10" height="2" fill="#535353" />
-                    <rect x="2" y="10" width="14" height="2" fill="#535353" />
-                    <rect x="2" y="12" width="12" height="2" fill="#535353" />
-                    {/* Arms */}
-                    <rect x="10" y="10" width="6" height="2" fill="#535353" />
-                    {/* Body */}
-                    <rect x="4" y="14" width="8" height="2" fill="#535353" />
-                    <rect x="4" y="16" width="8" height="2" fill="#535353" />
-                    {/* Legs — frame 1 */}
-                    <motion.g
-                      animate={{ opacity: [1, 0, 1, 0] }}
-                      transition={{ duration: 0.4, repeat: Infinity }}
-                    >
-                      <rect x="4" y="18" width="2" height="4" fill="#535353" />
-                      <rect x="10" y="18" width="2" height="2" fill="#535353" />
-                    </motion.g>
-                    {/* Legs — frame 2 */}
-                    <motion.g
-                      animate={{ opacity: [0, 1, 0, 1] }}
-                      transition={{ duration: 0.4, repeat: Infinity }}
-                    >
-                      <rect x="4" y="18" width="2" height="2" fill="#535353" />
-                      <rect x="10" y="18" width="2" height="4" fill="#535353" />
-                    </motion.g>
-                    {/* Tail */}
-                    <rect x="0" y="10" width="2" height="2" fill="#535353" />
-                    <rect x="0" y="8" width="2" height="2" fill="#535353" />
-                  </svg>
-                </div>
+                <img src="/dino.png" alt="dino" style={{ width: 60, height: 60, objectFit: "contain", imageRendering: "pixelated" }} />
               </motion.div>
             </div>
 
@@ -4267,7 +5791,7 @@ export default function Home() {
       )}
       </AnimatePresence>
 
-      <main className={`mx-auto max-w-3xl px-6 pt-28 pb-16 ${activeTab === "Me" ? "hidden" : ""}`}>
+      <main className={`mx-auto max-w-3xl px-6 pt-28 pb-16 ${activeTab === "Vibes" ? "hidden" : ""}`}>
         <AnimatePresence mode="wait">
           {/* ─── HOME TAB ─── */}
           {activeTab === "Home" && (
@@ -4328,6 +5852,11 @@ export default function Home() {
                   <span className="text-gray-900 font-semibold">thoughtful design</span>
                 </motion.p>
               </section>
+
+              {/* Figma "Let's work together" — bottom left */}
+              <div className="flex justify-start mb-16">
+                <FigmaWorkTogether />
+              </div>
             </motion.div>
           )}
 
@@ -4377,8 +5906,8 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* ─── ABOUT TAB ─── */}
-          {activeTab === "About" && (
+          {/* ─── ABOUT TAB (removed) ─── */}
+          {false && (
             <motion.div
               key="about"
               initial={{ opacity: 0, y: 10 }}
@@ -4554,15 +6083,10 @@ export default function Home() {
               transition={{ duration: 0.3 }}
               className="flex flex-col items-center justify-center min-h-[70vh]"
             >
-              {/* Photo on top, fixed position */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
-                className="w-36 h-36 rounded-full overflow-hidden shadow-xl mb-10"
-              >
-                <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
-              </motion.div>
+              {/* Figma-style photo frame animation */}
+              <div className="mb-10">
+                <ContactPhotoFrame />
+              </div>
 
               {/* Typewriter below — fixed height container prevents shifting */}
               <div className="h-[100px]">
