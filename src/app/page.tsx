@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import LiquidGlass from "liquid-glass-react";
 
 // ─── Typewriter Hook ───
@@ -1262,6 +1262,720 @@ function JourneyTimeline() {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+// ─── MS Paint — functional drawing app ───
+function MSPaint() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [color, setColor] = useState("#000000");
+  const [tool, setTool] = useState<"pencil" | "brush" | "eraser" | "line" | "rect" | "ellipse" | "fill">("pencil");
+  const [lineWidth, setLineWidth] = useState(2);
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+  const startPos = useRef<{ x: number; y: number } | null>(null);
+  const snapshot = useRef<ImageData | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }, []);
+
+  const getPos = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (canvas.width / rect.width),
+      y: (e.clientY - rect.top) * (canvas.height / rect.height),
+    };
+  }, []);
+
+  const floodFill = useCallback((startX: number, startY: number, fillColor: string) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    const sx = Math.floor(startX);
+    const sy = Math.floor(startY);
+    const idx = (sy * canvas.width + sx) * 4;
+    const targetR = data[idx], targetG = data[idx + 1], targetB = data[idx + 2];
+    const temp = document.createElement("canvas").getContext("2d")!;
+    temp.fillStyle = fillColor;
+    temp.fillRect(0, 0, 1, 1);
+    const fc = temp.getImageData(0, 0, 1, 1).data;
+    if (targetR === fc[0] && targetG === fc[1] && targetB === fc[2]) return;
+    const stack = [[sx, sy]];
+    const visited = new Set<number>();
+    while (stack.length > 0) {
+      const [x, y] = stack.pop()!;
+      const i = (y * canvas.width + x) * 4;
+      if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) continue;
+      if (visited.has(i)) continue;
+      if (Math.abs(data[i] - targetR) > 10 || Math.abs(data[i + 1] - targetG) > 10 || Math.abs(data[i + 2] - targetB) > 10) continue;
+      visited.add(i);
+      data[i] = fc[0]; data[i + 1] = fc[1]; data[i + 2] = fc[2]; data[i + 3] = 255;
+      stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }, []);
+
+  const handleDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const pos = getPos(e);
+    setIsDrawing(true);
+    lastPos.current = pos;
+    startPos.current = pos;
+    if (tool === "fill") {
+      floodFill(pos.x, pos.y, color);
+      return;
+    }
+    if (tool === "line" || tool === "rect" || tool === "ellipse") {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) snapshot.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      }
+    }
+    if (tool === "pencil" || tool === "brush" || tool === "eraser") {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, (tool === "brush" ? lineWidth * 2 : tool === "eraser" ? 8 : lineWidth) / 2, 0, Math.PI * 2);
+      ctx.fillStyle = tool === "eraser" ? "#FFFFFF" : color;
+      ctx.fill();
+    }
+  }, [getPos, tool, color, lineWidth, floodFill]);
+
+  const handleMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const pos = getPos(e);
+
+    if (tool === "pencil" || tool === "brush" || tool === "eraser") {
+      ctx.beginPath();
+      ctx.moveTo(lastPos.current!.x, lastPos.current!.y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.strokeStyle = tool === "eraser" ? "#FFFFFF" : color;
+      ctx.lineWidth = tool === "brush" ? lineWidth * 3 : tool === "eraser" ? 16 : lineWidth;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke();
+      lastPos.current = pos;
+    } else if (tool === "line" || tool === "rect" || tool === "ellipse") {
+      if (snapshot.current) ctx.putImageData(snapshot.current, 0, 0);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = "round";
+      const sp = startPos.current!;
+      if (tool === "line") {
+        ctx.beginPath();
+        ctx.moveTo(sp.x, sp.y);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      } else if (tool === "rect") {
+        ctx.strokeRect(sp.x, sp.y, pos.x - sp.x, pos.y - sp.y);
+      } else {
+        const cx = (sp.x + pos.x) / 2, cy = (sp.y + pos.y) / 2;
+        const rx = Math.abs(pos.x - sp.x) / 2, ry = Math.abs(pos.y - sp.y) / 2;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+  }, [isDrawing, getPos, tool, color, lineWidth]);
+
+  const handleUp = useCallback(() => {
+    setIsDrawing(false);
+    lastPos.current = null;
+    startPos.current = null;
+    snapshot.current = null;
+  }, []);
+
+  const colors = [
+    "#000000", "#808080", "#800000", "#808000", "#008000", "#008080", "#000080", "#800080",
+    "#808040", "#004040", "#0080FF", "#004080", "#8000FF", "#804000",
+    "#FFFFFF", "#C0C0C0", "#FF0000", "#FFFF00", "#00FF00", "#00FFFF", "#0000FF", "#FF00FF",
+    "#FFFF80", "#00FF80", "#80FFFF", "#0080FF", "#FF0080", "#FF8000",
+  ];
+
+  const tools: { id: typeof tool; label: string }[] = [
+    { id: "pencil", label: "✏️" },
+    { id: "brush", label: "🖌️" },
+    { id: "eraser", label: "🧹" },
+    { id: "fill", label: "🪣" },
+    { id: "line", label: "📏" },
+    { id: "rect", label: "⬜" },
+    { id: "ellipse", label: "⭕" },
+  ];
+
+  return (
+    <div className="select-none" style={{ width: 340 }}>
+      {/* Title bar */}
+      <div className="flex items-center justify-between px-1 py-0.5" style={{ background: "linear-gradient(90deg, #0A246A, #3A6EA5)", borderTopLeftRadius: 3, borderTopRightRadius: 3 }}>
+        <div className="flex items-center gap-1">
+          <span className="text-[10px]">🎨</span>
+          <span className="text-[11px] font-bold text-white">untitled - Paint</span>
+        </div>
+        <div className="flex gap-[2px]">
+          <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>_</div>
+          <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>□</div>
+          <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-white" style={{ background: "linear-gradient(180deg, #E8524A, #C62B22)" }}>✕</div>
+        </div>
+      </div>
+
+      {/* Menu bar */}
+      <div className="flex gap-3 px-2 py-0.5 bg-[#ECE9D8] border-b border-gray-400">
+        {["File", "Edit", "View", "Image", "Colors", "Help"].map((m) => (
+          <span key={m} className="text-[11px] text-gray-800">{m}</span>
+        ))}
+      </div>
+
+      {/* Main area */}
+      <div className="flex bg-[#C0C0C0]">
+        {/* Tool palette */}
+        <div className="flex flex-col gap-[2px] p-1 bg-[#ECE9D8] border-r border-gray-400" style={{ width: 42 }}>
+          {tools.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTool(t.id)}
+              className="w-[32px] h-[26px] flex items-center justify-center text-[12px] rounded-sm"
+              style={{
+                background: tool === t.id ? "#B0C4DE" : "#ECE9D8",
+                border: tool === t.id ? "1px solid #6688AA" : "1px solid transparent",
+                boxShadow: tool === t.id ? "inset 1px 1px 2px rgba(0,0,0,0.15)" : "none",
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+          {/* Size selector */}
+          <div className="mt-1 flex flex-col gap-[1px]">
+            {[1, 2, 4].map((s) => (
+              <button
+                key={s}
+                onClick={() => setLineWidth(s)}
+                className="w-[32px] h-[10px] flex items-center justify-center"
+                style={{ background: lineWidth === s ? "#B0C4DE" : "#ECE9D8", border: lineWidth === s ? "1px solid #6688AA" : "1px solid transparent" }}
+              >
+                <div style={{ width: 20, height: s, background: "#000" }} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Canvas */}
+        <div className="flex-1 p-1 bg-[#808080]">
+          <canvas
+            ref={canvasRef}
+            width={400}
+            height={300}
+            onMouseDown={handleDown}
+            onMouseMove={handleMove}
+            onMouseUp={handleUp}
+            onMouseLeave={handleUp}
+            className="bg-white cursor-crosshair"
+            style={{ width: "100%", height: 220, imageRendering: "auto" }}
+          />
+        </div>
+      </div>
+
+      {/* Color palette */}
+      <div className="flex items-center gap-1 px-2 py-1 bg-[#ECE9D8] border-t border-gray-400" style={{ borderBottomLeftRadius: 3, borderBottomRightRadius: 3 }}>
+        {/* Active color preview */}
+        <div className="w-[18px] h-[18px] border border-gray-600 mr-1" style={{ background: color }} />
+        {/* Color grid */}
+        <div className="grid grid-cols-14 gap-[1px]" style={{ gridTemplateColumns: "repeat(14, 1fr)" }}>
+          {colors.map((c) => (
+            <button
+              key={c}
+              onClick={() => setColor(c)}
+              className="w-[12px] h-[12px] border border-gray-500"
+              style={{ background: c, outline: color === c ? "2px solid #000" : "none", outlineOffset: -1 }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Status bar */}
+      <div className="px-2 py-0.5 bg-[#ECE9D8] rounded-b-sm border-t border-gray-300">
+        <span className="text-[9px] text-gray-600">For Help, click Help Topics on the Help menu.</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Windows XP Dialog Box (draggable + dismissable) ───
+function XPDialog({ title, message, icon, buttons = ["OK"], defaultX = 0, defaultY = 0, zBase = 0, onDismiss }: { title: string; message: string; icon: string; buttons?: string[]; defaultX?: number; defaultY?: number; zBase?: number; onDismiss?: () => void }) {
+  const [dragging, setDragging] = useState(false);
+  const [pos, setPos] = useState({ x: defaultX, y: defaultY });
+  const [z, setZ] = useState(zBase);
+  const dragStart = useRef({ x: 0, y: 0 });
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.7, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.7 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="absolute"
+      style={{ left: pos.x, top: pos.y, zIndex: z, cursor: dragging ? "grabbing" : "default" }}
+      onMouseDown={() => setZ(Date.now() % 10000)}
+      onPointerDown={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest("[data-titlebar]")) {
+          setDragging(true);
+          dragStart.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+          (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        }
+      }}
+      onPointerMove={(e) => {
+        if (!dragging) return;
+        setPos({ x: e.clientX - dragStart.current.x, y: e.clientY - dragStart.current.y });
+      }}
+      onPointerUp={() => setDragging(false)}
+    >
+      <div className="rounded-t-lg overflow-hidden shadow-2xl" style={{ width: 260, border: "1px solid #0054E3", fontFamily: "Tahoma, sans-serif" }}>
+        {/* Title bar — draggable */}
+        <div data-titlebar="true" className="flex items-center justify-between px-2 py-1 cursor-grab active:cursor-grabbing select-none" style={{ background: "linear-gradient(180deg, #0A246A, #3A6EA5, #0A246A)" }}>
+          <span className="text-[11px] font-bold text-white">{title}</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDismiss?.(); }}
+            className="w-[18px] h-[16px] rounded-sm text-[10px] flex items-center justify-center text-white font-bold hover:brightness-110 active:brightness-90"
+            style={{ background: "linear-gradient(180deg, #E08070, #C84030)", border: "1px solid #993322" }}
+          >✕</button>
+        </div>
+        {/* Body */}
+        <div className="bg-[#ECE9D8] px-4 py-4">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl shrink-0">{icon}</span>
+            <p className="text-[12px] text-gray-800 leading-relaxed mt-0.5">{message}</p>
+          </div>
+          <div className="flex justify-center gap-2 mt-4">
+            {buttons.map((btn) => (
+              <button
+                key={btn}
+                onClick={() => onDismiss?.()}
+                className="px-5 py-1 text-[11px] rounded-sm active:translate-y-[1px] hover:brightness-105"
+                style={{
+                  background: "linear-gradient(180deg, #FFFFFF, #ECE9D8, #D6D0C4)",
+                  border: "1px solid #003C74",
+                  boxShadow: "0 1px 0 rgba(255,255,255,0.5) inset",
+                }}
+              >{btn}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── XP Dialog Stack ───
+function XPDialogStack() {
+  const [dialogs, setDialogs] = useState([
+    { id: 1, title: "Windows XP", message: "Task failed successfully.", icon: "ℹ️", buttons: ["OK"], x: 0, y: 0 },
+    { id: 2, title: "Internet Explorer", message: "taylor.exe is not responding. She's too busy designing.", icon: "⚠️", buttons: ["Wait", "Close"], x: 30, y: 35 },
+    { id: 3, title: "Error", message: "You have mass amounts of talent. Delete anyway?", icon: "❓", buttons: ["Yes", "Obviously"], x: 55, y: 70 },
+    { id: 4, title: "My Computer", message: "Disk space low. Too many Figma files.", icon: "⚠️", buttons: ["OK"], x: 15, y: 110 },
+    { id: 5, title: "MSN Messenger", message: "designgirl2003 says: omg ur portfolio is so cute~*", icon: "💬", buttons: ["Reply", "Block"], x: 80, y: 50 },
+    { id: 6, title: "Windows Update", message: "A new version of taste is available. Install now?", icon: "🔄", buttons: ["Install", "Remind Later"], x: 45, y: 140 },
+    { id: 7, title: "Recycle Bin", message: "Are you sure you want to delete bad_code.swift?", icon: "🗑️", buttons: ["Yes", "No"], x: 100, y: 20 },
+  ]);
+
+  const dismiss = (id: number) => setDialogs((d) => d.filter((x) => x.id !== id));
+
+  return (
+    <>
+      <AnimatePresence>
+        {dialogs.map((d, i) => (
+          <XPDialog
+            key={d.id}
+            title={d.title}
+            message={d.message}
+            icon={d.icon}
+            buttons={d.buttons}
+            defaultX={d.x}
+            defaultY={d.y}
+            zBase={i + 1}
+            onDismiss={() => dismiss(d.id)}
+          />
+        ))}
+      </AnimatePresence>
+      {dialogs.length === 0 && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-2 text-[11px] rounded-sm"
+          style={{
+            background: "linear-gradient(180deg, #FFFFFF, #ECE9D8, #D6D0C4)",
+            border: "1px solid #003C74",
+            fontFamily: "Tahoma, sans-serif",
+          }}
+          onClick={() => setDialogs([
+            { id: Date.now(), title: "Windows XP", message: "Task failed successfully.", icon: "ℹ️", buttons: ["OK"], x: Math.random() * 100, y: Math.random() * 80 },
+            { id: Date.now() + 1, title: "Internet Explorer", message: "taylor.exe is not responding. She's too busy designing.", icon: "⚠️", buttons: ["Wait", "Close"], x: 30 + Math.random() * 60, y: 30 + Math.random() * 60 },
+            { id: Date.now() + 2, title: "Error", message: "You have mass amounts of talent. Delete anyway?", icon: "❓", buttons: ["Yes", "Obviously"], x: 50 + Math.random() * 60, y: 60 + Math.random() * 60 },
+            { id: Date.now() + 3, title: "My Computer", message: "Disk space low. Too many Figma files.", icon: "⚠️", buttons: ["OK"], x: 10 + Math.random() * 60, y: 100 + Math.random() * 40 },
+            { id: Date.now() + 4, title: "MSN Messenger", message: "designgirl2003 says: omg ur portfolio is so cute~*", icon: "💬", buttons: ["Reply", "Block"], x: 70 + Math.random() * 40, y: 40 + Math.random() * 60 },
+            { id: Date.now() + 5, title: "Windows Update", message: "A new version of taste is available. Install now?", icon: "🔄", buttons: ["Install", "Remind Later"], x: 40 + Math.random() * 50, y: 120 + Math.random() * 30 },
+            { id: Date.now() + 6, title: "Recycle Bin", message: "Are you sure you want to delete bad_code.swift?", icon: "🗑️", buttons: ["Yes", "No"], x: 90 + Math.random() * 30, y: 10 + Math.random() * 50 },
+          ])}
+        >Spawn more errors</motion.button>
+      )}
+    </>
+  );
+}
+
+// ─── Clippy ───
+function Clippy() {
+  const [visible, setVisible] = useState(true);
+  const [blink, setBlink] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBlink(true);
+      setTimeout(() => setBlink(false), 200);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.5 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: 1, type: "spring", stiffness: 300, damping: 15 }}
+      className="flex flex-col items-center"
+    >
+      {/* Speech bubble */}
+      <div className="bg-[#FFFFCC] border-2 border-gray-800 rounded-lg px-3 py-2 mb-1 relative shadow-md" style={{ maxWidth: 180, fontFamily: "Tahoma, sans-serif" }}>
+        <p className="text-[10px] text-gray-800 leading-relaxed">It looks like you&apos;re building a portfolio. Would you like help?</p>
+        <div className="flex gap-1.5 mt-2">
+          <button onClick={() => setVisible(false)} className="text-[9px] px-2 py-0.5 bg-white border border-gray-400 rounded-sm hover:bg-gray-100">Yes please!</button>
+          <button onClick={() => setVisible(false)} className="text-[9px] px-2 py-0.5 bg-white border border-gray-400 rounded-sm hover:bg-gray-100">Go away</button>
+        </div>
+        {/* Triangle pointer */}
+        <div className="absolute -bottom-[8px] left-6 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-gray-800" />
+        <div className="absolute -bottom-[6px] left-[26px] w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#FFFFCC]" />
+      </div>
+      {/* Clippy body */}
+      <svg width="50" height="60" viewBox="0 0 50 60">
+        {/* Wire body */}
+        <path d="M25 5 C25 5, 15 10, 15 20 C15 30, 20 32, 20 38 C20 44, 15 48, 25 52 C35 48, 30 44, 30 38 C30 32, 35 30, 35 20 C35 10, 25 5, 25 5" fill="none" stroke="#808080" strokeWidth="3" />
+        <path d="M25 5 C25 5, 15 10, 15 20 C15 30, 20 32, 20 38 C20 44, 15 48, 25 52 C35 48, 30 44, 30 38 C30 32, 35 30, 35 20 C35 10, 25 5, 25 5" fill="none" stroke="#C0C0C0" strokeWidth="2" />
+        {/* Eyes */}
+        <ellipse cx="21" cy="18" rx="4" ry={blink ? 0.5 : 4} fill="white" stroke="#808080" strokeWidth="1" />
+        <ellipse cx="29" cy="18" rx="4" ry={blink ? 0.5 : 4} fill="white" stroke="#808080" strokeWidth="1" />
+        {!blink && <>
+          <circle cx="22" cy="18" r="2" fill="#333" />
+          <circle cx="30" cy="18" r="2" fill="#333" />
+          <circle cx="22.5" cy="17" r="0.7" fill="white" />
+          <circle cx="30.5" cy="17" r="0.7" fill="white" />
+        </>}
+        {/* Eyebrows */}
+        <path d="M17 13 Q21 11, 25 13" fill="none" stroke="#808080" strokeWidth="1" />
+        <path d="M25 13 Q29 11, 33 13" fill="none" stroke="#808080" strokeWidth="1" />
+      </svg>
+    </motion.div>
+  );
+}
+
+// ─── Winamp ───
+function Winamp() {
+  const [playing, setPlaying] = useState(true);
+
+  return (
+    <div style={{ width: 200, fontFamily: "Tahoma, sans-serif" }}>
+      {/* Title bar */}
+      <div className="flex items-center justify-between px-1 py-0.5 rounded-t-sm" style={{ background: "linear-gradient(180deg, #1A1A2E, #2D2D44)" }}>
+        <div className="flex items-center gap-1">
+          <span className="text-[7px] text-green-400 font-bold">⚡</span>
+          <span className="text-[8px] text-green-400 font-bold tracking-wide">WINAMP</span>
+        </div>
+        <div className="flex gap-[2px]">
+          <div className="w-[10px] h-[8px] rounded-sm text-[6px] flex items-center justify-center text-green-400 bg-[#2D2D44] border border-[#444]">_</div>
+          <div className="w-[10px] h-[8px] rounded-sm text-[6px] flex items-center justify-center text-green-400 bg-[#2D2D44] border border-[#444]">✕</div>
+        </div>
+      </div>
+      {/* Display */}
+      <div className="px-2 py-1.5" style={{ background: "#0A0A12" }}>
+        {/* Song info — scrolling */}
+        <div className="overflow-hidden mb-1">
+          <motion.p
+            className="text-[9px] text-green-400 whitespace-nowrap"
+            animate={{ x: [0, -200] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          >
+            SZA - Kill Bill &nbsp;&nbsp;&nbsp; *** &nbsp;&nbsp;&nbsp; SZA - Kill Bill &nbsp;&nbsp;&nbsp; ***
+          </motion.p>
+        </div>
+        {/* Visualizer bars */}
+        <div className="flex items-end gap-[1px] h-[20px] mb-1">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="w-[7px] rounded-t-[1px]"
+              style={{ background: "linear-gradient(180deg, #FF0000, #FFFF00, #00FF00)" }}
+              animate={playing ? { height: [4 + Math.random() * 12, 2 + Math.random() * 16, 6 + Math.random() * 10] } : { height: 2 }}
+              transition={{ duration: 0.3 + Math.random() * 0.2, repeat: Infinity, repeatType: "mirror" }}
+            />
+          ))}
+        </div>
+        {/* Time */}
+        <div className="flex justify-between items-center">
+          <span className="text-[8px] text-green-400/70">03:24</span>
+          <span className="text-[7px] text-green-400/50">128kbps</span>
+        </div>
+      </div>
+      {/* Progress bar */}
+      <div className="px-2 py-1" style={{ background: "#1A1A2E" }}>
+        <div className="w-full h-[3px] bg-[#0A0A12] rounded-full">
+          <motion.div className="h-full bg-green-500 rounded-full" animate={{ width: ["0%", "100%"] }} transition={{ duration: 20, repeat: Infinity }} />
+        </div>
+      </div>
+      {/* Controls */}
+      <div className="flex items-center justify-center gap-1 px-2 py-1 rounded-b-sm" style={{ background: "#1A1A2E" }}>
+        {["⏮", "⏪", playing ? "⏸" : "▶", "⏩", "⏭", "⏹"].map((btn, i) => (
+          <button
+            key={i}
+            onClick={i === 2 ? () => setPlaying(!playing) : undefined}
+            className="w-[22px] h-[14px] rounded-sm text-[8px] flex items-center justify-center text-green-400 hover:text-green-300"
+            style={{ background: "#2D2D44", border: "1px solid #444" }}
+          >{btn}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Limewire Download ───
+function LimewireDownload() {
+  return (
+    <div className="rounded-t-sm overflow-hidden shadow-lg" style={{ width: 260, border: "1px solid #0054E3", fontFamily: "Tahoma, sans-serif" }}>
+      <div className="flex items-center justify-between px-2 py-0.5" style={{ background: "linear-gradient(180deg, #0A246A, #3A6EA5, #0A246A)" }}>
+        <span className="text-[9px] font-bold text-white">🍋 LimeWire 4.18.8</span>
+        <div className="flex gap-[2px]">
+          <div className="w-[14px] h-[12px] rounded-sm text-[8px] flex items-center justify-center text-black" style={{ background: "#C0C0C0" }}>_</div>
+          <div className="w-[14px] h-[12px] rounded-sm text-[8px] flex items-center justify-center text-white font-bold" style={{ background: "linear-gradient(180deg, #E08070, #C84030)" }}>✕</div>
+        </div>
+      </div>
+      <div className="bg-[#ECE9D8] p-3 space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">📄</span>
+          <div>
+            <p className="text-[9px] text-gray-800 font-bold">taylor_resume_FINAL.pdf.exe</p>
+            <p className="text-[8px] text-gray-500">From: xX_t0tAlLy_SaFe_Xx</p>
+          </div>
+        </div>
+        {/* Progress bar */}
+        <div>
+          <div className="w-full h-[14px] bg-white border border-gray-400 rounded-sm overflow-hidden">
+            <motion.div
+              className="h-full"
+              style={{ background: "linear-gradient(90deg, #00AA00, #00CC00, #00AA00)" }}
+              animate={{ width: ["0%", "73%"] }}
+              transition={{ duration: 12, ease: "easeOut" }}
+            />
+          </div>
+          <div className="flex justify-between mt-0.5">
+            <span className="text-[8px] text-gray-500">73% complete</span>
+            <span className="text-[8px] text-gray-500">2.1 MB of 2.9 MB</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-[8px] text-gray-500">
+          <span>⬇️ 14.2 KB/s</span>
+          <span>ETA: forever lol</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Sparkle Trail (follows cursor on Y2K canvas) ───
+function SparkleTrail() {
+  const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number }[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current?.parentElement;
+    if (!container) return;
+    let count = 0;
+    const handleMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      count++;
+      if (count % 3 !== 0) return;
+      const id = Date.now() + Math.random();
+      setSparkles((prev) => [...prev.slice(-12), { id, x, y }]);
+      setTimeout(() => setSparkles((prev) => prev.filter((s) => s.id !== id)), 600);
+    };
+    container.addEventListener("mousemove", handleMove);
+    return () => container.removeEventListener("mousemove", handleMove);
+  }, []);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 pointer-events-none z-40 overflow-hidden">
+      {sparkles.map((s) => (
+        <motion.div
+          key={s.id}
+          className="absolute"
+          initial={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 0, scale: 0, y: -20 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{ left: s.x - 6, top: s.y - 6 }}
+        >
+          <span className="text-[12px]">✦</span>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+// ─── XP Folder Icon ───
+function XPFolderIcon({ label, x, y, delay, onClick, onDoubleClick }: { label: string; x: string; y: string; delay: number; onClick?: () => void; onDoubleClick?: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      className="absolute flex flex-col items-center cursor-pointer select-none"
+      style={{ left: x, top: y }}
+    >
+      <div className="relative" style={{ width: 42, height: 36 }}>
+        <div className="absolute top-0 left-0 w-[18px] h-[8px] rounded-t-[3px]" style={{ background: "linear-gradient(180deg, #F0DC82, #E8C840)" }} />
+        <div className="absolute bottom-0 left-0 w-full rounded-[2px] rounded-tl-none" style={{ height: 28, background: "linear-gradient(180deg, #F5E6A0, #E8CC50, #DFC040)", boxShadow: "0 1px 2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.4)" }}>
+          <div className="absolute top-[1px] left-[2px] right-[2px] h-[1px] bg-white/30" />
+        </div>
+      </div>
+      <span className="text-[10px] text-gray-800 mt-1 text-center leading-tight" style={{ fontFamily: "Tahoma, sans-serif", textShadow: "0 1px 2px rgba(255,255,255,0.8)" }}>{label}</span>
+    </motion.div>
+  );
+}
+
+// ─── XP Folders with openable Typography folder ───
+function XPFolders() {
+  const [typoOpen, setTypoOpen] = useState(false);
+
+  return (
+    <>
+      <XPFolderIcon label="My Music" x="30vw" y="6%" delay={0.3} />
+      <XPFolderIcon label="My Pictures" x="38vw" y="5%" delay={0.38} />
+      <XPFolderIcon label="Typography" x="34vw" y="22%" delay={0.46} onClick={() => setTypoOpen(true)} />
+      <XPFolderIcon label="Untitled" x="46vw" y="8%" delay={0.54} />
+
+      {/* Typography XP window */}
+      <AnimatePresence>
+        {typoOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 40 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[26vw] top-[8%] z-50"
+          >
+            <div className="rounded-t-lg overflow-hidden shadow-2xl" style={{ width: 440, border: "1px solid #0054E3", fontFamily: "Tahoma, sans-serif" }}>
+              {/* Title bar */}
+              <div className="flex items-center justify-between px-2 py-1" style={{ background: "linear-gradient(180deg, #0A246A, #3A6EA5, #0A246A)" }}>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px]">📁</span>
+                  <span className="text-[11px] font-bold text-white">C:\Desktop\Typography</span>
+                </div>
+                <div className="flex gap-[2px]">
+                  <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>_</div>
+                  <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>□</div>
+                  <button
+                    onClick={() => setTypoOpen(false)}
+                    className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-white font-bold hover:brightness-110"
+                    style={{ background: "linear-gradient(180deg, #E08070, #C84030)", border: "1px solid #993322" }}
+                  >✕</button>
+                </div>
+              </div>
+              {/* Menu bar */}
+              <div className="flex gap-3 px-2 py-0.5 bg-[#ECE9D8] border-b border-gray-400">
+                {["File", "Edit", "View", "Favorites", "Tools", "Help"].map((m) => (
+                  <span key={m} className="text-[10px] text-gray-700">{m}</span>
+                ))}
+              </div>
+              {/* Address bar */}
+              <div className="flex items-center gap-1 px-2 py-1 bg-[#ECE9D8] border-b border-gray-400">
+                <span className="text-[9px] text-gray-500">Address</span>
+                <div className="flex-1 bg-white border border-gray-400 rounded-sm px-1 py-0.5">
+                  <span className="text-[9px] text-gray-700">C:\Desktop\Typography</span>
+                </div>
+              </div>
+              {/* Content — WordArt image */}
+              <div className="bg-white p-4 flex items-center justify-center" style={{ minHeight: 260 }}>
+                <img src="/wordart.png" alt="WordArt Typography" className="max-w-full max-h-[240px] object-contain" style={{ mixBlendMode: "multiply" }} />
+              </div>
+              {/* Status bar */}
+              <div className="px-2 py-0.5 bg-[#ECE9D8] border-t border-gray-300 flex justify-between">
+                <span className="text-[9px] text-gray-500">3 objects</span>
+                <span className="text-[9px] text-gray-500">My Computer</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ─── Big CD Case with ejectable disc ───
+function BigCDCase({ cover, title }: { cover: string; title: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      onClick={() => setOpen(!open)}
+      className="relative cursor-pointer"
+      style={{ width: 180, height: 180 }}
+    >
+      {/* Disc — slides out right */}
+      <motion.div
+        className="absolute top-[10px]"
+        animate={{ x: open ? 80 : 0, rotate: open ? 90 : 0 }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        style={{ left: 40 }}
+      >
+        <div
+          className="w-[140px] h-[140px] rounded-full"
+          style={{
+            background: "conic-gradient(from 0deg, #E8E8E8, #F5F5F5, #D0D0D0, #F0F0F0, #E0E0E0, #F8F8F8, #D8D8D8, #E8E8E8)",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+          }}
+        >
+          <div className="absolute inset-[15px] rounded-full" style={{ background: "conic-gradient(from 45deg, #F0F0F0, #E0E0E0, #F5F5F5, #D5D5D5, #F0F0F0)", opacity: 0.6 }} />
+          <div className="absolute inset-[10px] rounded-full opacity-20" style={{ background: "conic-gradient(from 0deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0000)" }} />
+          <div className="absolute inset-0 m-auto w-[30px] h-[30px] rounded-full bg-white" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)" }}>
+            <div className="absolute inset-0 m-auto w-[10px] h-[10px] rounded-full" style={{ background: "linear-gradient(135deg, #E0E0E0, #C0C0C0)" }} />
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Jewel case */}
+      <div
+        className="absolute top-0 left-0 w-[160px] h-[160px] rounded-[3px] overflow-hidden z-10"
+        style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.3)" }}
+      >
+        <div className="absolute left-0 top-0 bottom-0 w-[8px] z-10" style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1))" }} />
+        <div className="absolute top-0 left-0 right-0 h-[4px] z-10" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.5), transparent)" }} />
+        <img src={cover} alt={title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(255,255,255,0.08) 100%)" }} />
       </div>
     </div>
   );
@@ -2994,7 +3708,8 @@ function ProjectsView() {
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Home");
   const [aboutMode, setAboutMode] = useState<"modern" | "y2k">("modern");
-  const tabs = ["Home", "Projects", "Prototypes", "Resume", "About", "Contact"];
+  const [meMode, setMeMode] = useState<"modern" | "y2k">("modern");
+  const tabs = ["Home", "Projects", "Prototypes", "Resume", "About", "Me", "Contact"];
 
   return (
     <>
@@ -3017,7 +3732,542 @@ export default function Home() {
         </motion.div>
       </div>
 
-      <main className="mx-auto max-w-3xl px-6 pt-28 pb-16">
+      {/* ─── ME TAB — full-bleed canvas, outside main ─── */}
+      <AnimatePresence>
+      {activeTab === "Me" && (
+        <motion.div
+          key="me-canvas"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
+          className="w-full overflow-x-hidden pt-28 pb-0 min-h-screen"
+          style={{ background: "#FFFDFB" }}
+        >
+          {/* Mode toggle */}
+          <div className="flex justify-center mb-6">
+            <div className="flex items-center gap-1 rounded-full bg-gray-100 p-1">
+              <button
+                onClick={() => setMeMode("modern")}
+                className="relative rounded-full px-4 py-1.5 text-xs font-medium transition-colors"
+              >
+                {meMode === "modern" && (
+                  <motion.div layoutId="me-mode" className="absolute inset-0 rounded-full bg-black" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
+                )}
+                <span className={`relative z-10 ${meMode === "modern" ? "text-white" : "text-gray-500"}`}>Modern</span>
+              </button>
+              <button
+                onClick={() => setMeMode("y2k")}
+                className="relative rounded-full px-4 py-1.5 text-xs font-medium transition-colors"
+              >
+                {meMode === "y2k" && (
+                  <motion.div layoutId="me-mode" className="absolute inset-0 rounded-full bg-black" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
+                )}
+                <span className={`relative z-10 ${meMode === "y2k" ? "text-white" : "text-gray-500"}`}>Y2K</span>
+              </button>
+            </div>
+          </div>
+
+          <AnimatePresence mode="wait">
+          {meMode === "modern" ? (
+          <motion.div key="me-modern" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+
+          {/* ── Modern Canvas ── */}
+          <div className="relative w-full" style={{ minHeight: "calc(100vh - 140px)", background: "#FFFDFB" }}>
+
+            {/* Subtle grid dots */}
+            <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle, #C0C0C0 0.5px, transparent 0.5px)", backgroundSize: "28px 28px" }} />
+
+            {/* ── AirDrop avatar — dead center ── */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10"
+            >
+              <div className="relative">
+                <div className="w-28 h-28 rounded-full overflow-hidden shadow-xl ring-4 ring-white">
+                  <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
+                </div>
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-blue-400/30"
+                  animate={{ scale: [1, 1.8], opacity: [0.5, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
+                />
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-blue-400/20"
+                  animate={{ scale: [1, 2.4], opacity: [0.3, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut", delay: 0.6 }}
+                />
+              </div>
+              <p className="mt-4 text-base font-bold text-gray-900">Taylor Breitzman</p>
+              <p className="text-xs text-gray-400">Design Engineer</p>
+            </motion.div>
+
+            {/* ── Reading folder — far top-left ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="absolute left-[4vw] top-[6%]"
+            >
+              <div className="w-[170px] rounded-2xl p-3 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.65)", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04)" }}>
+                <div className="grid grid-cols-3 gap-1.5 mb-2">
+                  {books.slice(0, 9).map((book) => (
+                    <motion.div
+                      key={book.title}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      className="w-full aspect-[2/3] rounded-lg overflow-hidden shadow-sm cursor-pointer"
+                    >
+                      {book.cover ? (
+                        <img src={book.cover} alt={book.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full" style={{ background: book.color }} />
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+                <p className="text-[10px] font-medium text-gray-700 text-center">Reading</p>
+              </div>
+            </motion.div>
+
+            {/* ── Now Playing — far top-right ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 30, rotate: 3 }}
+              animate={{ opacity: 1, y: 0, rotate: 3 }}
+              transition={{ delay: 0.2 }}
+              className="absolute right-[4vw] top-[4%]"
+            >
+              <div className="w-[220px] rounded-2xl overflow-hidden backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.7)", boxShadow: "0 8px 32px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.04)" }}>
+                <div className="w-full h-[130px] relative" style={{ background: albums[0].gradient }}>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <p className="text-white/80 font-bold text-lg">{albums[0].artist}</p>
+                  </div>
+                  <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-5 items-center">
+                    <span className="text-white/60 text-xs">⏮</span>
+                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <span className="text-white text-sm ml-0.5">▶</span>
+                    </div>
+                    <span className="text-white/60 text-xs">⏭</span>
+                  </div>
+                </div>
+                <div className="px-4 py-3">
+                  <p className="text-xs font-bold text-gray-900">{albums[0].title}</p>
+                  <p className="text-[11px] text-gray-400">{albums[0].artist}</p>
+                  <div className="mt-2 w-full h-[2px] bg-gray-200 rounded-full">
+                    <motion.div className="h-full bg-pink-400 rounded-full" animate={{ width: ["0%", "100%"] }} transition={{ duration: 12, repeat: Infinity }} />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ── Vinyl — far right, middle ── */}
+            <motion.div
+              initial={{ opacity: 0, rotate: -10 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              transition={{ delay: 0.3 }}
+              className="absolute right-[6vw] top-[50%] -translate-y-1/2"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                className="w-[140px] h-[140px] rounded-full relative"
+                style={{ background: "conic-gradient(from 0deg, #1a1a1a, #333, #1a1a1a, #2a2a2a, #1a1a1a)", boxShadow: "0 6px 24px rgba(0,0,0,0.2)" }}
+              >
+                <div className="absolute inset-[8px] rounded-full border border-white/[0.03]" />
+                <div className="absolute inset-[16px] rounded-full border border-white/[0.03]" />
+                <div className="absolute inset-[24px] rounded-full border border-white/[0.03]" />
+                <div className="absolute inset-[32px] rounded-full border border-white/[0.03]" />
+                <div className="absolute inset-0 m-auto w-[44px] h-[44px] rounded-full flex items-center justify-center" style={{ background: albums[2].gradient }}>
+                  <div className="w-[6px] h-[6px] rounded-full bg-black/40" />
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* ── Music folder — far left, lower ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="absolute left-[3vw] bottom-[12%]"
+            >
+              <div className="w-[150px] rounded-2xl p-3 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.65)", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04)" }}>
+                <div className="grid grid-cols-3 gap-1.5 mb-2">
+                  {albums.slice(0, 9).map((album) => (
+                    <div key={album.title} className="w-full aspect-square rounded-md" style={{ background: album.gradient }} />
+                  ))}
+                </div>
+                <p className="text-[10px] font-medium text-gray-700 text-center">Music</p>
+              </div>
+            </motion.div>
+
+            {/* ── Floating book — bottom center-left ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: -8 }}
+              animate={{ opacity: 1, y: 0, rotate: -8 }}
+              whileHover={{ rotate: 0, scale: 1.05 }}
+              transition={{ delay: 0.35 }}
+              className="absolute left-[25vw] bottom-[8%] cursor-pointer"
+            >
+              <div className="w-[110px] rounded-lg shadow-xl overflow-hidden" style={{ height: 155 }}>
+                <img src={books[0].cover} alt={books[0].title} className="w-full h-full object-cover" />
+              </div>
+              <div className="mt-2 px-1">
+                <p className="text-[9px] font-bold text-gray-700">{books[0].title}</p>
+                <p className="text-[8px] text-gray-400">{books[0].author}</p>
+              </div>
+            </motion.div>
+
+            {/* ── Photo stack — bottom right ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: 5 }}
+              animate={{ opacity: 1, y: 0, rotate: 5 }}
+              transition={{ delay: 0.4 }}
+              className="absolute right-[20vw] bottom-[6%]"
+            >
+              <div className="relative w-[130px] h-[150px]">
+                <div className="absolute top-2 left-2 w-[115px] h-[135px] bg-white rounded-md shadow-md rotate-[-6deg] p-1.5">
+                  <div className="w-full h-[95px] bg-gray-100 rounded-sm overflow-hidden">
+                    <img src="/taylor.jpeg" alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <p className="text-[7px] text-gray-400 mt-1.5 text-center">Summer 2025</p>
+                </div>
+                <div className="absolute top-0 left-5 w-[115px] h-[135px] bg-white rounded-md shadow-lg rotate-[4deg] p-1.5">
+                  <div className="w-full h-[95px] bg-gray-200 rounded-sm" />
+                  <p className="text-[7px] text-gray-400 mt-1.5 text-center">Drop photos here</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ── AirDrop notification — left of center ── */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+              className="absolute left-[18vw] top-[38%]"
+            >
+              <div className="rounded-2xl px-4 py-3 backdrop-blur-xl flex items-center gap-3" style={{ background: "rgba(255,255,255,0.8)", boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.04)" }}>
+                <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold text-gray-900">AirDrop</p>
+                  <p className="text-[9px] text-gray-400">Taylor wants to share interests</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ── Sticker pills — scattered across canvas ── */}
+            {[
+              { label: "SwiftUI", x: "38vw", y: "25%", rotate: -4, bg: "#007AFF" },
+              { label: "Figma", x: "55vw", y: "75%", rotate: 6, bg: "#A259FF" },
+              { label: "Design Systems", x: "65vw", y: "30%", rotate: -2, bg: "#FF6B6B" },
+              { label: "iOS", x: "30vw", y: "70%", rotate: 8, bg: "#34C759" },
+              { label: "React", x: "72vw", y: "80%", rotate: -5, bg: "#61DAFB" },
+              { label: "TypeScript", x: "22vw", y: "18%", rotate: 3, bg: "#3178C6" },
+            ].map((sticker, i) => (
+              <motion.div
+                key={sticker.label}
+                initial={{ opacity: 0, scale: 0, rotate: sticker.rotate }}
+                animate={{ opacity: 1, scale: 1, rotate: sticker.rotate }}
+                whileHover={{ scale: 1.2, rotate: 0 }}
+                transition={{ delay: 0.5 + i * 0.06, type: "spring", stiffness: 300, damping: 15 }}
+                className="absolute cursor-pointer"
+                style={{ left: sticker.x, top: sticker.y }}
+              >
+                <div className="rounded-full px-3.5 py-1.5 shadow-lg" style={{ background: sticker.bg }}>
+                  <span className="text-[11px] font-bold text-white">{sticker.label}</span>
+                </div>
+              </motion.div>
+            ))}
+
+            {/* ── "Currently" widget — right of center ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              className="absolute right-[28vw] top-[28%]"
+            >
+              <div className="w-[180px] rounded-2xl p-4 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.7)", boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
+                <p className="text-[9px] font-bold text-gray-400 tracking-wider uppercase mb-3">Currently</p>
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">📍</span>
+                    <span className="text-[11px] text-gray-700">Vancouver, BC</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">💼</span>
+                    <span className="text-[11px] text-gray-700">EA (Parasoul)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">📖</span>
+                    <span className="text-[11px] text-gray-700">{books[0].title.split(" ").slice(0, 4).join(" ")}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">🎵</span>
+                    <span className="text-[11px] text-gray-700">{albums[0].artist} — {albums[0].title}</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
+
+          </motion.div>
+          ) : (
+          <motion.div key="me-y2k" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+
+          {/* ── Y2K Canvas ── */}
+          <div
+            className="relative w-full overflow-hidden"
+            style={{
+              minHeight: "calc(100vh - 140px)",
+              background: "#FFFDFB",
+              cursor: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M2 0L2 20L7 15L11 22L14 20.5L10 14L16 14Z' fill='white' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E\") 2 2, auto",
+            }}
+          >
+            {/* Sparkle grid */}
+            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle, #FF69B4 0.5px, transparent 0.5px)", backgroundSize: "32px 32px" }} />
+
+            {/* Floating stars */}
+            {[...Array(12)].map((_, i) => (
+              <motion.div
+                key={`star-${i}`}
+                className="absolute text-pink-300/40"
+                style={{ left: `${5 + i * 8}%`, top: `${8 + (i % 4) * 22}%`, fontSize: 10 + (i % 3) * 8 }}
+                animate={{ y: [0, -10, 0], rotate: [0, 180, 360], opacity: [0.2, 0.5, 0.2] }}
+                transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: "easeInOut" }}
+              >✦</motion.div>
+            ))}
+
+            {/* ── Sparkle cursor trail ── */}
+            <SparkleTrail />
+
+            {/* ── Clippy — bottom left ── */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5 }}
+              className="absolute right-[26vw] top-[12%] z-30"
+            >
+              <Clippy />
+            </motion.div>
+
+            {/* ── Winamp — center left ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="absolute left-[22vw] top-[35%]"
+            >
+              <Winamp />
+            </motion.div>
+
+            {/* ── Limewire — center bottom ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: -2 }}
+              animate={{ opacity: 1, y: 0, rotate: -2 }}
+              transition={{ delay: 0.7 }}
+              className="absolute right-[32vw] top-[28%]"
+            >
+              <LimewireDownload />
+            </motion.div>
+
+            {/* ── iPod — far top-left ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: -6 }}
+              animate={{ opacity: 1, y: 0, rotate: -6 }}
+              transition={{ delay: 0.2 }}
+              className="absolute left-[3vw] top-[4%] origin-top-left"
+              style={{ transform: "scale(0.6) rotate(-6deg)" }}
+            >
+              <IPodNano />
+            </motion.div>
+
+            {/* ── MS Paint — right side, below AIM ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: 2 }}
+              animate={{ opacity: 1, y: 0, rotate: 2 }}
+              transition={{ delay: 0.4 }}
+              className="absolute right-[6vw] top-[52%]"
+            >
+              <MSPaint />
+            </motion.div>
+
+            {/* ── AIM Away Message — center area ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="absolute right-[6vw] top-[3%]"
+            >
+              <div className="shadow-xl" style={{ width: 280, fontFamily: "Tahoma, MS Sans Serif, sans-serif" }}>
+                {/* AIM window behind */}
+                <div className="absolute -left-[60px] top-[20px] w-[80px] rounded-t-sm overflow-hidden" style={{ border: "2px solid #808080" }}>
+                  <div className="flex items-center justify-between px-1 py-0.5" style={{ background: "linear-gradient(90deg, #000080, #1084D0)" }}>
+                    <span className="text-[7px] font-bold text-white">SaMsAThE...</span>
+                  </div>
+                  <div className="bg-[#C0C0C0] p-1">
+                    <div className="text-[6px] text-gray-600">My AIM People Help</div>
+                    <div className="flex items-center justify-center py-2">
+                      <img src="/aim-logo.webp" alt="AIM" className="w-[30px] h-[30px] object-contain" />
+                    </div>
+                    <div className="text-[7px] space-y-0.5 px-1">
+                      <div className="flex items-center gap-1"><span className="text-[6px]">📂</span> <span className="font-bold">Buddies (0)</span></div>
+                      <div className="flex items-center gap-1"><span className="text-[6px]">📂</span> <span>Family (0)</span></div>
+                      <div className="flex items-center gap-1"><span className="text-[6px]">📂</span> <span>Co-Workers</span></div>
+                      <div className="flex items-center gap-1"><span className="text-[6px]">📂</span> <span>Offline (0)</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Edit Away Message window */}
+                <div className="rounded-t-sm overflow-hidden relative z-10" style={{ border: "2px solid #808080" }}>
+                  {/* Title bar */}
+                  <div className="flex items-center justify-between px-1.5 py-0.5" style={{ background: "linear-gradient(90deg, #000080, #1084D0)" }}>
+                    <span className="text-[10px] font-bold text-white">Edit Away Message</span>
+                    <button className="w-[14px] h-[12px] rounded-sm text-[8px] flex items-center justify-center text-black" style={{ background: "#C0C0C0", border: "1px outset #DFDFDF" }}>✕</button>
+                  </div>
+
+                  <div className="bg-[#C0C0C0] p-3 space-y-2">
+                    {/* Label field */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px]">Enter label:</span>
+                      <div className="flex-1 bg-white border border-gray-500 px-1 py-0.5">
+                        <span className="text-[10px]">Busy</span>
+                      </div>
+                    </div>
+
+                    {/* Message area */}
+                    <div>
+                      <span className="text-[9px]">Enter new Away message:</span>
+                      {/* Toolbar */}
+                      <div className="flex items-center gap-0.5 mt-1 mb-1 px-1 py-0.5 bg-[#D4D0C8] border border-gray-400">
+                        {["A", "𝐀", "ᴬ", "A", "𝔸", "B", "𝐼", "U", "link", "☺"].map((t, i) => (
+                          <span key={i} className="text-[8px] px-0.5 text-gray-700">{t}</span>
+                        ))}
+                      </div>
+                      {/* Message content */}
+                      <div className="bg-white border border-gray-500 p-2 min-h-[70px]">
+                        <p className="text-[11px] leading-relaxed" style={{ fontFamily: "Comic Sans MS, cursive" }}>
+                          <span className="font-bold text-pink-600">**BRB**</span><br />
+                          <span className="text-purple-700">viBe cOdiNg w/ cLaUdE</span><br />
+                          <span className="text-blue-600">thEn piCkLeBaLL @ 6</span> 🏓<br />
+                          <span className="text-pink-500">dO nOt DiStUrB LoL</span> 😎
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Special characters */}
+                    <div className="text-[8px] text-gray-600 space-y-0.5">
+                      <p>Special Characters:</p>
+                      <p>&nbsp;&nbsp;%n = Screen Name of Buddy</p>
+                      <p>&nbsp;&nbsp;%d = Current date</p>
+                      <p>&nbsp;&nbsp;%t = Current time</p>
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex justify-end gap-2 pt-1">
+                      <div className="flex items-center gap-1 text-[8px] text-gray-600 mr-auto">
+                        Save for later use <div className="w-[10px] h-[10px] border border-gray-500 bg-white" />
+                      </div>
+                      <button className="px-3 py-0.5 text-[10px]" style={{ background: "#D4D0C8", border: "2px outset #DFDFDF" }}>I&apos;m Away</button>
+                      <button className="px-3 py-0.5 text-[10px]" style={{ background: "#D4D0C8", border: "2px outset #DFDFDF" }}>Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ── XP Desktop Folders ── */}
+            <XPFolders />
+
+            {/* ── Big CD Cases — under iPod, left side ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 30, rotate: -6 }}
+              animate={{ opacity: 1, y: 0, rotate: -6 }}
+              transition={{ delay: 0.35 }}
+              className="absolute left-[4vw] top-[58%]"
+            >
+              <BigCDCase cover="/hannah.jpg" title="Hannah Montana" />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30, rotate: 4 }}
+              animate={{ opacity: 1, y: 0, rotate: 4 }}
+              transition={{ delay: 0.45 }}
+              className="absolute left-[16vw] top-[66%]"
+            >
+              <BigCDCase cover="/avril.jpg" title="Avril Lavigne - Let Go" />
+            </motion.div>
+
+            {/* ── Chrome Dino running across bottom ── */}
+            <div className="absolute bottom-[6px] left-0 right-0 h-[50px] z-30 pointer-events-none">
+              {/* Ground line */}
+              <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-400/30" />
+              {/* Dino */}
+              <motion.div
+                className="absolute bottom-[2px]"
+                animate={{ x: ["-60px", "calc(100vw + 60px)"] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              >
+                {/* Pixel dino using box shadows on a single pixel */}
+                <div className="relative" style={{ width: 40, height: 44, imageRendering: "pixelated" }}>
+                  <svg width="40" height="44" viewBox="0 0 20 22" shapeRendering="crispEdges">
+                    {/* Head */}
+                    <rect x="8" y="0" width="12" height="2" fill="#535353" />
+                    <rect x="8" y="2" width="12" height="2" fill="#535353" />
+                    <rect x="14" y="2" width="2" height="2" fill="#FFFDFB" />
+                    <rect x="8" y="4" width="12" height="2" fill="#535353" />
+                    <rect x="10" y="6" width="10" height="2" fill="#535353" />
+                    {/* Neck + body */}
+                    <rect x="4" y="8" width="10" height="2" fill="#535353" />
+                    <rect x="2" y="10" width="14" height="2" fill="#535353" />
+                    <rect x="2" y="12" width="12" height="2" fill="#535353" />
+                    {/* Arms */}
+                    <rect x="10" y="10" width="6" height="2" fill="#535353" />
+                    {/* Body */}
+                    <rect x="4" y="14" width="8" height="2" fill="#535353" />
+                    <rect x="4" y="16" width="8" height="2" fill="#535353" />
+                    {/* Legs — frame 1 */}
+                    <motion.g
+                      animate={{ opacity: [1, 0, 1, 0] }}
+                      transition={{ duration: 0.4, repeat: Infinity }}
+                    >
+                      <rect x="4" y="18" width="2" height="4" fill="#535353" />
+                      <rect x="10" y="18" width="2" height="2" fill="#535353" />
+                    </motion.g>
+                    {/* Legs — frame 2 */}
+                    <motion.g
+                      animate={{ opacity: [0, 1, 0, 1] }}
+                      transition={{ duration: 0.4, repeat: Infinity }}
+                    >
+                      <rect x="4" y="18" width="2" height="2" fill="#535353" />
+                      <rect x="10" y="18" width="2" height="4" fill="#535353" />
+                    </motion.g>
+                    {/* Tail */}
+                    <rect x="0" y="10" width="2" height="2" fill="#535353" />
+                    <rect x="0" y="8" width="2" height="2" fill="#535353" />
+                  </svg>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* ── XP Dialog Stack — bottom center ── */}
+            <div className="absolute left-[35vw] bottom-[8%] w-[380px] h-[300px]" style={{ position: "absolute" }}>
+              <XPDialogStack />
+            </div>
+
+          </div>
+
+          </motion.div>
+          )}
+          </AnimatePresence>
+
+        </motion.div>
+      )}
+      </AnimatePresence>
+
+      <main className={`mx-auto max-w-3xl px-6 pt-28 pb-16 ${activeTab === "Me" ? "hidden" : ""}`}>
         <AnimatePresence mode="wait">
           {/* ─── HOME TAB ─── */}
           {activeTab === "Home" && (
@@ -3292,6 +4542,7 @@ export default function Home() {
 
             </motion.div>
           )}
+
 
           {/* ─── CONTACT TAB ─── */}
           {activeTab === "Contact" && (
