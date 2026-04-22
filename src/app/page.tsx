@@ -954,49 +954,24 @@ function IDBadgeCoverflow() {
               transition={{ type: "spring", stiffness: 250, damping: 22 }}
               style={{ zIndex: 100 - absOffset, transformStyle: "preserve-3d" }}
             >
-              {/* Lanyard — drops in and dangles */}
-              <motion.div
-                className="flex flex-col items-center"
-                style={{ transformOrigin: "top center" }}
-                initial={{ y: -300, rotateZ: -15 + i * 8 }}
-                animate={{
-                  y: 0,
-                  rotateZ: [-3 + i * 2, -1 + i * 1.5, -3 + i * 2],
-                }}
-                transition={{
-                  y: { delay: i * 0.2, type: "spring", stiffness: 80, damping: 10, mass: 1.2 },
-                  rotateZ: {
-                    delay: 1.5 + i * 0.2,
-                    duration: 3 + i * 0.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    repeatType: "mirror",
-                  },
-                }}
-              >
-                {/* Strap — thick black lanyard with company logo */}
-                <div className="w-[32px] relative overflow-hidden rounded-[2px]" style={{ height: 180, marginTop: -100, background: "#1A1A1A" }}>
-                  {/* Subtle fabric texture */}
+              {/* Lanyard */}
+              <div className="flex flex-col items-center">
+                {/* Strap */}
+                <div className="w-[26px] relative overflow-hidden rounded-[2px]" style={{ height: 140, marginTop: -70, background: "#1A1A1A" }}>
                   <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 4px)" }} />
-                  {/* Company logo on strap — repeated */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-8">
                     {badge.logo && (
                       <>
-                        <img src={badge.logo} alt="" className="w-[16px] h-[16px] object-contain opacity-40 brightness-0 invert" />
-                        <img src={badge.logo} alt="" className="w-[16px] h-[16px] object-contain opacity-40 brightness-0 invert" />
+                        <img src={badge.logo} alt="" className="w-[14px] h-[14px] object-contain opacity-40 brightness-0 invert" />
+                        <img src={badge.logo} alt="" className="w-[14px] h-[14px] object-contain opacity-40 brightness-0 invert" />
                       </>
                     )}
                   </div>
-                  {/* Edge highlights */}
-                  <div className="absolute top-0 bottom-0 left-0 w-[1px] bg-white/5" />
-                  <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/5" />
                 </div>
                 {/* Metal clasp */}
-                <div className="relative w-[24px] h-[22px] mb-[3px]">
-                  {/* Clasp body */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[20px] h-[16px] rounded-b-[4px]" style={{ background: "linear-gradient(180deg, #3A3A3A, #2A2A2A)", boxShadow: "0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)" }} />
-                  {/* Hook ring */}
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[8px] h-[8px] rounded-full border-[2px]" style={{ borderColor: "#3A3A3A", background: "linear-gradient(135deg, #4A4A4A, #2A2A2A)" }} />
+                <div className="relative w-[24px] h-[20px] mb-[2px]">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[20px] h-[14px] rounded-b-[4px]" style={{ background: "linear-gradient(180deg, #3A3A3A, #2A2A2A)", boxShadow: "0 2px 4px rgba(0,0,0,0.3)" }} />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[8px] h-[8px] rounded-full border-[2px]" style={{ borderColor: "#3A3A3A", background: "#2A2A2A" }} />
                 </div>
 
                 {/* Badge */}
@@ -1056,7 +1031,7 @@ function IDBadgeCoverflow() {
                     style={{ background: badge.accent }}
                   />
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           );
         })}
@@ -1394,20 +1369,24 @@ function FigmaTextBox({ onClick }: { onClick: () => void }) {
         await sleep(600);
         if (cancelled) return;
 
-        // Italicize
-        setPhase("italic");
-        await sleep(3000);
+        // Done with selection
+        setPhase("done");
+        await sleep(4000);
         if (cancelled) return;
 
-        // Reset
-        setPhase("done");
-        await sleep(8000);
+        // Add exclamation marks one by one
+        for (const char of "!!!") {
+          if (cancelled) return;
+          setText((prev) => prev + char);
+          await sleep(200);
+        }
+        await sleep(6000);
         if (cancelled) return;
 
         // Clear and restart
         setText("");
         setPhase("hidden");
-        await sleep(1000);
+        await sleep(2000);
       }
     }
 
@@ -1910,14 +1889,15 @@ const albums = [
 ];
 
 const books = [
-  { title: "Thinking, Fast and Slow", author: "Daniel Kahneman", color: "#2D3436" },
-  { title: "Don't Make Me Think", author: "Steve Krug", color: "#E17055" },
-  { title: "The Design of Everyday Things", author: "Don Norman", color: "#0984E3" },
-  { title: "Atomic Habits", author: "James Clear", color: "#00B894" },
-  { title: "Creative Selection", author: "Ken Kocienda", color: "#6C5CE7" },
-  { title: "Hooked", author: "Nir Eyal", color: "#E84393" },
-  { title: "Refactoring UI", author: "Wathan & Schoger", color: "#FDCB6E" },
-  { title: "Sprint", author: "Jake Knapp", color: "#00CEC9" },
+  { title: "A Court of Thorns and Roses", author: "Sarah J. Maas", color: "#C83232", cover: "/books/acotar.jpg" },
+  { title: "A Court of Mist and Fury", author: "Sarah J. Maas", color: "#2A9D8F", cover: "/books/acomaf.jpg" },
+  { title: "Fourth Wing", author: "Rebecca Yarros", color: "#C4A44A", cover: "/books/fourth-wing.jpg" },
+  { title: "One Golden Summer", author: "Carley Fortune", color: "#2E6BC4", cover: "/books/one-golden-summer.jpg" },
+  { title: "Project Hail Mary", author: "Andy Weir", color: "#1A1A0A", cover: "/books/project-hail-mary.jpg" },
+  { title: "The Correspondent", author: "Virginia Evans", color: "#F5F0E8", cover: "/books/the-correspondent.jpg" },
+  { title: "I Who Have Never Known Men", author: "Jacqueline Harpman", color: "#D45A35", cover: "/books/never-known-men.jpg" },
+  { title: "The Nightingale", author: "Kristin Hannah", color: "#2C4A6E", cover: "/books/nightingale.jpg" },
+  { title: "Binding 13", author: "Chloe Walsh", color: "#CC2222", cover: "/books/binding-13.jpg" },
 ];
 
 // Drop photos in /public/life/ and add paths here
@@ -3200,19 +3180,25 @@ export default function Home() {
                       whileHover={{ y: -12, rotateZ: -2, transition: { duration: 0.2 } }}
                       className="relative cursor-pointer shrink-0 group"
                     >
-                      {/* Book spine + cover */}
+                      {/* Book cover */}
                       <div
                         className="w-[120px] rounded-lg shadow-lg overflow-hidden transition-shadow group-hover:shadow-xl"
                         style={{
                           height: 170 + (i % 3) * 10,
-                          background: book.color,
+                          background: book.cover ? "none" : book.color,
                         }}
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent w-[6px]" />
-                        <div className="h-full flex flex-col justify-end p-3">
-                          <p className="text-[10px] font-bold text-white/90 leading-tight">{book.title}</p>
-                          <p className="text-[8px] text-white/60 mt-1">{book.author}</p>
-                        </div>
+                        {book.cover ? (
+                          <img src={book.cover} alt={book.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <>
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent w-[6px]" />
+                            <div className="h-full flex flex-col justify-end p-3">
+                              <p className="text-[10px] font-bold text-white/90 leading-tight">{book.title}</p>
+                              <p className="text-[8px] text-white/60 mt-1">{book.author}</p>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   ))}
