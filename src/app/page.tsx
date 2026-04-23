@@ -806,7 +806,7 @@ function IPodNano() {
                   Cover Flow
                 </div>
                 {/* Coverflow */}
-                <div className="flex-1 flex items-center justify-center relative overflow-hidden" style={{ perspective: 300 }}>
+                <div className="flex-1 flex items-end justify-center relative overflow-hidden pb-1" style={{ perspective: 300 }}>
                   {albums.map((album, i) => {
                     const offset = i - coverIndex;
                     const absOffset = Math.abs(offset);
@@ -3471,6 +3471,8 @@ function XPFolderIcon({ label, x, y, delay, onClick, onDoubleClick }: { label: s
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.08, y: -3, transition: { delay: 0, duration: 0.2 } }}
+      whileTap={{ scale: 0.92, transition: { delay: 0, duration: 0.1 } }}
       transition={{ delay }}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
@@ -4313,15 +4315,15 @@ const y2kUIs = [
 ];
 
 const albums = [
-  { title: "SOS", artist: "SZA", color: "#1a1a2e", gradient: "linear-gradient(135deg, #1a1a2e, #4a2c6e)", cover: "/hannah.jpg" },
-  { title: "Ctrl", artist: "SZA", color: "#8B6914", gradient: "linear-gradient(135deg, #8B6914, #C4A34A)", cover: "/hannah.jpg" },
-  { title: "RENAISSANCE", artist: "Beyoncé", color: "#C0C0C0", gradient: "linear-gradient(135deg, #888, #CCC)", cover: "/hannah.jpg" },
-  { title: "Midnights", artist: "Taylor Swift", color: "#1B365D", gradient: "linear-gradient(135deg, #1B365D, #4A6B8A)", cover: "/hannah.jpg" },
-  { title: "Blonde", artist: "Frank Ocean", color: "#E8E0D0", gradient: "linear-gradient(135deg, #E8E0D0, #F5F0E5)", cover: "/hannah.jpg" },
-  { title: "good kid, m.A.A.d city", artist: "Kendrick Lamar", color: "#2C1810", gradient: "linear-gradient(135deg, #2C1810, #5A3A2A)", cover: "/hannah.jpg" },
-  { title: "After Hours", artist: "The Weeknd", color: "#8B0000", gradient: "linear-gradient(135deg, #8B0000, #DC143C)", cover: "/hannah.jpg" },
-  { title: "IGOR", artist: "Tyler, The Creator", color: "#FFB6C1", gradient: "linear-gradient(135deg, #FFB6C1, #FF69B4)", cover: "/hannah.jpg" },
-  { title: "Happier Than Ever", artist: "Billie Eilish", color: "#D4C5A9", gradient: "linear-gradient(135deg, #B8A88A, #D4C5A9)", cover: "/hannah.jpg" },
+  { title: "Hannah Montana", artist: "Hannah Montana", color: "#FF69B4", gradient: "linear-gradient(135deg, #FF69B4, #FF1493)", cover: "/hannah.jpg" },
+  { title: "Short n' Sweet", artist: "Sabrina Carpenter", color: "#2060A0", gradient: "linear-gradient(135deg, #2060A0, #4080C0)", cover: "/sabrina.jpeg" },
+  { title: "TTPD", artist: "Taylor Swift", color: "#3A3530", gradient: "linear-gradient(135deg, #3A3530, #5A5550)", cover: "/ttpd.jpeg" },
+  { title: "Stellaria", artist: "Chelsea Cutler", color: "#6B5B7B", gradient: "linear-gradient(135deg, #6B5B7B, #9B8BAB)", cover: "/stellaria.jpeg" },
+  { title: "Good Girl Gone Bad", artist: "Rihanna", color: "#008080", gradient: "linear-gradient(135deg, #008080, #40A0A0)", cover: "/rihanna.jpg" },
+  { title: "The Secret of Us", artist: "Gracie Abrams", color: "#E8D5B7", gradient: "linear-gradient(135deg, #E8D5B7, #C4A882)", cover: "/gracie.png" },
+  { title: "Let Go", artist: "Avril Lavigne", color: "#4A6080", gradient: "linear-gradient(135deg, #4A6080, #7090B0)", cover: "/avril.jpg" },
+  { title: "1989 (TV)", artist: "Taylor Swift", color: "#87CEEB", gradient: "linear-gradient(135deg, #87CEEB, #5BA3D9)", cover: "/taylor-swift-1989.png" },
+  { title: "a beautiful blur", artist: "LANY", color: "#4466FF", gradient: "linear-gradient(135deg, #4466FF, #0A0A0A)", cover: "/lany.jpeg" },
 ];
 
 const books = [
@@ -4418,7 +4420,7 @@ const projects = [
     color: "#3DC1B8",
     overview: "",
     impact: [],
-    tools: ["Flutter", "Figma", "Dart"],
+    tools: ["Flutter", "Figma"],
     images: [],
     hideContext: true,
     contentBlocks: [
@@ -4627,7 +4629,7 @@ const projects = [
     color: "#3DC1B8",
     overview: "",
     impact: [],
-    tools: ["Flutter", "Figma", "Dart"],
+    tools: ["Flutter", "Figma"],
     images: [],
     hideContext: true,
     contentBlocks: [
@@ -4875,14 +4877,14 @@ const projects = [
     company: "Nike",
     logo: "/logos/nike.svg",
     title: "Momentum",
-    subtitle: "A running app designed for people who don't run yet",
+    subtitle: "Designing for Women at a Company Known for Elite Sport",
     role: "iOS Engineer",
     period: "2021 — 2022",
     color: "#111111",
     overview: "",
     impact: [],
     hideContext: true,
-    tools: ["Swift", "SwiftUI", "UIKit"],
+    tools: ["Swift", "SwiftUI"],
     images: [],
     coverImage: "/projects/nike/nike-cover.png",
     dividerImage: "/projects/nike/momentum-divider.png",
@@ -4965,69 +4967,83 @@ function ProjectsView() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <div className="grid grid-cols-2 gap-5">
-              {projects.map((p, i) => (
-                <motion.div
-                  key={p.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: i * 0.06 }}
-                  whileHover={{ y: -3 }}
-                  onClick={() => setSelectedProject(p.id)}
-                  className="cursor-pointer rounded-3xl p-5 transition-shadow hover:shadow-lg"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.75)",
-                    backdropFilter: "blur(40px) saturate(180%)",
-                    WebkitBackdropFilter: "blur(40px) saturate(180%)",
-                    border: "1px solid rgba(255, 255, 255, 0.6)",
-                    boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
-                  }}
-                >
-                  {/* Thumbnail */}
-                  <div className="mb-4 rounded-xl overflow-hidden bg-white">
-                    {(p as any).coverVideo ? (
-                      <video
-                        src={(p as any).coverVideo}
-                        autoPlay loop muted playsInline
-                        className="w-full aspect-[4/3] object-cover"
-                      />
-                    ) : (p as any).coverVideos && (p as any).coverImage ? (
-                      <div className="relative w-full aspect-[4/3]">
-                        <img src={(p as any).coverImage} alt={p.title} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 flex items-center justify-center gap-4">
-                          {(p as any).coverVideos.map((vid: string, vi: number) => (
-                            <div key={vi} className="relative w-[90px] h-[190px] rounded-[20px] border-[3px] border-gray-900 bg-black shadow-xl overflow-hidden">
-                              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[36px] h-[10px] bg-black rounded-b-lg z-10" />
-                              <div className="w-full h-full rounded-[17px] overflow-hidden">
-                                <video src={vid} autoPlay loop muted playsInline className="w-full h-full object-cover" />
-                              </div>
-                              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[30%] h-[2px] bg-gray-600 rounded-full" />
+            {/* Bento grid */}
+            <div className="grid grid-cols-2 gap-5 auto-rows-auto">
+              {projects.map((p, i) => {
+                const isHero = i === 0;
+                const coverSrc = (p as any).coverImage || (p as any).heroImage || (p.images.length > 0 ? p.images[0] : null);
+                const coverVideo = (p as any).coverVideos?.[0] || (p as any).coverVideo;
+                const coverVideos = (p as any).coverVideos as string[] | undefined;
+
+                return (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.06 }}
+                    whileHover={{ y: -4, transition: { delay: 0, duration: 0.2 } }}
+                    onClick={() => setSelectedProject(p.id)}
+                    className={`cursor-pointer group ${isHero ? "col-span-2" : ""}`}
+                  >
+                    {/* Image/video area */}
+                    <div
+                      className="rounded-2xl overflow-hidden relative"
+                      style={{ height: isHero ? 280 : 260 }}
+                    >
+                      {/* Background */}
+                      {isHero && coverSrc ? (
+                        <div className="absolute inset-0">
+                          <img src={coverSrc} alt={p.title} className="w-full h-full object-cover" />
+                          {/* Phone mockups overlaid */}
+                          {coverVideos && (
+                            <div className="absolute inset-0 flex items-center justify-center gap-4">
+                              {coverVideos.map((vid: string, vi: number) => (
+                                <div key={vi} className="relative w-[90px] h-[190px] rounded-[20px] border-[3px] border-gray-900 bg-black shadow-xl overflow-hidden">
+                                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[36px] h-[10px] bg-black rounded-b-lg z-10" />
+                                  <div className="w-full h-full rounded-[17px] overflow-hidden">
+                                    <video src={vid} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+                                  </div>
+                                  <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[30%] h-[2px] bg-gray-600 rounded-full" />
+                                </div>
+                              ))}
                             </div>
+                          )}
+                        </div>
+                      ) : coverVideo ? (
+                        <video src={coverVideo} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" />
+                      ) : coverSrc ? (
+                        <img src={coverSrc} alt={p.title} className="absolute inset-0 w-full h-full object-cover" />
+                      ) : (
+                        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${p.color}20, ${p.color}40)` }} />
+                      )}
+
+                      {/* Hover shine */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%)" }} />
+                    </div>
+
+                    {/* Info below */}
+                    <div className="px-1 pt-3 pb-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        {p.logo && (
+                          <img src={p.logo} alt={p.company} className="w-4 h-4 rounded-[4px] object-cover" />
+                        )}
+                        <span className="text-[11px] text-gray-400 font-medium">{p.company}</span>
+                      </div>
+                      <h3 className={`font-bold text-gray-900 ${isHero ? "text-lg" : "text-sm"}`}>{p.title}</h3>
+                      {(p as any).subtitle && (
+                        <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{(p as any).subtitle}</p>
+                      )}
+                      {(p as any).tools && (
+                        <div className="flex gap-1.5 mt-2">
+                          {((p as any).tools as string[]).slice(0, isHero ? 5 : 3).map((t: string) => (
+                            <span key={t} className="text-[9px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">{t}</span>
                           ))}
                         </div>
-                      </div>
-                    ) : (p as any).coverImage ? (
-                      <img src={(p as any).coverImage} alt={p.title} className="w-full aspect-[4/3] object-contain" />
-                    ) : (p as any).heroImage ? (
-                      <img src={(p as any).heroImage} alt={p.title} className="w-full aspect-[4/3] object-contain" />
-                    ) : p.images.length > 0 ? (
-                      <img src={p.images[0]} alt={p.title} className="w-full aspect-[4/3] object-contain" />
-                    ) : p.logo ? (
-                      <div className="w-full aspect-[4/3] flex items-center justify-center">
-                        <img src={p.logo} alt={p.company} className="h-16 w-16 rounded-xl object-cover opacity-40" />
-                      </div>
-                    ) : (
-                      <div className="w-full aspect-[4/3] flex items-center justify-center bg-gray-100">
-                        <span className="text-sm text-gray-300">Thumbnail</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Company + Title */}
-                  <p className="text-xs text-gray-400 mt-1">{p.company}</p>
-                  <h3 className="text-sm font-semibold text-gray-900">{p.title}</h3>
-                </motion.div>
-              ))}
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.div>
         ) : project ? (
@@ -5050,42 +5066,25 @@ function ProjectsView() {
               Back
             </motion.button>
 
-            {/* Divider — intentionally removed from top, placed before Context */}
-
-            {/* Title */}
-            <h1
-              className="text-4xl font-bold tracking-tight text-gray-900 mb-3"
-            >
-              {project.title}
-            </h1>
-            <p className="text-lg text-gray-400 mb-10">
-              {project.subtitle}
-            </p>
-
-            {/* Metadata card */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-16">
-              <div className="grid grid-cols-5 gap-6">
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">Role</p>
-                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{project.role}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">Company</p>
-                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{project.company}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">Team</p>
-                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{(project as any).team || "Product"}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">Timeline</p>
-                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{project.period}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">Tools & Technologies</p>
-                  <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>{project.tools.join("\n")}</p>
-                </div>
+            {/* Title + subtitle */}
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-3">
+                {project.logo && (
+                  <img src={project.logo} alt={project.company} className="w-8 h-8 rounded-[8px] object-cover" />
+                )}
+                <span className="text-sm text-gray-400 font-medium">{project.company} · {project.period}</span>
               </div>
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">{project.title}</h1>
+              <p className="text-base text-gray-400">{project.subtitle}</p>
+            </div>
+
+            {/* Metadata — role pills dark, tools lighter */}
+            <div className="flex flex-wrap items-center gap-2 mb-12">
+              <span className="text-xs px-3 py-1.5 rounded-full bg-gray-900 text-white font-medium">{project.role}</span>
+              <span className="text-xs px-3 py-1.5 rounded-full bg-gray-900 text-white font-medium">{(project as any).team || "Product"}</span>
+              {project.tools.map((t) => (
+                <span key={t} className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-500">{t}</span>
+              ))}
             </div>
 
             {/* Featured video */}
@@ -5819,17 +5818,13 @@ export default function Home() {
               cursor: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M2 0L2 20L7 15L11 22L14 20.5L10 14L16 14Z' fill='white' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E\") 2 2, auto",
             }}
           >
-            {/* Sparkle grid */}
-            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle, #FF69B4 0.5px, transparent 0.5px)", backgroundSize: "32px 32px" }} />
 
-            {/* ── Sparkle cursor trail ── */}
-            <SparkleTrail />
 
             {/* ── Clippy — bottom left ── */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
+              transition={{ delay: 0.3 }}
               className="absolute right-[26vw] top-[12%] z-30"
             >
               <Clippy />
@@ -5839,7 +5834,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.16 }}
               className="absolute left-[22vw] top-[35%]"
             >
               <Winamp />
@@ -5849,17 +5844,20 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20, rotate: -2 }}
               animate={{ opacity: 1, y: 0, rotate: -2 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.22 }}
               className="absolute right-[32vw] top-[28%]"
             >
               <LimewireDownload />
             </motion.div>
 
+            {/* ── Sparkle cursor trail ── */}
+            <SparkleTrail />
+
             {/* ── iPod — far top-left ── */}
             <motion.div
               initial={{ opacity: 0, y: 20, rotate: -6 }}
               animate={{ opacity: 1, y: 0, rotate: -6 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.05 }}
               className="absolute left-[3vw] top-[4%] origin-top-left"
               style={{ transform: "scale(0.6) rotate(-6deg)" }}
             >
@@ -5870,7 +5868,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20, rotate: 2 }}
               animate={{ opacity: 1, y: 0, rotate: 2 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.12 }}
               className="absolute right-[6vw] top-[52%]"
             >
               <MSPaint />
@@ -5880,7 +5878,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
+              transition={{ delay: 0.08 }}
               className="absolute right-[6vw] top-[3%]"
             >
               <div className="shadow-xl" style={{ width: 280, fontFamily: "Tahoma, MS Sans Serif, sans-serif" }}>
@@ -5968,9 +5966,9 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 30, rotate: -6 }}
               animate={{ opacity: 1, y: 0, rotate: -6 }}
-              whileHover={{ scale: 1.06, y: -4, rotate: 0 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ delay: 0.35 }}
+              whileHover={{ scale: 1.06, y: -4, rotate: 0, transition: { delay: 0, duration: 0.2 } }}
+              whileTap={{ scale: 0.95, transition: { delay: 0, duration: 0.1 } }}
+              transition={{ delay: 0.1 }}
               className="absolute left-[4vw] top-[58%] cursor-pointer"
             >
               <BigCDCase cover="/hannah.jpg" title="Hannah Montana" />
@@ -5978,12 +5976,37 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 30, rotate: 4 }}
               animate={{ opacity: 1, y: 0, rotate: 4 }}
-              whileHover={{ scale: 1.06, y: -4, rotate: 0 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ delay: 0.45 }}
+              whileHover={{ scale: 1.06, y: -4, rotate: 0, transition: { delay: 0, duration: 0.2 } }}
+              whileTap={{ scale: 0.95, transition: { delay: 0, duration: 0.1 } }}
+              transition={{ delay: 0.14 }}
               className="absolute left-[16vw] top-[66%] cursor-pointer"
             >
               <BigCDCase cover="/avril.jpg" title="Avril Lavigne - Let Go" />
+            </motion.div>
+
+            {/* ── Tiger Beat Magazine ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: -8 }}
+              animate={{ opacity: 1, y: 0, rotate: -8 }}
+              whileHover={{ rotate: -2, scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ delay: 0.18 }}
+              className="absolute right-[34vw] top-[55%] cursor-pointer"
+            >
+              <div className="relative" style={{ width: 150 }}>
+                <img
+                  src="/tiger-beat.jpeg"
+                  alt="Tiger Beat Magazine"
+                  className="w-full rounded-[4px]"
+                  style={{
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.1)",
+                  }}
+                />
+                {/* Magazine gloss */}
+                <div className="absolute inset-0 rounded-[4px]" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(255,255,255,0.05) 60%, transparent 100%)" }} />
+                {/* Subtle page edge on the right */}
+                <div className="absolute top-[2px] right-0 bottom-[2px] w-[3px] rounded-r-[2px]" style={{ background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.05))" }} />
+              </div>
             </motion.div>
 
             {/* ── Baby Lips — physical object, corner ── */}
@@ -5994,9 +6017,6 @@ export default function Home() {
               whileTap={{ scale: 0.95, rotate: 5 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
               className="absolute right-[28vw] top-[55%] cursor-pointer"
-              drag
-              dragConstraints={{ left: -300, right: 300, top: -300, bottom: 300 }}
-              dragElastic={0.3}
             >
               <img src="/baby-lips.png" alt="Maybelline Baby Lips" className="h-[220px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
             </motion.div>
@@ -6006,7 +6026,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.2 }}
               className="absolute right-[28vw] top-[82%] rotate-[-6deg]"
             >
               <div className="flex items-center gap-[3px] relative">
@@ -6019,7 +6039,7 @@ export default function Home() {
                       key={i}
                       initial={{ scale: 0, rotate: Math.random() * 20 - 10 }}
                       animate={{ scale: 1, rotate: (i % 2 === 0 ? -2 : 3) }}
-                      transition={{ delay: 0.7 + i * 0.06, type: "spring", stiffness: 400, damping: 12 }}
+                      transition={{ delay: 0.25 + i * 0.04, type: "spring", stiffness: 400, damping: 12 }}
                       className="relative z-10 flex items-center justify-center shrink-0"
                       style={{
                         width: 34,
