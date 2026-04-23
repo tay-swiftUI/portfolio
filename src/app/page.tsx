@@ -557,6 +557,9 @@ function IPhoneMockup({
   index,
   gifSrc,
   videoSrc,
+  contain,
+  lighten,
+  padded,
 }: {
   title: string;
   description: string;
@@ -564,6 +567,9 @@ function IPhoneMockup({
   index: number;
   gifSrc?: string;
   videoSrc?: string;
+  contain?: boolean;
+  lighten?: boolean;
+  padded?: boolean;
 }) {
   return (
     <motion.div
@@ -574,9 +580,9 @@ function IPhoneMockup({
     >
       <div className="relative w-[180px] h-[380px] rounded-[32px] border-[6px] border-gray-900 bg-black shadow-xl overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80px] h-[24px] bg-black rounded-b-2xl z-10" />
-        <div className="w-full h-full rounded-[26px] overflow-hidden bg-gray-100">
+        <div className={`w-full h-full rounded-[26px] overflow-hidden ${contain ? "bg-white flex items-center" : padded ? "bg-white flex items-center justify-center p-3" : "bg-gray-100"}`}>
           {videoSrc ? (
-            <video src={videoSrc} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+            <video src={videoSrc} autoPlay loop muted playsInline className={`${padded ? "w-full h-full object-cover" : contain ? "w-full object-contain" : "w-full h-full object-cover"}`} style={padded ? { transform: "scale(0.93)" } : lighten ? { filter: "brightness(1.04)" } : undefined} />
           ) : gifSrc ? (
             <img src={gifSrc} alt={title} className="w-full h-full object-cover" />
           ) : (
@@ -585,6 +591,8 @@ function IPhoneMockup({
             </div>
           )}
         </div>
+        {/* White overlay to cover status bar when contain mode */}
+        {contain && <div className="absolute top-0 left-0 right-0 h-[70px] bg-white z-[5] rounded-t-[26px]" />}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[40%] h-[4px] bg-gray-600 rounded-full" />
       </div>
     </motion.div>
@@ -4061,7 +4069,7 @@ function ContactTypewriter() {
 }
 
 // ─── Carousel Phone (waits for media to load before showing) ───
-function CarouselPhone({ src, isVideo, title }: { src: string; isVideo: boolean; title: string }) {
+function CarouselPhone({ src, isVideo, title, contain }: { src: string; isVideo: boolean; title: string; contain?: boolean }) {
   const [ready, setReady] = useState(!isVideo); // images are ready immediately
 
   return (
@@ -4070,16 +4078,17 @@ function CarouselPhone({ src, isVideo, title }: { src: string; isVideo: boolean;
       animate={{ opacity: ready ? 1 : 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="relative w-[280px] h-[580px] rounded-[48px] border-[8px] border-gray-900 bg-black shadow-2xl overflow-hidden"
+      className={`relative w-[280px] h-[580px] rounded-[48px] border-[8px] border-gray-900 shadow-2xl overflow-hidden ${contain ? "bg-white" : "bg-black"}`}
     >
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[28px] bg-black rounded-b-2xl z-10" />
-      <div className="w-full h-full rounded-[40px] overflow-hidden bg-gray-100">
+      <div className={`w-full h-full rounded-[40px] overflow-hidden ${contain ? "bg-white flex items-center" : "bg-gray-100"}`}>
         {isVideo ? (
           <video
             src={src}
             autoPlay loop muted playsInline
             onLoadedData={() => setReady(true)}
-            className="w-full h-full object-cover"
+            className={`w-full ${contain ? "object-contain" : "h-full object-cover"}`}
+            style={contain ? { objectPosition: "center 0%" } : undefined}
           />
         ) : src ? (
           <img src={src} alt={title} className="w-full h-full object-cover" />
@@ -4089,6 +4098,7 @@ function CarouselPhone({ src, isVideo, title }: { src: string; isVideo: boolean;
           </div>
         )}
       </div>
+      {contain && <div className="absolute top-[28px] left-0 right-0 h-[50px] bg-white z-[5]" />}
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[35%] h-[4px] bg-gray-600 rounded-full" />
     </motion.div>
   );
@@ -4171,13 +4181,14 @@ function PrototypesView() {
                   ))}
                 </div>
 
-                {/* Phone — entire device swaps */}
+                {/* Phone — larger mockup */}
                 <AnimatePresence mode="wait">
                   <CarouselPhone
                     key={current}
                     src={prototypes[current].videoSrc || prototypes[current].gifSrc || ""}
                     isVideo={!!prototypes[current].videoSrc}
                     title={prototypes[current].title}
+                    contain={(prototypes[current] as any).contain}
                   />
                 </AnimatePresence>
               </div>
@@ -4230,6 +4241,9 @@ function PrototypesView() {
                     index={i}
                     gifSrc={p.gifSrc}
                     videoSrc={p.videoSrc}
+                    contain={(p as any).contain}
+                    lighten={(p as any).lighten}
+                    padded={(p as any).padded}
                   />
                   <div className="mt-4 text-center">
                     <p className="text-sm font-semibold text-gray-900">{p.title}</p>
@@ -4320,7 +4334,8 @@ const prototypes: { title: string; description: string; tag: string; gifSrc?: st
   { title: "Solo Chat", description: "One-on-one character conversation with real-time emotion transitions", tag: "Metal + SwiftUI", videoSrc: "/projects/solo-chat.mov" },
   { title: "Character Portal", description: "Animated portal avatar with transparent video compositing", tag: "Metal + SwiftUI", videoSrc: "/projects/character-portal.mp4" },
   { title: "Galaxy Canvas", description: "Interactive particle canvas with gesture-driven star field", tag: "SwiftUI", videoSrc: "/projects/galaxy-canvas.mov" },
-  { title: "Chat Bubble Animation", description: "Spring-driven message bubbles with staggered entrance transitions", tag: "SwiftUI", videoSrc: "/projects/chat-bubble-anim.mp4" },
+  { title: "Variable Font Animation", description: "Each glyph animates from bold to regular weight as it types, creating a natural settling feel", tag: "SwiftUI", videoSrc: "/projects/chat-bubble-anim.mp4", contain: true },
+  { title: "Bubble Morph", description: "Thinking bubble morphing into a chat bubble using Canvas in SwiftUI", tag: "SwiftUI + Canvas", videoSrc: "/projects/bubble-morph.mov", contain: true },
   { title: "Tab Bar", description: "Dynamic tab bar that minimizes in one fluid motion during profile transitions", tag: "SwiftUI", videoSrc: "/projects/tab-bar.mov" },
   { title: "Split Pane", description: "Draggable split view with fluid resizing and snap points", tag: "SwiftUI", videoSrc: "/projects/split-pane.mp4" },
 ];
