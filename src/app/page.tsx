@@ -271,50 +271,113 @@ function NavPill({
   active: string;
   onChange: (tab: string) => void;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <motion.nav
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
-      className="fixed top-6 left-1/2 z-50 -translate-x-1/2"
-    >
-      <div className="flex items-center gap-1 rounded-full px-2 py-1.5 overflow-x-auto scrollbar-hide whitespace-nowrap"
-        style={{
-          background: "rgba(255, 255, 255, 0.75)",
-          backdropFilter: "blur(40px) saturate(180%)",
-          WebkitBackdropFilter: "blur(40px) saturate(180%)",
-          border: "1px solid rgba(255, 255, 255, 0.6)",
-          boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
-        }}
+    <>
+      {/* Desktop nav */}
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
+        className="fixed top-6 left-1/2 z-50 -translate-x-1/2 hidden md:block"
       >
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => onChange(tab)}
-            className="relative rounded-full px-4 py-1.5 text-xs md:text-sm font-medium transition-colors"
-          >
-            {active === tab && (
-              <motion.div
-                layoutId="nav-pill"
-                className="absolute inset-0 rounded-full bg-black"
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 30,
-                }}
-              />
-            )}
-            <span
-              className={`relative z-10 ${
-                active === tab ? "text-white" : "text-gray-500 hover:text-black"
-              }`}
+        <div className="flex items-center gap-1 rounded-full px-2 py-1.5"
+          style={{
+            background: "rgba(255, 255, 255, 0.75)",
+            backdropFilter: "blur(40px) saturate(180%)",
+            WebkitBackdropFilter: "blur(40px) saturate(180%)",
+            border: "1px solid rgba(255, 255, 255, 0.6)",
+            boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+          }}
+        >
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => onChange(tab)}
+              className="relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors"
             >
-              {tab}
-            </span>
-          </button>
-        ))}
-      </div>
-    </motion.nav>
+              {active === tab && (
+                <motion.div
+                  layoutId="nav-pill"
+                  className="absolute inset-0 rounded-full bg-black"
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                  }}
+                />
+              )}
+              <span
+                className={`relative z-10 ${
+                  active === tab ? "text-white" : "text-gray-500 hover:text-black"
+                }`}
+              >
+                {tab}
+              </span>
+            </button>
+          ))}
+        </div>
+      </motion.nav>
+
+      {/* Mobile nav — hamburger */}
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
+        className="fixed top-4 right-4 z-50 md:hidden"
+      >
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="w-10 h-10 rounded-full flex items-center justify-center"
+          style={{
+            background: "rgba(255, 255, 255, 0.85)",
+            backdropFilter: "blur(40px) saturate(180%)",
+            WebkitBackdropFilter: "blur(40px) saturate(180%)",
+            border: "1px solid rgba(255, 255, 255, 0.6)",
+            boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.08)",
+          }}
+        >
+          <div className="flex flex-col gap-[4px]">
+            <motion.div animate={{ rotate: menuOpen ? 45 : 0, y: menuOpen ? 6 : 0 }} className="w-4 h-[1.5px] bg-gray-800 rounded-full" />
+            <motion.div animate={{ opacity: menuOpen ? 0 : 1 }} className="w-4 h-[1.5px] bg-gray-800 rounded-full" />
+            <motion.div animate={{ rotate: menuOpen ? -45 : 0, y: menuOpen ? -6 : 0 }} className="w-4 h-[1.5px] bg-gray-800 rounded-full" />
+          </div>
+        </button>
+
+        {/* Mobile menu dropdown */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -10 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="absolute top-14 right-0 rounded-2xl py-2 min-w-[160px]"
+              style={{
+                background: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(40px) saturate(180%)",
+                WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                border: "1px solid rgba(255, 255, 255, 0.6)",
+                boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.12)",
+              }}
+            >
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => { onChange(tab); setMenuOpen(false); }}
+                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
+                    active === tab ? "text-black" : "text-gray-400"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
+    </>
   );
 }
 
