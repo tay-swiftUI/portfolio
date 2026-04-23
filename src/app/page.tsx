@@ -1804,8 +1804,6 @@ function InteractiveBook({ cover, title, author }: { cover: string; title: strin
         <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.1), inset -2px 0 4px rgba(0,0,0,0.05)" }} />
       </motion.div>
 
-      {/* Book shadow */}
-      <div className="absolute bottom-0 left-[5px] right-[5px] h-[6px] rounded-full" style={{ background: "radial-gradient(ellipse, rgba(0,0,0,0.1) 0%, transparent 70%)" }} />
     </div>
   );
 }
@@ -5635,7 +5633,7 @@ export default function Home() {
           {/* ── Modern Canvas — Mobile ── */}
           <div className="md:hidden px-5 py-8 space-y-8" style={{ background: "#FFFDFB" }}>
             {/* Books — 2x2 tilted */}
-            <div className="grid grid-cols-2 gap-4 px-6">
+            <div className="grid grid-cols-2 gap-4 px-10 mx-auto max-w-[300px]">
               <div className="rotate-[-5deg]"><InteractiveBook cover="/books/project-hail-mary-alt.jpg" title="Project Hail Mary" author="Andy Weir" /></div>
               <div className="rotate-[3deg]"><InteractiveBook cover="/books/fourth-wing.jpg" title="Fourth Wing" author="Rebecca Yarros" /></div>
               <div className="rotate-[-2deg]"><InteractiveBook cover="/books/acomaf.jpg" title="A Court of Mist and Fury" author="Sarah J. Maas" /></div>
@@ -5689,7 +5687,7 @@ export default function Home() {
               </motion.div>
             </div>
             {/* Xcode */}
-            <XcodeCrash />
+            <div className="flex justify-center"><XcodeCrash /></div>
             {/* Slack */}
             <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ background: "rgba(255,255,255,0.5)", backdropFilter: "blur(40px) saturate(180%)", border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06)" }}>
               <div className="w-8 h-8 rounded-[8px] overflow-hidden shrink-0"><img src="/slack-icon.png" alt="Slack" className="w-full h-full object-contain" /></div>
