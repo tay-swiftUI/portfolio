@@ -251,8 +251,8 @@ function CursorLabel({
           height="16"
           viewBox="0 0 12 16"
           fill="none"
-          className="self-end mr-[-6px] mt-1"
-          style={{ transform: "scaleX(-1)" }}
+          className="self-end mr-[-4px] mt-0"
+          style={{ transform: "rotate(55deg)" }}
         >
           <path d="M1 1L1 15L11 8L1 1Z" fill={color} stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
         </svg>
