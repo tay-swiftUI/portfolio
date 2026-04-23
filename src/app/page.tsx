@@ -5577,7 +5577,7 @@ export default function Home() {
 
       {/* Figma-style avatar in top right */}
       {/* Avatar + Figma text box */}
-      <div className="fixed top-7 right-6 z-50 flex items-center gap-0">
+      <div className="fixed top-7 right-6 z-50 hidden md:flex items-center gap-0">
         <FigmaTextBox onClick={() => setActiveTab("Contact")} />
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -5633,7 +5633,7 @@ export default function Home() {
           <motion.div key="me-modern" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 
           {/* ── Modern Canvas ── */}
-          <div className="relative w-full overflow-x-hidden" style={{ minHeight: "calc(100vh - 140px)", background: "#FFFDFB" }}>
+          <div className="relative w-full overflow-x-hidden hidden md:block" style={{ minHeight: "calc(100vh - 140px)", background: "#FFFDFB" }}>
 
             {/* Subtle grid dots */}
             <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle, #C0C0C0 0.5px, transparent 0.5px)", backgroundSize: "28px 28px" }} />
@@ -5971,7 +5971,7 @@ export default function Home() {
 
           {/* ── Y2K Canvas ── */}
           <div
-            className="relative w-full overflow-hidden overflow-x-hidden"
+            className="relative w-full overflow-hidden overflow-x-hidden hidden md:block"
             style={{
               minHeight: "calc(100vh - 140px)",
               background: "#FFFDFB",
@@ -6259,6 +6259,11 @@ export default function Home() {
           </motion.div>
           )}
           </AnimatePresence>
+
+          {/* Mobile message */}
+          <div className="md:hidden flex items-center justify-center min-h-[50vh] px-6 text-center">
+            <p className="text-gray-400 text-sm">Visit on desktop for the full interactive experience ✨</p>
+          </div>
 
         </motion.div>
       )}
