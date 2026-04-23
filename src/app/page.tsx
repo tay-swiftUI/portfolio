@@ -216,7 +216,7 @@ function CursorLabel({
 }) {
   return (
     <motion.div
-      className={`absolute hidden md:flex flex-col pointer-events-none ${flip ? "items-end" : "items-start"}`}
+      className={`absolute flex flex-col pointer-events-none ${flip ? "items-end" : "items-start"}`}
       initial={{ x: initialX, y: initialY, opacity: 0, scale: 0.6 }}
       animate={{
         x: driftRangeX.map((d) => initialX + d),
@@ -5577,7 +5577,7 @@ export default function Home() {
 
       {/* Figma-style avatar in top right */}
       {/* Avatar + Figma text box */}
-      <div className="fixed top-7 right-6 z-50 hidden md:flex items-center gap-0">
+      <div className="fixed top-7 right-6 z-50 flex items-center gap-0">
         <FigmaTextBox onClick={() => setActiveTab("Contact")} />
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -5633,7 +5633,7 @@ export default function Home() {
           <motion.div key="me-modern" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 
           {/* ── Modern Canvas ── */}
-          <div className="relative w-full overflow-x-hidden hidden md:block" style={{ minHeight: "calc(100vh - 140px)", background: "#FFFDFB" }}>
+          <div className="relative w-full overflow-x-hidden" style={{ minHeight: "200vh", background: "#FFFDFB" }}>
 
             {/* Subtle grid dots */}
             <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle, #C0C0C0 0.5px, transparent 0.5px)", backgroundSize: "28px 28px" }} />
@@ -5971,9 +5971,9 @@ export default function Home() {
 
           {/* ── Y2K Canvas ── */}
           <div
-            className="relative w-full overflow-hidden overflow-x-hidden hidden md:block"
+            className="relative w-full overflow-hidden overflow-x-hidden"
             style={{
-              minHeight: "calc(100vh - 140px)",
+              minHeight: "200vh",
               background: "#FFFDFB",
               cursor: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M2 0L2 20L7 15L11 22L14 20.5L10 14L16 14Z' fill='white' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E\") 2 2, auto",
             }}
@@ -6260,10 +6260,6 @@ export default function Home() {
           )}
           </AnimatePresence>
 
-          {/* Mobile message */}
-          <div className="md:hidden flex items-center justify-center min-h-[50vh] px-6 text-center">
-            <p className="text-gray-400 text-sm">Visit on desktop for the full interactive experience ✨</p>
-          </div>
 
         </motion.div>
       )}
@@ -6332,7 +6328,7 @@ export default function Home() {
               </section>
 
               {/* Figma "Let's work together" — bottom left */}
-              <div className="hidden md:flex justify-start mb-16">
+              <div className="flex justify-start mb-16">
                 <FigmaWorkTogether />
               </div>
             </motion.div>
