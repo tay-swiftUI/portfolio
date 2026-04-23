@@ -5633,56 +5633,60 @@ export default function Home() {
           <motion.div key="me-modern" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 
           {/* ── Modern Canvas — Mobile ── */}
-          <div className="md:hidden px-5 py-8 space-y-6" style={{ background: "#FFFDFB" }}>
-            {/* Books */}
-            <div className="flex flex-wrap gap-3 justify-center">
+          <div className="md:hidden px-5 py-8 space-y-8" style={{ background: "#FFFDFB" }}>
+            {/* Books — 2x2 grid */}
+            <div className="grid grid-cols-2 gap-4 px-8">
               {[
                 { cover: "/books/project-hail-mary-alt.jpg", title: "Project Hail Mary", author: "Andy Weir" },
                 { cover: "/books/fourth-wing.jpg", title: "Fourth Wing", author: "Rebecca Yarros" },
                 { cover: "/books/acomaf.jpg", title: "A Court of Mist and Fury", author: "Sarah J. Maas" },
                 { cover: "/books/one-golden-summer-alt.jpg", title: "One Golden Summer", author: "Carley Fortune" },
               ].map((b) => (
-                <div key={b.title} className="w-[80px]"><InteractiveBook cover={b.cover} title={b.title} author={b.author} /></div>
+                <div key={b.title}><InteractiveBook cover={b.cover} title={b.title} author={b.author} /></div>
               ))}
+            </div>
+            {/* Folders */}
+            <div className="flex flex-wrap gap-6 justify-center">
+              <div className="flex flex-col items-center">
+                <div style={{ width: 80, height: 68 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
+                <span className="text-[10px] font-medium text-gray-600 mt-1.5">notes</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div style={{ width: 80, height: 68 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
+                <span className="text-[10px] font-medium text-gray-600 mt-1.5">about me</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div style={{ width: 80, height: 68 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
+                <span className="text-[10px] font-medium text-gray-600 mt-1.5">untitled</span>
+              </div>
             </div>
             {/* Spotify */}
             <NowPlayingPill />
-            {/* Find My */}
-            <div className="rounded-2xl overflow-hidden" style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.1)" }}>
-              <div className="relative h-[160px]" style={{ background: "linear-gradient(135deg, #E8F4E8, #D4ECD4, #C8E0C8)" }}>
-                <div className="absolute inset-0 opacity-30">
-                  <div className="absolute top-[30%] left-0 right-0 h-[2px] bg-white" />
-                  <div className="absolute top-[60%] left-0 right-0 h-[2px] bg-white" />
-                  <div className="absolute top-0 bottom-0 left-[25%] w-[2px] bg-white" />
-                  <div className="absolute top-0 bottom-0 left-[55%] w-[2px] bg-white" />
-                </div>
-                <div className="absolute top-[35%] left-[42%] flex flex-col items-center">
-                  <div className="w-10 h-10 rounded-full overflow-hidden border-[3px] border-white shadow-xl">
-                    <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-white -mt-[1px]" />
-                </div>
-                <div className="absolute top-[62%] left-[35%] bg-white/90 rounded-lg px-2 py-1 shadow-sm">
-                  <span className="text-[8px] text-gray-700 font-medium">🏓 Pickleball Courts</span>
-                </div>
-              </div>
-              <div className="px-4 py-3 bg-white/85">
-                <p className="text-[12px] font-bold text-gray-900">Taylor B.</p>
-                <p className="text-[10px] text-gray-400">Pickleball Courts · Now</p>
-              </div>
-            </div>
             {/* AirDrop */}
-            <AirDropPopup />
-            {/* Xcode */}
-            <XcodeCrash />
+            <div className="flex justify-center">
+              <AirDropPopup />
+            </div>
             {/* Summer Fridays */}
             <div className="flex justify-center">
-              <img src="/summer-fridays.png" alt="Summer Fridays" className="h-[180px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
+              <motion.div
+                whileHover={{ rotate: 0, scale: 1.1 }}
+                whileTap={{ scale: 0.95, rotate: 5 }}
+                style={{ rotate: -15 }}
+              >
+                <img src="/summer-fridays.png" alt="Summer Fridays" className="h-[200px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
+              </motion.div>
             </div>
+            {/* Xcode */}
+            <XcodeCrash />
             {/* Slack */}
             <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ background: "rgba(255,255,255,0.5)", backdropFilter: "blur(40px) saturate(180%)", border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06)" }}>
               <div className="w-8 h-8 rounded-[8px] overflow-hidden shrink-0"><img src="/slack-icon.png" alt="Slack" className="w-full h-full object-contain" /></div>
               <div className="flex-1"><div className="flex items-center gap-1.5"><span className="text-[11px] font-bold text-gray-900">#design-system</span><span className="text-[9px] text-gray-400">2m ago</span></div><p className="text-[11px] text-gray-600 mt-0.5"><span className="font-medium">Taylor:</span> just pushed 12 new components 🚀</p></div>
+            </div>
+            {/* Siri Suggestion */}
+            <div className="rounded-2xl px-4 py-2.5" style={{ background: "rgba(255,255,255,0.5)", backdropFilter: "blur(40px) saturate(180%)", border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04)" }}>
+              <p className="text-[9px] text-gray-400 uppercase tracking-wider font-medium">Siri Suggestion</p>
+              <p className="text-[11px] font-medium text-gray-700">Walk away from the terminal and touch grass</p>
             </div>
             {/* Screen Time */}
             <div className="rounded-2xl px-4 py-3" style={{ background: "rgba(255,255,255,0.5)", backdropFilter: "blur(40px) saturate(180%)", border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06)" }}>
