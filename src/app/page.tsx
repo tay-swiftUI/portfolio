@@ -2750,7 +2750,7 @@ function AboutMeFolder({ x, y, delay }: { x: string; y: string; delay: number })
             <div
               className="rounded-xl overflow-hidden"
               style={{
-                width: 280,
+                width: 340,
                 background: "#FFFFFF",
                 boxShadow: "0 12px 40px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.06)",
               }}
@@ -2765,19 +2765,15 @@ function AboutMeFolder({ x, y, delay }: { x: string; y: string; delay: number })
                 <span className="flex-1 text-center text-[12px] font-bold text-gray-700">About Me</span>
               </div>
               {/* Note content */}
-              <div className="px-4 py-4" style={{ background: "#FFFFFF", minHeight: 240 }}>
+              <div className="px-5 py-5" style={{ background: "#FFFFFF", minHeight: 280 }}>
                 <p className="text-[18px] font-bold text-gray-900 mb-1">about me!</p>
                 <p className="text-[10px] text-gray-400 mb-4">April 22, 2026</p>
                 <div className="space-y-2.5 text-[13px] text-gray-700" style={{ lineHeight: 1.6 }}>
-                  <p>- design engineer @ EA</p>
-                  <p>- previously spotify, nike, sidework</p>
-                  <p>- building design systems in SwiftUI</p>
-                  <p>- based in vancouver</p>
-                  <p>- pickleball on sundays</p>
-                  <p>- strawberry matcha enthusiast</p>
-                  <p>- currently reading sarah j maas</p>
-                  <p>- vibe coding with claude at 2am</p>
-                  <p>- applying to google material design</p>
+                  <p>- Designer / Engineer — I identify as both</p>
+                  <p>- I&apos;m originally from New Jersey, but I&apos;ve also lived in Portland, San Diego, and now San Francisco!!!</p>
+                  <p>- I spend way too many hours playing pickleball on Saturday&apos;s</p>
+                  <p>- I&apos;m currently on a mission to find the best strawberry matcha in SF (Komeya No Bento is winning so far)</p>
+                  <p>- I loveeeee reading</p>
                 </div>
               </div>
             </div>
@@ -3031,15 +3027,7 @@ function NotesFolder({ x, y, delay }: { x: string; y: string; delay: number }) {
               <div className="px-4 py-4" style={{ background: "#FFFFFF", minHeight: 220 }}>
                 <p className="text-[18px] font-bold text-gray-900 mb-1">things i love</p>
                 <p className="text-[10px] text-gray-400 mb-4">April 22, 2026</p>
-                <div className="space-y-2.5 text-[13px] text-gray-700" style={{ lineHeight: 1.6 }}>
-                  <p>- design systems (obviously)</p>
-                  <p>- strawberry matcha from komeya</p>
-                  <p>- pickleball on sundays</p>
-                  <p>- when figma auto-layout just works</p>
-                  <p>- vibe coding at 2am</p>
-                  <p>- sarah j maas books</p>
-                  <p>- gracie abrams on repeat</p>
-                  <p>- the feeling when a PR gets approved</p>
+                <div className="space-y-2 text-[13px] text-gray-700" style={{ lineHeight: 1.6 }}>
                 </div>
               </div>
             </div>
@@ -3579,15 +3567,6 @@ function XPFolders() {
               </div>
               <div className="bg-white p-3 text-[11px] text-gray-800 leading-relaxed" style={{ minHeight: 180, fontFamily: "Courier New, monospace" }}>
                 <p>things on my mind rn:</p>
-                <p className="mt-2">- need to finish that SwiftUI animation</p>
-                <p>- pickleball rematch on sunday</p>
-                <p>- strawberry matcha &gt; regular matcha</p>
-                <p>- why does xcode keep crashing</p>
-                <p>- new gracie abrams album on repeat</p>
-                <p>- should i learn rust or is that overkill</p>
-                <p>- remember to water the plants</p>
-                <p className="mt-2">- &quot;it wont work&quot;</p>
-                <p>- it will. im literally crazy.</p>
               </div>
             </div>
           </motion.div>
@@ -3623,16 +3602,13 @@ function XPFolders() {
               <div className="bg-white p-4 text-[11px] text-gray-800 leading-relaxed" style={{ minHeight: 200 }}>
                 <p className="text-[14px] font-bold" style={{ fontFamily: "Comic Sans MS, cursive" }}>~*~ aBouT mE ~*~</p>
                 <p className="mt-3">★ taylor breitzman</p>
-                <p>★ design engineer from vancouver</p>
-                <p>★ building design systems @ EA</p>
-                <p>★ swiftui + figma enthusiast</p>
+                <p>★ designer / engineer from new jersey</p>
+                <p>★ now in san francisco</p>
+                <p>★ design engineer @ EA</p>
                 <p>★ previously: spotify, nike, sidework</p>
-                <p className="mt-2">★ obsessed with:</p>
-                <p>&nbsp;&nbsp;- clean component APIs</p>
-                <p>&nbsp;&nbsp;- pixel-perfect designs</p>
-                <p>&nbsp;&nbsp;- pickleball (getting competitive)</p>
-                <p>&nbsp;&nbsp;- sarah j maas books</p>
-                <p>&nbsp;&nbsp;- strawberry matcha</p>
+                <p>★ pickleball on saturdays</p>
+                <p>★ strawberry matcha enthusiast</p>
+                <p>★ loveeeee reading</p>
                 <p className="mt-2" style={{ fontFamily: "Comic Sans MS, cursive" }}>~*~ dOnT fOrGeT tO sIgN mY gUeStBoOk ~*~</p>
               </div>
             </div>
@@ -4213,19 +4189,17 @@ const experiences = [
   {
     company: "Electronic Arts",
     logo: "/logos/ea.jpg",
-    role: "Design Engineer — Parasoul (iOS)",
+    role: "Product Design Engineer",
     period: "Mar 2025 — Present",
     description:
-      "Building and owning the design system for Parasoul, a generative AI social platform. Bridging design and engineering across SwiftUI components, interactive prototypes, and real-time AI features.",
+      "Sole design engineer on Parasoul, EA's world-building platform. Built the design system from scratch and owned the creative engineering — the animations, interactions, and details that make the product feel alive.",
     highlights: [
-      "Architected and maintained a 92+ component design system (SwiftUI) with tokens for color, typography, spacing, icons, gradients, and corner radius",
-      "Built a comprehensive Figma-to-code component catalog with 1:1 mapping, enabling product teams to self-serve without designer involvement",
-      "Developed interactive AI features including real-time character chat, generative storylines, and AI-driven world creation flows",
-      "Created custom animations and micro-interactions — spring physics buttons, chat bubble transitions, parallax scroll effects, and gesture-driven interfaces",
-      "Implemented custom squircle corner smoothing algorithm matching Figma's 100% smoothing spec for pixel-perfect design fidelity",
-      "Built avatar system (Creator, Character, World) with 8 size tokens, gradient fallbacks, and transparent video compositing via Metal shaders",
-      "Migrated legacy component library (Air*) to new MetaLab design language (ML*) while maintaining backwards compatibility across 90+ production screens",
-      "Collaborated directly with MetaLab design agency, translating Figma specs to production Swift and identifying documentation gaps",
+      "Architected and built a 90+ component design system in SwiftUI from the ground up — defining tokens for color, typography, spacing, motion, and layout with 1:1 Figma parity, enabling scalable and consistent UI development",
+      "Created high-fidelity, tactile interaction systems using spring physics, gesture-driven interfaces, and motion design to elevate product feel and responsiveness",
+      "Designed and engineered an immersive character chat experience, leveraging custom Metal shaders and transparent video avatars — supporting 8 dynamic emotion states with GPU-accelerated compositing, depth layering, and real-time sentiment-driven transitions",
+      "Built a rich messaging interface with variable font interpolation, ambient thinking animations, and depth-based avatar hierarchy",
+      "Shipped interaction concepts like glassmorphism, transparent video layers, and gesture-driven flows directly in production SwiftUI",
+      "Defined an AI-native design engineering workflow using Claude and MCP integrations to parallelize design and development — reducing design-to-code cycles from days to hours",
     ],
     color: "#0071E3",
   },
@@ -4235,13 +4209,13 @@ const experiences = [
     role: "Product Design Engineer",
     period: "Mar 2024 — Mar 2025",
     description:
-      "Drove 0→1 product development in a fast-paced startup, combining user research, design, prototyping, and engineering to transform abstract concepts into production-ready features.",
+      "Led end-to-end product design for a 0→1 startup — from user research and discovery through prototyping, usability testing, and production engineering.",
     highlights: [
-      "Built high-fidelity, interactive prototypes in Figma to validate new product ideas and complex user flows, accelerating alignment and decision-making",
-      "Spearheaded a UX redesign informed by behavioral analysis, reducing user errors and support tickets by 40%",
-      "Engineered redesigned UI components and flows in Flutter with pixel-perfect fidelity and accessibility compliance",
-      "Developed a scalable design system to unify visual language and interaction patterns, streamlining development and ensuring consistency",
-      "Iterated rapidly on prototypes based on qualitative and quantitative feedback, improving usability and adoption before engineering implementation",
+      "Led end-to-end product design for a 0→1 startup — from user research and discovery through prototyping, usability testing, and production engineering",
+      "Spearheaded a UX redesign informed by behavioral analysis and user interviews, reducing user errors and support tickets by 40%",
+      "Designed and validated complex workflows through high-fidelity interactive prototypes, iterating rapidly on qualitative and quantitative feedback before committing to engineering",
+      "Developed a scalable design system to unify visual language and interaction patterns, improving consistency and development efficiency",
+      "Translated ambiguous product requirements into clear, intuitive flows — simplifying a complex coffee machine interface into an experience baristas could learn in minutes",
     ],
     color: "#3DC1B8",
   },
@@ -4251,12 +4225,11 @@ const experiences = [
     role: "iOS Engineer",
     period: "Oct 2022 — Mar 2024",
     description:
-      "Developed a new Ads UI that delivered a 61% increase in click-through rates and a 120% surge in global video click-through rates.",
+      "Led iOS development of Spotify's Ads UI redesign across audio, video, and podcast formats, shipping to hundreds of millions of users globally.",
     highlights: [
-      "Delivered 61% increase in overall ad click-through rates and 120% surge in global video CTR",
-      "Designed an accessibility-first color-extraction algorithm that dynamically adjusted hue, brightness, and contrast for compliance",
-      "Co-created a modular iOS design system for ad formats, enabling scalability and consistency across teams",
-      "Collaborated cross-functionally with designers, PMs, and engineers to align on user needs, brand guidelines, and feasibility",
+      "Developed a new Ads UI, enhancing interactivity and delivering a 61% increase in overall click-through rates and a 120% surge in global video click-through rates",
+      "Engineered a client-side color-extraction algorithm using binary search to find the brightest brand-safe shade that passes WCAG AA — preserving advertiser identity while guaranteeing 4.5:1 contrast compliance",
+      "Worked across the full ads lifecycle (audio, video, and podcast formats) shipping components that served ads to hundreds of millions of users globally",
     ],
     color: "#1DB954",
   },
@@ -4266,24 +4239,26 @@ const experiences = [
     role: "iOS Engineer",
     period: "Aug 2021 — Oct 2022",
     description:
-      "Worked on the Activity & Innovation team (Valiant Labs) to develop a running app targeting first-time female runners, with emphasis on inclusive design and supportive UX.",
+      "Designed and developed a running app for first-time female runners on Nike's Valiant Labs innovation team.",
     highlights: [
-      "Contributed to design and development of an inclusive running experience for underserved users",
-      "Prioritized user-centered approach to foster a supportive running community",
-      "Contributed to a design system fitting Nike's brand and UX standards, ensuring consistency and scalability",
-      "Focused on usability, aesthetics, and accessible design patterns throughout the app",
+      "Worked on Nike's Valiant Labs innovation team, shipping experimental product concepts from prototype to production in rapid cycles",
+      "Designed and developed a running app for first-time female runners — shaping inclusive, community-driven experiences that reinforced motivation, habit formation, and shared progress",
+      "Designed a community chat feature that proved successful enough to be integrated into Nike Sneakers app, extending its impact across Nike's digital ecosystem",
     ],
     color: "#111111",
   },
 ];
 
 const prototypes: { title: string; description: string; tag: string; gifSrc?: string; videoSrc?: string }[] = [
-  { title: "World Profile", description: "Immersive world profile with avatar, feed, and floating menu", tag: "SwiftUI", gifSrc: "/projects/world-profile.png" },
-  { title: "Character Chat", description: "Interactive AI character conversation with real-time responses", tag: "SwiftUI", videoSrc: "/projects/parasoul-chat.mp4" },
+  { title: "Spinning World", description: "Interactive 3D spinning globe with video textures and immersive profile layout", tag: "SwiftUI", videoSrc: "/projects/world-profile.mp4" },
+  { title: "Feed Portal", description: "Animated character portal with depth transitions on the feed", tag: "SwiftUI", videoSrc: "/projects/feed-portal.mov" },
+  { title: "Profile Transitions", description: "Seamless animated transitions between character and world profiles", tag: "SwiftUI", videoSrc: "/projects/profile-transitions.mp4" },
+  { title: "Depth Chat", description: "Depth-layered avatars that bring the most recent speaker to the foreground in group conversations", tag: "Metal + SwiftUI", videoSrc: "/projects/depth-chat.mp4" },
+  { title: "Emotion Chat", description: "Sentiment-driven character emotions with depth-layered avatar responses", tag: "Metal + SwiftUI", videoSrc: "/projects/character-chat-2.mov" },
   { title: "Character Portal", description: "Animated portal avatar with transparent video compositing", tag: "Metal + SwiftUI", videoSrc: "/projects/character-portal.mp4" },
-  { title: "Galaxy Canvas", description: "Interactive particle canvas with gesture-driven star field", tag: "SwiftUI", videoSrc: "/projects/galaxy-canvas.mp4" },
+  { title: "Galaxy Canvas", description: "Interactive particle canvas with gesture-driven star field", tag: "SwiftUI", videoSrc: "/projects/galaxy-canvas.mov" },
   { title: "Chat Bubble Animation", description: "Spring-driven message bubbles with staggered entrance transitions", tag: "SwiftUI", videoSrc: "/projects/chat-bubble-anim.mp4" },
-  { title: "Navigation Bar", description: "Custom tab bar with diamond divot indicator and fluid transitions", tag: "SwiftUI", videoSrc: "/projects/nav-bar.mp4" },
+  { title: "Tab Bar", description: "Dynamic tab bar that minimizes in one fluid motion during profile transitions", tag: "SwiftUI", videoSrc: "/projects/tab-bar.mov" },
   { title: "Split Pane", description: "Draggable split view with fluid resizing and snap points", tag: "SwiftUI", videoSrc: "/projects/split-pane.mp4" },
 ];
 
@@ -4384,7 +4359,7 @@ const projects = [
         subtitle: "World, Character, and Creator profile experiences",
         body: "",
         items: [
-          { label: "World Profile", src: "/projects/world-profile.png", scroll: false },
+          { label: "World Profile", src: "/projects/world-profile.mp4", scroll: false },
           { label: "Character Profile", src: "/projects/character-profile-scroll.mp4", scroll: false },
           { label: "Creator Profile", src: "/projects/creator-profile-scroll.mp4", scroll: false },
         ],
@@ -5485,7 +5460,7 @@ function ProjectsView() {
             {/* World CTA — bottom of page, EA only */}
             {project.id === "ea" && (
               <div className="mb-8 flex justify-center">
-                <img src="/projects/parasoul-world.png" alt="Create a World of Your Own" className="w-full object-contain rounded-2xl" />
+                <img src="/projects/parasoul-world.png" alt="Create a World of Your Own" className="w-[50%] object-contain rounded-2xl" />
               </div>
             )}
 
@@ -5880,6 +5855,20 @@ export default function Home() {
             <ImageFolder x="48vw" y="20%" delay={0.46} label="untitled" image="/meme.webp" />
             <MacAppFolder x="37vw" y="24%" delay={0.46} />
             <WeatherApp x="68vw" y="6%" delay={0.5} />
+
+            {/* Notes app icon — below weather */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ delay: 0.55 }}
+              className="absolute flex flex-col items-center cursor-pointer select-none"
+              style={{ left: "64vw", top: "18%" }}
+            >
+              <img src="/notes-icon.png" alt="Notes" className="w-[56px] h-[56px] rounded-[14px] object-contain" style={{ boxShadow: "0 3px 10px rgba(0,0,0,0.12)" }} />
+              <span className="text-[10px] font-medium text-gray-600 mt-1.5 text-center">Notes</span>
+            </motion.div>
 
           </div>
 
@@ -6297,6 +6286,23 @@ export default function Home() {
                 {experiences.map((exp, i) => (
                   <ExpCard key={exp.company} {...exp} index={i} />
                 ))}
+              </div>
+
+              {/* Skills pills */}
+              <div className="mt-12">
+                <h3 className="text-sm font-bold text-gray-900 mb-4">Skills & Technologies</h3>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "SwiftUI", "Swift", "iOS", "UIKit", "Design Systems",
+                    "Figma", "Prototyping", "Interaction Design", "Motion Design",
+                    "AI-Assisted Development", "Claude", "MCP Integrations",
+                    "Accessibility", "WCAG", "Design Tokens", "Component Libraries",
+                    "API Design", "Metal", "Flutter", "React", "TypeScript", "Next.js",
+                    "Design Engineering", "Product Design", "Git",
+                  ].map((skill) => (
+                    <span key={skill} className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-500">{skill}</span>
+                  ))}
+                </div>
               </div>
 
             </motion.div>
