@@ -4255,6 +4255,7 @@ const prototypes: { title: string; description: string; tag: string; gifSrc?: st
   { title: "Profile Transitions", description: "Seamless animated transitions between character and world profiles", tag: "SwiftUI", videoSrc: "/projects/profile-transitions.mp4" },
   { title: "Depth Chat", description: "Depth-layered avatars that bring the most recent speaker to the foreground in group conversations", tag: "Metal + SwiftUI", videoSrc: "/projects/depth-chat.mp4" },
   { title: "Emotion Chat", description: "Sentiment-driven character emotions with depth-layered avatar responses", tag: "Metal + SwiftUI", videoSrc: "/projects/character-chat-2.mov" },
+  { title: "Solo Chat", description: "One-on-one character conversation with real-time emotion transitions", tag: "Metal + SwiftUI", videoSrc: "/projects/solo-chat.mov" },
   { title: "Character Portal", description: "Animated portal avatar with transparent video compositing", tag: "Metal + SwiftUI", videoSrc: "/projects/character-portal.mp4" },
   { title: "Galaxy Canvas", description: "Interactive particle canvas with gesture-driven star field", tag: "SwiftUI", videoSrc: "/projects/galaxy-canvas.mov" },
   { title: "Chat Bubble Animation", description: "Spring-driven message bubbles with staggered entrance transitions", tag: "SwiftUI", videoSrc: "/projects/chat-bubble-anim.mp4" },
@@ -4333,7 +4334,7 @@ const projects = [
     period: "2025",
     color: "#0071E3",
     overview: "Parasoul is a world-building app where users create characters with deep personalities, craft lore and plotlines, and build immersive worlds that evolve over time. Characters grow, storylines branch, and worlds change based on how users interact with them.",
-    roleDescription: "I joined as the sole design engineer. My job was two-fold: build a production design system from zero, and bring the more ambitious interaction design ideas to life in code — the kind of work that lives in the gap between what Figma can spec and what SwiftUI can do.",
+    roleDescription: "I joined as the sole design engineer. My job was two-fold: build a production design system from zero, and bring the more ambitious interaction ideas to life in code. A lot of what I designed — spring animations, emotion-driven transitions, gesture-based flows — can\u0027t be specced in Figma. I prototyped and shipped directly in SwiftUI.",
     impact: [
       "92+ production components across 14 categories",
       "Design token system covering color, typography, spacing, icons, gradients, and corner radius",
@@ -4375,11 +4376,39 @@ const projects = [
         ],
       },
       {
-        title: "Design Engineering Prototypes",
-        subtitle: "Interactive prototypes and custom interactions built in SwiftUI",
+        title: "Creation",
+        subtitle: "World building, character creation, and lore management",
+        body: "",
+        items: [
+          { label: "World Creation", src: "/projects/creation.png", scroll: false },
+          { label: "Character Editor", src: "/projects/creation2.png", scroll: false },
+          { label: "Character Lore", src: "/projects/creation3.png", scroll: false },
+        ],
+      },
+      {
+        title: "",
+        subtitle: "",
+        body: "",
+        items: [
+          { label: "Character Book", src: "/projects/chyles-creation.mp4", scroll: false },
+        ],
+      },
+      {
+        title: "Character Chat System",
+        subtitle: "Bringing characters to life through emotion, depth, and interaction",
         body: "Each character has six emotion composites — happy, sad, angry, surprised, thinking, and neutral — that map directly to the sentiment of their messages. As a character responds, their expression shifts in real time, creating a chat experience that feels genuinely emotional and alive. The depth-stacking effect layers characters by recency, so in group conversations you can instantly see who's most active. It made the whole interaction feel less like messaging and more like being in a room with people who react to what you say.",
         items: [
-          { label: "Character Chat", src: "/projects/parasoul-chat.mp4", scroll: false },
+          { label: "Depth Chat", src: "/projects/depth-chat.mp4", scroll: false },
+          { label: "Emotion Chat", src: "/projects/character-chat-2.mov", scroll: false },
+          { label: "Solo Chat", src: "/projects/solo-chat.mov", scroll: false },
+        ],
+      },
+      {
+        title: "",
+        subtitle: "",
+        body: "",
+        items: [
+          { label: "Character Reactions", src: "/projects/character-reactions.mov", scroll: false, transparent: true },
         ],
       },
     ],
@@ -5392,7 +5421,7 @@ function ProjectsView() {
                           transition={{ delay: i * 0.1 }}
                           className="flex flex-col items-center"
                         >
-                          <video src={item.src} autoPlay loop muted playsInline className="h-[420px] object-contain" style={{ mixBlendMode: "screen" }} />
+                          <video src={item.src} autoPlay loop muted playsInline className="h-[500px] object-contain rounded-2xl" />
                           <span className="mt-3 text-xs font-medium text-gray-500">{item.label}</span>
                         </motion.div>
                       );
