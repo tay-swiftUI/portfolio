@@ -2862,7 +2862,7 @@ function NowPlayingPill() {
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.7, type: "spring" }}
-      className="absolute left-[36vw] bottom-[26%]"
+      className="md:absolute left-auto md:left-[36vw] bottom-auto md:bottom-[26%]"
     >
       <div
         className="rounded-[28px] pl-2 pr-3 py-2 flex items-center gap-3"
@@ -2947,7 +2947,7 @@ function XcodeCrash() {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ delay: 1.2, type: "spring", stiffness: 300, damping: 20 }}
-      className="absolute right-[6vw] bottom-[38%] z-40 cursor-pointer"
+      className="md:absolute right-auto md:right-[6vw] bottom-auto md:bottom-[38%] z-40 cursor-pointer"
       onClick={dismiss}
     >
       <div
@@ -6039,16 +6039,26 @@ export default function Home() {
           <motion.div key="me-y2k" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 
           {/* ── Y2K Canvas — Mobile ── */}
-          <div className="md:hidden px-5 py-8 space-y-6" style={{ background: "#FFFDFB" }}>
+          <div className="md:hidden px-5 py-8 space-y-8" style={{ background: "#FFFDFB" }}>
             {/* iPod */}
             <div className="flex justify-center" style={{ transform: "scale(0.9)" }}><IPodNano /></div>
-            {/* XP Folders */}
-            <XPFolders />
-            {/* AIM */}
+            {/* CDs under iPod */}
+            <div className="flex gap-4 justify-center">
+              <BigCDCase cover="/hannah.jpg" title="Hannah Montana" />
+              <BigCDCase cover="/avril.jpg" title="Avril Lavigne" />
+            </div>
+            {/* XP Folders — spread out */}
+            <div className="flex justify-around px-4">
+              <XPFolders />
+            </div>
+            {/* AIM with logo */}
             <div className="shadow-xl" style={{ fontFamily: "Tahoma, MS Sans Serif, sans-serif" }}>
               <div className="rounded-t-sm overflow-hidden relative" style={{ border: "2px solid #808080" }}>
                 <div className="flex items-center justify-between px-1.5 py-0.5" style={{ background: "linear-gradient(90deg, #000080, #1084D0)" }}>
-                  <span className="text-[10px] font-bold text-white">Edit Away Message</span>
+                  <div className="flex items-center gap-1">
+                    <img src="/aim-logo.webp" alt="AIM" className="w-[12px] h-[12px] object-contain" />
+                    <span className="text-[10px] font-bold text-white">Edit Away Message</span>
+                  </div>
                   <button className="w-[14px] h-[12px] rounded-sm text-[8px] flex items-center justify-center text-black" style={{ background: "#C0C0C0", border: "1px outset #DFDFDF" }}>✕</button>
                 </div>
                 <div className="bg-[#C0C0C0] p-3 space-y-2">
@@ -6063,18 +6073,12 @@ export default function Home() {
             <LimewireDownload />
             {/* MS Paint */}
             <MSPaint />
-            {/* CDs */}
-            <div className="flex gap-4 justify-center">
-              <BigCDCase cover="/hannah.jpg" title="Hannah Montana" />
-              <BigCDCase cover="/avril.jpg" title="Avril Lavigne" />
-            </div>
-            {/* Tiger Beat */}
-            <div className="flex justify-center">
-              <img src="/tiger-beat.jpeg" alt="Tiger Beat" className="w-[200px] rounded-md shadow-lg" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 100%)" }} />
-            </div>
-            {/* Baby Lips */}
-            <div className="flex justify-center">
-              <img src="/baby-lips.png" alt="Baby Lips" className="h-[180px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
+            {/* Tiger Beat + Baby Lips side by side */}
+            <div className="flex items-center justify-center gap-4">
+              <div className="rotate-[-8deg]">
+                <img src="/tiger-beat.jpeg" alt="Tiger Beat" className="w-[150px] rounded-md shadow-lg" />
+              </div>
+              <img src="/baby-lips.png" alt="Baby Lips" className="h-[160px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
             </div>
             {/* Bracelet */}
             <div className="flex justify-center gap-[3px] relative py-4">
@@ -6085,8 +6089,8 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            {/* XP Dialogs */}
-            <div className="space-y-3">
+            {/* XP Dialogs — at the bottom */}
+            <div className="space-y-3 pt-4">
               <XPDialogStack />
             </div>
           </div>
