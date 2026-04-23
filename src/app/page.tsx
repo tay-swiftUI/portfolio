@@ -5632,8 +5632,73 @@ export default function Home() {
           {meMode === "modern" ? (
           <motion.div key="me-modern" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 
-          {/* ── Modern Canvas ── */}
-          <div className="relative w-full overflow-x-hidden" style={{ minHeight: "200vh", background: "#FFFDFB" }}>
+          {/* ── Modern Canvas — Mobile ── */}
+          <div className="md:hidden px-5 py-8 space-y-6" style={{ background: "#FFFDFB" }}>
+            {/* Books */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              {[
+                { cover: "/books/project-hail-mary-alt.jpg", title: "Project Hail Mary", author: "Andy Weir" },
+                { cover: "/books/fourth-wing.jpg", title: "Fourth Wing", author: "Rebecca Yarros" },
+                { cover: "/books/acomaf.jpg", title: "A Court of Mist and Fury", author: "Sarah J. Maas" },
+                { cover: "/books/one-golden-summer-alt.jpg", title: "One Golden Summer", author: "Carley Fortune" },
+              ].map((b) => (
+                <div key={b.title} className="w-[80px]"><InteractiveBook cover={b.cover} title={b.title} author={b.author} /></div>
+              ))}
+            </div>
+            {/* Spotify */}
+            <NowPlayingPill />
+            {/* Find My */}
+            <div className="rounded-2xl overflow-hidden" style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.1)" }}>
+              <div className="relative h-[160px]" style={{ background: "linear-gradient(135deg, #E8F4E8, #D4ECD4, #C8E0C8)" }}>
+                <div className="absolute inset-0 opacity-30">
+                  <div className="absolute top-[30%] left-0 right-0 h-[2px] bg-white" />
+                  <div className="absolute top-[60%] left-0 right-0 h-[2px] bg-white" />
+                  <div className="absolute top-0 bottom-0 left-[25%] w-[2px] bg-white" />
+                  <div className="absolute top-0 bottom-0 left-[55%] w-[2px] bg-white" />
+                </div>
+                <div className="absolute top-[35%] left-[42%] flex flex-col items-center">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-[3px] border-white shadow-xl">
+                    <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-white -mt-[1px]" />
+                </div>
+                <div className="absolute top-[62%] left-[35%] bg-white/90 rounded-lg px-2 py-1 shadow-sm">
+                  <span className="text-[8px] text-gray-700 font-medium">🏓 Pickleball Courts</span>
+                </div>
+              </div>
+              <div className="px-4 py-3 bg-white/85">
+                <p className="text-[12px] font-bold text-gray-900">Taylor B.</p>
+                <p className="text-[10px] text-gray-400">Pickleball Courts · Now</p>
+              </div>
+            </div>
+            {/* AirDrop */}
+            <AirDropPopup />
+            {/* Xcode */}
+            <XcodeCrash />
+            {/* Summer Fridays */}
+            <div className="flex justify-center">
+              <img src="/summer-fridays.png" alt="Summer Fridays" className="h-[180px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
+            </div>
+            {/* Slack */}
+            <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ background: "rgba(255,255,255,0.5)", backdropFilter: "blur(40px) saturate(180%)", border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06)" }}>
+              <div className="w-8 h-8 rounded-[8px] overflow-hidden shrink-0"><img src="/slack-icon.png" alt="Slack" className="w-full h-full object-contain" /></div>
+              <div className="flex-1"><div className="flex items-center gap-1.5"><span className="text-[11px] font-bold text-gray-900">#design-system</span><span className="text-[9px] text-gray-400">2m ago</span></div><p className="text-[11px] text-gray-600 mt-0.5"><span className="font-medium">Taylor:</span> just pushed 12 new components 🚀</p></div>
+            </div>
+            {/* Screen Time */}
+            <div className="rounded-2xl px-4 py-3" style={{ background: "rgba(255,255,255,0.5)", backdropFilter: "blur(40px) saturate(180%)", border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06)" }}>
+              <div className="flex items-center justify-between mb-1.5"><span className="text-[10px] font-bold text-gray-500 tracking-wide uppercase">Screen Time</span><span className="text-[10px] text-gray-400">11m ago</span></div>
+              <p className="text-[12px] font-bold text-gray-900">Weekly Report Available</p>
+              <p className="text-[11px] text-gray-500 mt-0.5">You averaged 29,030,230,213,023 hours on Claude Code last week.</p>
+            </div>
+            {/* Terminal */}
+            <div className="rounded-xl overflow-hidden" style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.15)" }}>
+              <div className="flex items-center gap-1.5 px-3 py-2" style={{ background: "#2D2D2D" }}><div className="w-[10px] h-[10px] rounded-full bg-[#FF5F56]" /><div className="w-[10px] h-[10px] rounded-full bg-[#FFBD2E]" /><div className="w-[10px] h-[10px] rounded-full bg-[#27C93F]" /><span className="text-[10px] text-gray-400 ml-2">taylor — zsh</span></div>
+              <div className="px-3 py-3 font-mono" style={{ background: "#1A1A1A" }}><p className="text-[10px] text-green-400">taylor@macbook <span className="text-blue-400">~/portfolio</span> $</p><p className="text-[10px] text-gray-300 mt-0.5">npx next build</p><p className="text-[10px] text-green-400 mt-1">✓ Compiled successfully</p></div>
+            </div>
+          </div>
+
+          {/* ── Modern Canvas — Desktop ── */}
+          <div className="relative w-full overflow-x-hidden hidden md:block" style={{ minHeight: "calc(100vh - 140px)", background: "#FFFDFB" }}>
 
             {/* Subtle grid dots */}
             <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle, #C0C0C0 0.5px, transparent 0.5px)", backgroundSize: "28px 28px" }} />
@@ -5969,9 +6034,62 @@ export default function Home() {
           ) : (
           <motion.div key="me-y2k" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 
-          {/* ── Y2K Canvas ── */}
+          {/* ── Y2K Canvas — Mobile ── */}
+          <div className="md:hidden px-5 py-8 space-y-6" style={{ background: "#FFFDFB" }}>
+            {/* iPod */}
+            <div className="flex justify-center" style={{ transform: "scale(0.9)" }}><IPodNano /></div>
+            {/* XP Folders */}
+            <XPFolders />
+            {/* AIM */}
+            <div className="shadow-xl" style={{ fontFamily: "Tahoma, MS Sans Serif, sans-serif" }}>
+              <div className="rounded-t-sm overflow-hidden relative" style={{ border: "2px solid #808080" }}>
+                <div className="flex items-center justify-between px-1.5 py-0.5" style={{ background: "linear-gradient(90deg, #000080, #1084D0)" }}>
+                  <span className="text-[10px] font-bold text-white">Edit Away Message</span>
+                  <button className="w-[14px] h-[12px] rounded-sm text-[8px] flex items-center justify-center text-black" style={{ background: "#C0C0C0", border: "1px outset #DFDFDF" }}>✕</button>
+                </div>
+                <div className="bg-[#C0C0C0] p-3 space-y-2">
+                  <div className="flex items-center gap-2"><span className="text-[10px]">Enter label:</span><div className="flex-1 bg-white border border-gray-500 px-1 py-0.5"><span className="text-[10px]">Busy</span></div></div>
+                  <div className="bg-white border border-gray-500 p-2 min-h-[60px]">
+                    <p className="text-[11px] leading-relaxed" style={{ fontFamily: "Comic Sans MS, cursive" }}><span className="font-bold text-pink-600">**BRB**</span><br /><span className="text-purple-700">viBe cOdiNg w/ cLaUdE</span><br /><span className="text-blue-600">thEn piCkLeBaLL @ 6</span> 🏓<br /><span className="text-pink-500">dO nOt DiStUrB LoL</span> 😎</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Limewire */}
+            <LimewireDownload />
+            {/* MS Paint */}
+            <MSPaint />
+            {/* CDs */}
+            <div className="flex gap-4 justify-center">
+              <BigCDCase cover="/hannah.jpg" title="Hannah Montana" />
+              <BigCDCase cover="/avril.jpg" title="Avril Lavigne" />
+            </div>
+            {/* Tiger Beat */}
+            <div className="flex justify-center">
+              <img src="/tiger-beat.jpeg" alt="Tiger Beat" className="w-[200px] rounded-md shadow-lg" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 100%)" }} />
+            </div>
+            {/* Baby Lips */}
+            <div className="flex justify-center">
+              <img src="/baby-lips.png" alt="Baby Lips" className="h-[180px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
+            </div>
+            {/* Bracelet */}
+            <div className="flex justify-center gap-[3px] relative py-4">
+              <div className="absolute top-1/2 left-[20%] right-[20%] h-[3px] -translate-y-1/2 z-0 rounded-full" style={{ background: "linear-gradient(90deg, transparent, #F0B0C8 8%, #E890B0 50%, #F0B0C8 92%, transparent)" }} />
+              {["T", "A", "Y", "L", "O", "R"].map((letter, i) => (
+                <div key={i} className="relative z-10 flex items-center justify-center shrink-0" style={{ width: 34, height: 34, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%, #FFFFFF, #F5F5F5 40%, #E0E0E0 80%, #D0D0D0)", boxShadow: "0 3px 8px rgba(0,0,0,0.15), inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)" }}>
+                  <span className="font-black select-none" style={{ fontSize: 16, color: "#2A2A2A", fontFamily: "system-ui, -apple-system, sans-serif" }}>{letter}</span>
+                </div>
+              ))}
+            </div>
+            {/* XP Dialogs */}
+            <div className="space-y-3">
+              <XPDialogStack />
+            </div>
+          </div>
+
+          {/* ── Y2K Canvas — Desktop ── */}
           <div
-            className="relative w-full overflow-hidden overflow-x-hidden"
+            className="relative w-full overflow-hidden overflow-x-hidden hidden md:block"
             style={{
               minHeight: "200vh",
               background: "#FFFDFB",
@@ -6282,30 +6400,30 @@ export default function Home() {
                   label="Design"
                   color="#D46CB3"
                   flip
-                  initialX={-150}
-                  initialY={-100}
+                  initialX={typeof window !== "undefined" && window.innerWidth < 768 ? -140 : -380}
+                  initialY={-120}
                   enterDelay={1.5}
                   driftDurationX={11}
                   driftDurationY={7}
-                  driftRangeX={[0, 10, -5, 8]}
-                  driftRangeY={[0, -10, 5, -3]}
+                  driftRangeX={[0, 20, -8, 12]}
+                  driftRangeY={[0, -15, 8, -4]}
                 />
                 <CursorLabel
                   label="Engineering"
                   color="#D46CB3"
-                  initialX={130}
+                  initialX={typeof window !== "undefined" && window.innerWidth < 768 ? 120 : 340}
                   initialY={30}
                   enterDelay={3.0}
                   driftDurationX={9}
                   driftDurationY={13}
-                  driftRangeX={[0, -8, 10, -4]}
-                  driftRangeY={[0, 8, -10, 4]}
+                  driftRangeX={[0, -12, 18, -6]}
+                  driftRangeY={[0, 10, -18, 6]}
                 />
                 <CursorLabel
                   label="Product"
                   color="#D46CB3"
-                  initialX={120}
-                  initialY={130}
+                  initialX={typeof window !== "undefined" && window.innerWidth < 768 ? 110 : 300}
+                  initialY={150}
                   enterDelay={4.5}
                   driftDurationX={14}
                   driftDurationY={9}
