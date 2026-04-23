@@ -4353,11 +4353,12 @@ const projects = [
     coverImage: "/projects/parasoul-cover.png",
     coverVideos: ["/projects/discover-video.mp4", "/projects/feed-vid1.mp4"],
     title: "Parasoul",
-    subtitle: "Design system and product engineering for a generative AI social platform",
+    subtitle: "Creative engineering behind EA's world-building platform",
     role: "Design Engineer",
     period: "2025",
     color: "#0071E3",
-    overview: "Parasoul is EA's generative AI social app where users create characters, build worlds, and interact through AI-driven storylines. I joined as the sole design engineer responsible for the component library, working directly with MetaLab's design team to translate their Figma specs into production SwiftUI. I built and maintained 92+ components, established the design token system, and created a visual catalog ensuring 1:1 parity between design and code.",
+    overview: "Parasoul is a world-building app where users create characters with deep personalities, craft lore and plotlines, and build immersive worlds that evolve over time. Characters grow, storylines branch, and worlds change based on how users interact with them.",
+    roleDescription: "I joined as the sole design engineer. My job was two-fold: build a production design system from zero, and bring the more ambitious interaction design ideas to life in code — the kind of work that lives in the gap between what Figma can spec and what SwiftUI can do.",
     impact: [
       "92+ production components across 14 categories",
       "Design token system covering color, typography, spacing, icons, gradients, and corner radius",
@@ -4401,7 +4402,7 @@ const projects = [
       {
         title: "Design Engineering Prototypes",
         subtitle: "Interactive prototypes and custom interactions built in SwiftUI",
-        body: "",
+        body: "Each character has six emotion composites — happy, sad, angry, surprised, thinking, and neutral — that map directly to the sentiment of their messages. As a character responds, their expression shifts in real time, creating a chat experience that feels genuinely emotional and alive. The depth-stacking effect layers characters by recency, so in group conversations you can instantly see who's most active. It made the whole interaction feel less like messaging and more like being in a room with people who react to what you say.",
         items: [
           { label: "Character Chat", src: "/projects/parasoul-chat.mp4", scroll: false },
         ],
@@ -4978,9 +4979,9 @@ function ProjectsView() {
                 return (
                   <motion.div
                     key={p.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: i * 0.06 }}
+                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 20, delay: i * 0.1 }}
                     whileHover={{ y: -4, transition: { delay: 0, duration: 0.2 } }}
                     onClick={() => setSelectedProject(p.id)}
                     className={`cursor-pointer group ${isHero ? "col-span-2" : ""}`}
@@ -5133,6 +5134,13 @@ function ProjectsView() {
               </div>
             )}
 
+            {/* Parasoul hero — before Context, EA only */}
+            {project.id === "ea" && (
+              <div className="mb-10 -mx-2 rounded-2xl overflow-hidden">
+                <img src="/projects/parasoul-hero.png" alt="Parasoul — Your Imagination. Infinite Canvas." className="w-full object-cover rounded-2xl" />
+              </div>
+            )}
+
             {/* Divider + Context (hidden when contentBlocks handle it) */}
             {!(project as any).hideContext && (
               <>
@@ -5151,7 +5159,24 @@ function ProjectsView() {
                       {project.overview}
                     </p>
                   </div>
+                  {project.id === "ea" && (
+                    <div className="mt-8 -mx-2 rounded-xl overflow-hidden">
+                      <img src="/projects/parasoul-stories2.png" alt="Parasoul characters" className="w-full object-cover rounded-xl" />
+                    </div>
+                  )}
                 </div>
+
+                {/* My Role section */}
+                {(project as any).roleDescription && (
+                  <div className="mb-16">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-6">My Role</h2>
+                    <div className="bg-white rounded-2xl border border-gray-100 p-8">
+                      <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+                        {(project as any).roleDescription}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -5368,9 +5393,11 @@ function ProjectsView() {
                     {section.subtitle}
                   </p>
                   {section.body && (
-                    <p className="text-[15px] text-gray-600 leading-relaxed max-w-2xl mt-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>
-                      {section.body}
-                    </p>
+                    <div className="bg-white rounded-2xl border border-gray-100 p-8 mt-4">
+                      <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+                        {section.body}
+                      </p>
+                    </div>
                   )}
                 </div>
                 <div className="flex flex-wrap justify-center gap-8">
@@ -5379,6 +5406,21 @@ function ProjectsView() {
 
                     if (item.scroll) {
                       return <ScrollingPhone key={i} src={item.src} label={item.label} index={i} duration={item.duration || 12} />;
+                    }
+
+                    if (item.transparent) {
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.1 }}
+                          className="flex flex-col items-center"
+                        >
+                          <video src={item.src} autoPlay loop muted playsInline className="h-[420px] object-contain" style={{ mixBlendMode: "screen" }} />
+                          <span className="mt-3 text-xs font-medium text-gray-500">{item.label}</span>
+                        </motion.div>
+                      );
                     }
 
                     return (
@@ -5411,6 +5453,42 @@ function ProjectsView() {
                 </div>
               </div>
             ))}
+
+            {/* Typography section — EA only */}
+            {project.id === "ea" && (
+              <div className="mb-16">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Typography</h2>
+                  <p className="text-sm text-gray-400 mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>
+                    Using type to convey personality across worlds
+                  </p>
+                  <div className="bg-white rounded-2xl border border-gray-100 p-8 mt-4">
+                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+                      Every world in Parasoul has its own identity, and typography is one of the most powerful tools to express it. Each genre — from fantasy to horror to sci-fi — gets its own typeface that sets the tone before a single word of the story is read. The type system was designed to make every world feel distinct and immersive the moment you enter it.
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div className="flex justify-center">
+                    <img src="/projects/parasoul-typo2.png" alt="Stories Start Here" className="max-h-[120px] object-contain" />
+                  </div>
+                  <div className="-mx-2 rounded-xl overflow-hidden">
+                    <img src="/projects/parasoul-stories.png" alt="Parasoul stories" className="w-full object-cover rounded-xl" />
+                  </div>
+                  <div className="flex justify-center overflow-hidden" style={{ maxHeight: 400 }}>
+                    <img src="/projects/parasoul-typo.png" alt="Genre typography" className="w-[60%] object-contain" style={{ marginTop: "-8%", marginBottom: "-8%" }} />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* World CTA — bottom of page, EA only */}
+            {project.id === "ea" && (
+              <div className="mb-8 flex justify-center">
+                <img src="/projects/parasoul-world.png" alt="Create a World of Your Own" className="w-full object-contain rounded-2xl" />
+              </div>
+            )}
+
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -5468,7 +5546,7 @@ export default function Home() {
                 {meMode === "modern" && (
                   <motion.div layoutId="me-mode" className="absolute inset-0 rounded-full bg-black" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
                 )}
-                <span className={`relative z-10 ${meMode === "modern" ? "text-white" : "text-gray-500"}`}>Modern</span>
+                <span className={`relative z-10 ${meMode === "modern" ? "text-white" : "text-gray-500"}`}>Now</span>
               </button>
               <button
                 onClick={() => setMeMode("y2k")}
@@ -5477,7 +5555,7 @@ export default function Home() {
                 {meMode === "y2k" && (
                   <motion.div layoutId="me-mode" className="absolute inset-0 rounded-full bg-black" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
                 )}
-                <span className={`relative z-10 ${meMode === "y2k" ? "text-white" : "text-gray-500"}`}>Y2K</span>
+                <span className={`relative z-10 ${meMode === "y2k" ? "text-white" : "text-gray-500"}`}>Then</span>
               </button>
             </div>
           </div>
