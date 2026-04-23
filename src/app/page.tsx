@@ -216,7 +216,7 @@ function CursorLabel({
 }) {
   return (
     <motion.div
-      className={`absolute hidden md:flex flex-col pointer-events-none ${flip ? "items-end" : "items-start"}`}
+      className={`absolute flex flex-col pointer-events-none ${flip ? "items-end" : "items-start"}`}
       initial={{ x: initialX, y: initialY, opacity: 0, scale: 0.6 }}
       animate={{
         x: driftRangeX.map((d) => initialX + d),
@@ -6282,30 +6282,30 @@ export default function Home() {
                   label="Design"
                   color="#D46CB3"
                   flip
-                  initialX={-380}
-                  initialY={-120}
+                  initialX={-150}
+                  initialY={-100}
                   enterDelay={1.5}
                   driftDurationX={11}
                   driftDurationY={7}
-                  driftRangeX={[0, 20, -8, 12]}
-                  driftRangeY={[0, -15, 8, -4]}
+                  driftRangeX={[0, 10, -5, 8]}
+                  driftRangeY={[0, -10, 5, -3]}
                 />
                 <CursorLabel
                   label="Engineering"
                   color="#D46CB3"
-                  initialX={340}
+                  initialX={130}
                   initialY={30}
                   enterDelay={3.0}
                   driftDurationX={9}
                   driftDurationY={13}
-                  driftRangeX={[0, -12, 18, -6]}
-                  driftRangeY={[0, 10, -18, 6]}
+                  driftRangeX={[0, -8, 10, -4]}
+                  driftRangeY={[0, 8, -10, 4]}
                 />
                 <CursorLabel
                   label="Product"
                   color="#D46CB3"
-                  initialX={300}
-                  initialY={150}
+                  initialX={120}
+                  initialY={130}
                   enterDelay={4.5}
                   driftDurationX={14}
                   driftDurationY={9}
