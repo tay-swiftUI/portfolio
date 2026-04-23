@@ -6116,9 +6116,32 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            {/* XP Dialogs — at the bottom */}
+            {/* XP Dialogs — stacked vertically */}
             <div className="space-y-3 pt-4">
-              <XPDialogStack />
+              {[
+                { title: "Recycle Bin", message: "Are you sure you want to delete ex_boyfriend_pics.zip?", icon: "🗑️", buttons: ["Yes", "ABSOLUTELY"] },
+                { title: "MSN Messenger", message: "ur crush is online. Act natural.", icon: "💬", buttons: ["OMG", "Play it cool"] },
+                { title: "Webkinz", message: "Your Webkinz is starving. This is a formal warning.", icon: "⚠️", buttons: ["Feed it", "Neglect"] },
+                { title: "Error", message: "Ctrl+Z cannot undo your last text.", icon: "❓", buttons: ["Cry", "OK"] },
+              ].map((d) => (
+                <div key={d.title} className="rounded-t-lg overflow-hidden shadow-xl" style={{ border: "1px solid #0054E3", fontFamily: "Tahoma, sans-serif" }}>
+                  <div className="flex items-center justify-between px-2 py-1" style={{ background: "linear-gradient(180deg, #0A246A, #3A6EA5, #0A246A)" }}>
+                    <span className="text-[11px] font-bold text-white">{d.title}</span>
+                    <button className="w-[18px] h-[16px] rounded-sm text-[10px] flex items-center justify-center text-white font-bold" style={{ background: "linear-gradient(180deg, #E08070, #C84030)", border: "1px solid #993322" }}>✕</button>
+                  </div>
+                  <div className="bg-[#ECE9D8] px-4 py-4">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl shrink-0">{d.icon}</span>
+                      <p className="text-[12px] text-gray-800 leading-relaxed mt-0.5">{d.message}</p>
+                    </div>
+                    <div className="flex justify-center gap-2 mt-4">
+                      {d.buttons.map((btn) => (
+                        <button key={btn} className="px-5 py-1 text-[11px] rounded-sm" style={{ background: "linear-gradient(180deg, #FFFFFF, #ECE9D8, #D6D0C4)", border: "1px solid #003C74", boxShadow: "0 1px 0 rgba(255,255,255,0.5) inset" }}>{btn}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
