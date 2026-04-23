@@ -6059,9 +6059,24 @@ export default function Home() {
               <BigCDCase cover="/hannah.jpg" title="Hannah Montana" />
               <BigCDCase cover="/avril.jpg" title="Avril Lavigne" />
             </div>
-            {/* XP Folders — spread out */}
-            <div className="flex justify-around px-4">
-              <XPFolders />
+            {/* XP Folders — fun scattered arrangement */}
+            <div className="flex justify-center gap-5">
+              {[
+                { label: "Notes", rotate: "-3deg", mt: "0" },
+                { label: "About Me", rotate: "2deg", mt: "12px" },
+                { label: "Typography", rotate: "-4deg", mt: "-4px" },
+                { label: "Untitled", rotate: "5deg", mt: "8px" },
+              ].map((f) => (
+                <div key={f.label} className="flex flex-col items-center" style={{ rotate: f.rotate, marginTop: f.mt }}>
+                  <div className="relative" style={{ width: 42, height: 36 }}>
+                    <div className="absolute top-0 left-0 w-[18px] h-[8px] rounded-t-[3px]" style={{ background: "linear-gradient(180deg, #F0DC82, #E8C840)" }} />
+                    <div className="absolute bottom-0 left-0 w-full rounded-[2px] rounded-tl-none" style={{ height: 28, background: "linear-gradient(180deg, #F5E6A0, #E8CC50, #DFC040)", boxShadow: "0 1px 2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.4)" }}>
+                      <div className="absolute top-[1px] left-[2px] right-[2px] h-[1px] bg-white/30" />
+                    </div>
+                  </div>
+                  <span className="text-[9px] text-gray-600 mt-1">{f.label}</span>
+                </div>
+              ))}
             </div>
             {/* AIM with logo */}
             <div className="shadow-xl" style={{ fontFamily: "Tahoma, MS Sans Serif, sans-serif" }}>
