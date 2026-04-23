@@ -5634,34 +5634,46 @@ export default function Home() {
 
           {/* ── Modern Canvas — Mobile ── */}
           <div className="md:hidden px-5 py-8 space-y-8" style={{ background: "#FFFDFB" }}>
-            {/* Books — 2x2 grid */}
-            <div className="grid grid-cols-2 gap-4 px-8">
-              {[
-                { cover: "/books/project-hail-mary-alt.jpg", title: "Project Hail Mary", author: "Andy Weir" },
-                { cover: "/books/fourth-wing.jpg", title: "Fourth Wing", author: "Rebecca Yarros" },
-                { cover: "/books/acomaf.jpg", title: "A Court of Mist and Fury", author: "Sarah J. Maas" },
-                { cover: "/books/one-golden-summer-alt.jpg", title: "One Golden Summer", author: "Carley Fortune" },
-              ].map((b) => (
-                <div key={b.title}><InteractiveBook cover={b.cover} title={b.title} author={b.author} /></div>
-              ))}
+            {/* Books — 2x2 tilted */}
+            <div className="grid grid-cols-2 gap-4 px-6">
+              <div className="rotate-[-5deg]"><InteractiveBook cover="/books/project-hail-mary-alt.jpg" title="Project Hail Mary" author="Andy Weir" /></div>
+              <div className="rotate-[3deg]"><InteractiveBook cover="/books/fourth-wing.jpg" title="Fourth Wing" author="Rebecca Yarros" /></div>
+              <div className="rotate-[-2deg]"><InteractiveBook cover="/books/acomaf.jpg" title="A Court of Mist and Fury" author="Sarah J. Maas" /></div>
+              <div className="rotate-[4deg]"><InteractiveBook cover="/books/one-golden-summer-alt.jpg" title="One Golden Summer" author="Carley Fortune" /></div>
             </div>
-            {/* Folders */}
-            <div className="flex flex-wrap gap-6 justify-center">
-              <div className="flex flex-col items-center">
-                <div style={{ width: 80, height: 68 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
-                <span className="text-[10px] font-medium text-gray-600 mt-1.5">notes</span>
+            {/* Folders — scattered fun */}
+            <div className="flex justify-center gap-4">
+              <div className="flex flex-col items-center rotate-[-3deg]">
+                <div style={{ width: 70, height: 58 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
+                <span className="text-[10px] font-medium text-gray-600 mt-1">notes</span>
               </div>
-              <div className="flex flex-col items-center">
-                <div style={{ width: 80, height: 68 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
-                <span className="text-[10px] font-medium text-gray-600 mt-1.5">about me</span>
+              <div className="flex flex-col items-center mt-3 rotate-[2deg]">
+                <div style={{ width: 70, height: 58 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
+                <span className="text-[10px] font-medium text-gray-600 mt-1">about me</span>
               </div>
-              <div className="flex flex-col items-center">
-                <div style={{ width: 80, height: 68 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
-                <span className="text-[10px] font-medium text-gray-600 mt-1.5">untitled</span>
+              <div className="flex flex-col items-center -mt-1 rotate-[-4deg]">
+                <div style={{ width: 70, height: 58 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
+                <span className="text-[10px] font-medium text-gray-600 mt-1">untitled</span>
+              </div>
+              <div className="flex flex-col items-center mt-2 rotate-[5deg]">
+                <div style={{ width: 70, height: 58 }}><img src="/mac-folder.png" alt="folder" className="w-full h-full object-contain" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))" }} /></div>
+                <span className="text-[10px] font-medium text-gray-600 mt-1">fav apps</span>
               </div>
             </div>
-            {/* Spotify */}
-            <NowPlayingPill />
+            {/* Focus Mode */}
+            <div className="flex justify-center">
+              <div className="rounded-full px-4 py-2 flex items-center gap-2" style={{ background: "rgba(255,255,255,0.5)", backdropFilter: "blur(40px) saturate(180%)", border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04)" }}>
+                <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+                </div>
+                <span className="text-[11px] font-medium text-gray-700">Do Not Disturb</span>
+                <span className="text-[11px] text-gray-400">Coding</span>
+              </div>
+            </div>
+            {/* Spotify — centered */}
+            <div className="flex justify-center">
+              <NowPlayingPill />
+            </div>
             {/* AirDrop */}
             <div className="flex justify-center">
               <AirDropPopup />
