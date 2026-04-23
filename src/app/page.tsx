@@ -4325,7 +4325,7 @@ const experiences = [
   },
 ];
 
-const prototypes: { title: string; description: string; tag: string; gifSrc?: string; videoSrc?: string }[] = [
+const prototypes: { title: string; description: string; tag: string; gifSrc?: string; videoSrc?: string; contain?: boolean; lighten?: boolean; padded?: boolean }[] = [
   { title: "Spinning World", description: "Interactive 3D spinning globe with video textures and immersive profile layout", tag: "SwiftUI", videoSrc: "/projects/world-profile.mp4" },
   { title: "Feed Portal", description: "Animated character portal with depth transitions on the feed", tag: "SwiftUI", videoSrc: "/projects/feed-portal.mov" },
   { title: "Profile Transitions", description: "Seamless animated transitions between character and world profiles", tag: "SwiftUI", videoSrc: "/projects/profile-transitions.mp4" },
