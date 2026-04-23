@@ -6162,7 +6162,7 @@ export default function Home() {
           <div
             className="relative w-full overflow-hidden overflow-x-hidden hidden md:block"
             style={{
-              minHeight: "200vh",
+              minHeight: "calc(100vh - 140px)",
               background: "#FFFDFB",
               cursor: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M2 0L2 20L7 15L11 22L14 20.5L10 14L16 14Z' fill='white' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E\") 2 2, auto",
             }}
