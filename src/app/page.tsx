@@ -216,7 +216,7 @@ function CursorLabel({
 }) {
   return (
     <motion.div
-      className={`absolute flex flex-col pointer-events-none ${flip ? "items-end" : "items-start"}`}
+      className={`absolute hidden md:flex flex-col pointer-events-none ${flip ? "items-end" : "items-start"}`}
       initial={{ x: initialX, y: initialY, opacity: 0, scale: 0.6 }}
       animate={{
         x: driftRangeX.map((d) => initialX + d),
@@ -5577,7 +5577,7 @@ export default function Home() {
 
       {/* Figma-style avatar in top right */}
       {/* Avatar + Figma text box */}
-      <div className="fixed top-7 right-6 z-50 flex items-center gap-0">
+      <div className="fixed top-7 right-6 z-50 hidden md:flex items-center gap-0">
         <FigmaTextBox onClick={() => setActiveTab("Contact")} />
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -6328,7 +6328,7 @@ export default function Home() {
               </section>
 
               {/* Figma "Let's work together" — bottom left */}
-              <div className="flex justify-start mb-16">
+              <div className="flex justify-start mb-16 -mt-16 md:mt-0">
                 <FigmaWorkTogether />
               </div>
             </motion.div>
