@@ -278,7 +278,7 @@ function NavPill({
       transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
       className="fixed top-6 left-1/2 z-50 -translate-x-1/2"
     >
-      <div className="flex items-center gap-1 rounded-full px-2 py-1.5"
+      <div className="flex items-center gap-1 rounded-full px-2 py-1.5 overflow-x-auto scrollbar-hide whitespace-nowrap"
         style={{
           background: "rgba(255, 255, 255, 0.75)",
           backdropFilter: "blur(40px) saturate(180%)",
@@ -291,7 +291,7 @@ function NavPill({
           <button
             key={tab}
             onClick={() => onChange(tab)}
-            className="relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors"
+            className="relative rounded-full px-4 py-1.5 text-xs md:text-sm font-medium transition-colors"
           >
             {active === tab && (
               <motion.div
@@ -928,6 +928,7 @@ function IDBadgeCoverflow() {
 
   return (
     <div className="relative mb-12 -mt-[7.5rem]" style={{ clipPath: "inset(0px 0px 0px 0px)" }}>
+      {/* TODO: Make height responsive on mobile (currently 460px fixed) */}
       <div className="flex items-center justify-center" style={{ perspective: 1000, height: 460 }}>
         {badgeData.map((badge, i) => {
           const offset = i - active;
@@ -4150,7 +4151,7 @@ function PrototypesView() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
           >
-            <div className="grid grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {prototypes.map((p, i) => (
                 <motion.div
                   key={p.title}
@@ -4973,7 +4974,7 @@ function ProjectsView() {
             transition={{ duration: 0.25 }}
           >
             {/* Bento grid */}
-            <div className="grid grid-cols-2 gap-5 auto-rows-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 auto-rows-auto">
               {projects.map((p, i) => {
                 const isHero = i === 0;
                 const coverSrc = (p as any).coverImage || (p as any).heroImage || (p.images.length > 0 ? p.images[0] : null);
@@ -4988,7 +4989,7 @@ function ProjectsView() {
                     transition={{ type: "spring", stiffness: 200, damping: 20, delay: i * 0.1 }}
                     whileHover={{ y: -4, transition: { delay: 0, duration: 0.2 } }}
                     onClick={() => setSelectedProject(p.id)}
-                    className={`cursor-pointer group ${isHero ? "col-span-2" : ""}`}
+                    className={`cursor-pointer group ${isHero ? "md:col-span-2" : ""}`}
                   >
                     {/* Image/video area */}
                     <div
@@ -5569,7 +5570,7 @@ export default function Home() {
           <motion.div key="me-modern" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 
           {/* ── Modern Canvas ── */}
-          <div className="relative w-full" style={{ minHeight: "calc(100vh - 140px)", background: "#FFFDFB" }}>
+          <div className="relative w-full overflow-x-hidden" style={{ minHeight: "calc(100vh - 140px)", background: "#FFFDFB" }}>
 
             {/* Subtle grid dots */}
             <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage: "radial-gradient(circle, #C0C0C0 0.5px, transparent 0.5px)", backgroundSize: "28px 28px" }} />
@@ -5907,7 +5908,7 @@ export default function Home() {
 
           {/* ── Y2K Canvas ── */}
           <div
-            className="relative w-full overflow-hidden"
+            className="relative w-full overflow-hidden overflow-x-hidden"
             style={{
               minHeight: "calc(100vh - 140px)",
               background: "#FFFDFB",
@@ -6263,7 +6264,7 @@ export default function Home() {
               </section>
 
               {/* Figma "Let's work together" — bottom left */}
-              <div className="flex justify-start mb-16">
+              <div className="hidden md:flex justify-start mb-16">
                 <FigmaWorkTogether />
               </div>
             </motion.div>
@@ -6306,7 +6307,7 @@ export default function Home() {
               className="relative"
             >
               {/* Download resume — far left */}
-              <div className="absolute left-[-24vw] top-[30%]">
+              <div className="md:absolute md:left-[-24vw] md:top-[30%] mb-6 md:mb-0">
                 <ComicalResumeRow />
               </div>
 
@@ -6512,10 +6513,10 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="relative min-h-[70vh]"
+              className="relative min-h-[70vh] flex flex-col md:block"
             >
-              {/* Left — contact info, absolutely positioned */}
-              <div className="absolute left-[-24vw] bottom-[-8%] flex flex-col gap-5">
+              {/* Left — contact info, absolutely positioned on desktop, inline on mobile */}
+              <div className="md:absolute md:left-[-24vw] md:bottom-[-8%] flex flex-col gap-5 mb-8 md:mb-0">
                 <ContactInfoRow
                   icon="/linkedin-icon.png"
                   text="/in/taylorbreitzman"
