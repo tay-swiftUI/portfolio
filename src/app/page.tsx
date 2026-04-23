@@ -3980,7 +3980,7 @@ function ContactTypewriter() {
   const phrases = [
     { text: "Contact me", link: "", subtitle: "" },
     { text: "Email me", link: "mailto:tbreitz16@gmail.com", subtitle: "tbreitz16@gmail.com" },
-    { text: "Connect with me", link: "https://linkedin.com/in/taylorbreitzman", subtitle: "linkedin.com/in/taylorbreitzman" },
+    { text: "Connect with me", link: "https://www.linkedin.com/in/taylor-breitzman-778925152/", subtitle: "linkedin.com/in/taylor-breitzman" },
   ];
 
   const [phraseIndex, setPhraseIndex] = useState(0);
@@ -6772,14 +6772,14 @@ export default function Home() {
               <div className="md:absolute md:left-[-24vw] md:bottom-[-8%] flex flex-col gap-5 mb-8 md:mb-0">
                 <ContactInfoRow
                   icon="/linkedin-icon.png"
-                  text="/in/taylorbreitzman"
-                  href="https://linkedin.com/in/taylorbreitzman"
+                  text="/in/taylor-breitzman"
+                  href="https://www.linkedin.com/in/taylor-breitzman-778925152/"
                   delay={1.5}
                 />
                 <ContactInfoRow
                   icon="/mail-icon.png"
-                  text="projectairtaylor@gmail.com"
-                  href="mailto:projectairtaylor@gmail.com"
+                  text="tbreitz16@gmail.com"
+                  href="mailto:tbreitz16@gmail.com"
                   delay={3}
                 />
                 <ContactInfoRow
