@@ -3256,14 +3256,14 @@ function NotesFolder({ x, y, delay }: { x: string; y: string; delay: number }) {
               </div>
               {/* Note content */}
               <div className="px-4 py-4" style={{ background: "#FFFFFF", minHeight: 220 }}>
-                <p className="text-[18px] font-bold text-gray-900 mb-1">things about me</p>
+                <p className="text-[18px] font-bold text-gray-900 mb-1">design philosophy</p>
                 <p className="text-[10px] text-gray-400 mb-4">April 24, 2026</p>
                 <div className="space-y-2.5 text-[13px] text-gray-700" style={{ lineHeight: 1.6 }}>
-                  <p>- Designer / Engineer — I identify as both</p>
-                  <p>- I&apos;m originally from New Jersey, but I&apos;ve also lived in Portland, San Diego, and now San Francisco!!!</p>
-                  <p>- I spend way too many hours playing pickleball on Saturday&apos;s</p>
-                  <p>- I&apos;m currently on a mission to find the best strawberry matcha in SF (Komeya No Bento is winning so far)</p>
-                  <p>- I loveeeee reading</p>
+                  <p>- clean and polished, but never boring</p>
+                  <p>- the small details are the whole point</p>
+                  <p>- if it doesn&apos;t feel good to tap, it&apos;s not done</p>
+                  <p>- personality and polish aren&apos;t opposites</p>
+                  <p>- I want every interaction to feel like someone thought about it — because I did</p>
                 </div>
               </div>
             </div>
