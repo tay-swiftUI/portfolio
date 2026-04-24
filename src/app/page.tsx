@@ -3263,7 +3263,9 @@ function NotesFolder({ x, y, delay }: { x: string; y: string; delay: number }) {
                   <p>- the small details are the whole point</p>
                   <p>- if it doesn&apos;t feel good to tap, it&apos;s not done</p>
                   <p>- personality and polish aren&apos;t opposites</p>
-                  <p>- I want every interaction to feel like someone thought about it — because I did</p>
+                  <p>- confusion is a design bug</p>
+                  <p>- every interaction should feel considered — because it is</p>
+                  <p>- good design works beautifully and scales</p>
                 </div>
               </div>
             </div>
