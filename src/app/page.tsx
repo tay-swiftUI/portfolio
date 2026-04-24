@@ -990,8 +990,8 @@ function IPodNano() {
 const badgeData = [
   { company: "Nike", role: "iOS Engineer", period: "2021-2022", color: "#111111", accent: "#FF6B00", logo: "/logos/nike.svg" },
   { company: "Spotify", role: "iOS Engineer", period: "2022-2024", color: "#1A6B4A", accent: "#1DB954", logo: "/logos/spotify.png" },
-  { company: "Sidework", role: "Design Engineer", period: "2024-2025", color: "#FFFFFF", accent: "#3DC1B8", logo: "/logos/sidework.png", darkText: true },
-  { company: "Electronic Arts", role: "Design Engineer", period: "2025", color: "#2D5BE3", accent: "#1A3FC7", logo: "/logos/ea.jpg" },
+  { company: "Sidework", role: "Design Engineer", period: "2024-2025", color: "#FFFFFF", accent: "#3DC1B8", logo: "/logos/sidework.png", strapLogo: "/logos/sidework-white.png", darkText: true },
+  { company: "Electronic Arts", role: "Design Engineer", period: "2025", color: "#2D5BE3", accent: "#1A3FC7", logo: "/logos/ea.jpg", strapLogo: "/logos/ea-white.png" },
 ];
 
 function IDBadgeCoverflow() {
@@ -1036,8 +1036,8 @@ function IDBadgeCoverflow() {
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-8">
                     {badge.logo && (
                       <>
-                        <img src={badge.logo} alt="" className="w-[14px] h-[14px] object-contain opacity-40 brightness-0 invert" />
-                        <img src={badge.logo} alt="" className="w-[14px] h-[14px] object-contain opacity-40 brightness-0 invert" />
+                        <img src={(badge as any).strapLogo || badge.logo} alt="" className={`w-[18px] h-[18px] object-contain opacity-50 ${(badge as any).strapLogo ? "" : "brightness-0 invert"}`} />
+                        <img src={(badge as any).strapLogo || badge.logo} alt="" className={`w-[18px] h-[18px] object-contain opacity-50 ${(badge as any).strapLogo ? "" : "brightness-0 invert"}`} />
                       </>
                     )}
                   </div>
@@ -3095,9 +3095,9 @@ function NotesFolder({ x, y, delay }: { x: string; y: string; delay: number }) {
               </div>
               {/* Note content */}
               <div className="px-4 py-4" style={{ background: "#FFFFFF", minHeight: 220 }}>
-                <p className="text-[18px] font-bold text-gray-900 mb-1">things i love</p>
-                <p className="text-[10px] text-gray-400 mb-4">April 22, 2026</p>
-                <div className="space-y-2 text-[13px] text-gray-700" style={{ lineHeight: 1.6 }}>
+                <p className="text-[18px] font-bold text-gray-900 mb-1">thoughts</p>
+                <p className="text-[10px] text-gray-400 mb-4">April 23, 2026</p>
+                <div className="text-[13px] text-gray-700" style={{ lineHeight: 1.7 }}>
                 </div>
               </div>
             </div>
@@ -3114,7 +3114,7 @@ function MacAppFolder({ x, y, delay }: { x: string; y: string; delay: number }) 
 
   const apps = [
     { name: "Spotify", icon: "/logos/spotify.png", x: -30, y: -45, rotate: -10 },
-    { name: "Pinterest", icon: "/pinterest-icon.avif", x: 25, y: -40, rotate: 8 },
+    { name: "Pinterest", icon: "/pinterest-icon.avif", x: 25, y: -55, rotate: 8 },
   ];
 
   return (
@@ -3144,9 +3144,7 @@ function MacAppFolder({ x, y, delay }: { x: string; y: string; delay: number }) 
               transition={{ type: "spring", stiffness: 500, damping: 15, delay: i * 0.05 }}
               className="absolute left-[12px] top-[4px] z-0"
             >
-              <div className="w-[36px] h-[36px] rounded-[10px] overflow-hidden shadow-lg" style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
-                <img src={app.icon} alt={app.name} className="w-full h-full object-cover" />
-              </div>
+              <img src={app.icon} alt={app.name} className={`object-contain rounded-[10px] ${app.name === "Pinterest" ? "w-[70px] h-[70px]" : "w-[42px] h-[42px]"}`} style={{ filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.15))" }} />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -3478,6 +3476,126 @@ function LimewireDownload() {
           >Actually Download</a>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── Y2K Loading Screen ───
+// ─── Internet Explorer — opens Webkinz ───
+function IEBrowser() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      {/* IE Icon */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.08, y: -3, transition: { delay: 0, duration: 0.2 } }}
+        whileTap={{ scale: 0.92, transition: { delay: 0, duration: 0.1 } }}
+        transition={{ delay: 0.2 }}
+        onClick={() => setOpen(!open)}
+        className="absolute flex flex-col items-center cursor-pointer select-none"
+        style={{ left: "54vw", top: "8%" }}
+      >
+        <img src="/ie-icon.png" alt="Internet Explorer" className="w-[72px] h-[72px] object-contain" style={{ imageRendering: "pixelated" }} />
+      </motion.div>
+
+      {/* Browser window */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.3, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.3, y: 40 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="absolute left-[20vw] top-[5%] z-50"
+          >
+            <div className="rounded-t-sm overflow-hidden shadow-2xl" style={{ width: 480, border: "2px solid #808080", fontFamily: "Tahoma, sans-serif" }}>
+              {/* Title bar */}
+              <div className="flex items-center justify-between px-2 py-1" style={{ background: "linear-gradient(180deg, #0A246A, #3A6EA5, #0A246A)" }}>
+                <div className="flex items-center gap-1.5">
+                  <img src="/ie-icon.png" alt="" className="w-[14px] h-[14px]" style={{ imageRendering: "pixelated" }} />
+                  <span className="text-[11px] font-bold text-white">Webkinz World - Microsoft Internet Explorer</span>
+                </div>
+                <div className="flex gap-[2px]">
+                  <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>_</div>
+                  <div className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-black" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)" }}>□</div>
+                  <button onClick={() => setOpen(false)} className="w-[16px] h-[14px] rounded-sm text-[9px] flex items-center justify-center text-white font-bold hover:brightness-110" style={{ background: "linear-gradient(180deg, #E08070, #C84030)", border: "1px solid #993322" }}>✕</button>
+                </div>
+              </div>
+              {/* Menu bar */}
+              <div className="flex gap-3 px-2 py-0.5 bg-[#ECE9D8] border-b border-gray-400">
+                {["File", "Edit", "View", "Favorites", "Tools", "Help"].map((m) => (
+                  <span key={m} className="text-[10px] text-gray-700">{m}</span>
+                ))}
+              </div>
+              {/* Address bar */}
+              <div className="flex items-center gap-1 px-2 py-1 bg-[#ECE9D8] border-b border-gray-400">
+                <span className="text-[9px] text-gray-500">Address</span>
+                <div className="flex-1 bg-white border border-gray-400 rounded-sm px-1 py-0.5 flex items-center gap-1">
+                  <img src="/ie-icon.png" alt="" className="w-[10px] h-[10px]" style={{ imageRendering: "pixelated" }} />
+                  <span className="text-[9px] text-gray-700">http://www.webkinz.com</span>
+                </div>
+                <div className="px-2 py-0.5 text-[9px] rounded-sm" style={{ background: "linear-gradient(180deg, #E8E8E8, #C0C0C0)", border: "1px outset #DFDFDF" }}>Go</div>
+              </div>
+              {/* Content */}
+              <div className="bg-white">
+                <img src="/webkinz-full.jpg" alt="Webkinz World" className="w-full" />
+              </div>
+              {/* Status bar */}
+              <div className="px-2 py-0.5 bg-[#ECE9D8] border-t border-gray-300 flex justify-between">
+                <span className="text-[8px] text-gray-500">Done</span>
+                <span className="text-[8px] text-gray-500">Internet</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ─── Y2K Canvas Wrapper — shows loader, delays heavy content ───
+function Y2KCanvasWrapper({ children }: { children: React.ReactNode }) {
+  const [loaded, setLoaded] = useState(false);
+  const [blocks, setBlocks] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBlocks((b) => {
+        if (b >= 8) {
+          clearInterval(interval);
+          setTimeout(() => setLoaded(true), 200);
+          return b;
+        }
+        return b + 1;
+      });
+    }, 150);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="relative" style={{ minHeight: "calc(100vh - 140px)" }}>
+      {/* Loading bar — shows immediately */}
+      {!loaded && (
+        <div className="absolute inset-0 z-[60] flex flex-col items-center justify-center" style={{ background: "#FFFDFB" }}>
+          <p className="text-[24px] font-black text-purple-400 mb-4 tracking-wider" style={{ fontFamily: "monospace", textShadow: "2px 2px 0 rgba(128,0,128,0.15)" }}>
+            LOADING...
+          </p>
+          <div className="w-[200px] h-[30px] border-[3px] border-purple-400 rounded-[2px] p-[3px] flex gap-[3px]">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className="h-full flex-1 rounded-[1px] transition-opacity duration-100"
+                style={{ background: "#9B72CF", opacity: i < blocks ? 1 : 0 }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      {/* Canvas content — only renders after loading */}
+      {loaded && children}
     </div>
   );
 }
@@ -4437,8 +4555,8 @@ const projects = [
         subtitle: "World, Character, and Creator profile experiences",
         body: "",
         items: [
-          { label: "World Profile", src: "/projects/world-profile.mp4", scroll: false },
           { label: "Character Profile", src: "/projects/character-profile-scroll.mp4", scroll: false },
+          { label: "World Profile", src: "/projects/world-profile-case.mov", scroll: false },
           { label: "Creator Profile", src: "/projects/creator-profile-scroll.mp4", scroll: false },
         ],
       },
@@ -5864,12 +5982,27 @@ export default function Home() {
               whileHover={{ rotate: 0, scale: 1.1 }}
               whileTap={{ scale: 0.95, rotate: 5 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
-              className="absolute left-[26vw] bottom-[16%] cursor-pointer"
+              className="absolute left-[23vw] bottom-[24%] cursor-pointer"
               drag
               dragConstraints={{ left: -50, right: 50, top: -50, bottom: 50 }}
               dragElastic={0.3}
             >
               <img src="/summer-fridays.png" alt="Summer Fridays Lip Butter Balm" className="h-[240px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.12))" }} />
+            </motion.div>
+
+            {/* ── EADEM lip gloss — next to Summer Fridays ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: 12 }}
+              animate={{ opacity: 1, y: 0, rotate: 12 }}
+              whileHover={{ rotate: -5, scale: 1.12, y: -5 }}
+              whileTap={{ scale: 0.93, rotate: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="absolute left-[24vw] bottom-[0%] cursor-pointer"
+              drag
+              dragConstraints={{ left: -80, right: 80, top: -80, bottom: 80 }}
+              dragElastic={0.25}
+            >
+              <img src="/eadem.png" alt="EADEM" className="h-[400px] object-contain" style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.1))" }} />
             </motion.div>
 
             {/* ── Slack notification — bottom left ── */}
@@ -6300,13 +6433,16 @@ export default function Home() {
                       <div className="flex items-center gap-1 text-[8px] text-gray-600 mr-auto">
                         Save for later use <div className="w-[10px] h-[10px] border border-gray-500 bg-white" />
                       </div>
-                      <button className="px-3 py-0.5 text-[10px]" style={{ background: "#D4D0C8", border: "2px outset #DFDFDF" }}>I&apos;m Away</button>
-                      <button className="px-3 py-0.5 text-[10px]" style={{ background: "#D4D0C8", border: "2px outset #DFDFDF" }}>Cancel</button>
+                      <button className="px-3 py-0.5 text-[10px] active:border-inset active:translate-y-[1px]" style={{ background: "#D4D0C8", border: "2px outset #DFDFDF" }} onClick={() => {}}>I&apos;m Away</button>
+                      <button className="px-3 py-0.5 text-[10px] active:translate-y-[1px]" style={{ background: "#D4D0C8", border: "2px outset #DFDFDF" }} onClick={() => {}}>Cancel</button>
                     </div>
                   </div>
                 </div>
               </div>
             </motion.div>
+
+            {/* ── Internet Explorer — opens Webkinz ── */}
+            <IEBrowser />
 
             {/* ── XP Desktop Folders ── */}
             <XPFolders />
