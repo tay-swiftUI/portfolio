@@ -3006,7 +3006,6 @@ function AboutMeFolder({ x, y, delay }: { x: string; y: string; delay: number })
                   <p>The truth is, I do both. I design what I build and I build what I design. And as AI makes everyone faster, I think the human stuff — personality, emotion, whimsy — becomes the thing that actually matters.</p>
                   <p>This page is proof of that. The &quot;Now&quot; side is who I am today and the &quot;Then&quot; side is where it all started — the nostalgia, the fun, the y2k girly tech kid. Both sides are me.</p>
                 </div>
-                </div>
               </div>
             </div>
           </motion.div>
