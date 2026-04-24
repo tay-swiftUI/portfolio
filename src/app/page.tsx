@@ -3000,11 +3000,11 @@ function AboutMeFolder({ x, y, delay }: { x: string; y: string; delay: number })
                 <p className="text-[18px] font-bold text-gray-900 mb-1">about me</p>
                 <p className="text-[10px] text-gray-400 mb-4">April 24, 2026</p>
                 <div className="text-[13px] text-gray-700 space-y-3" style={{ lineHeight: 1.7 }}>
-                  <p>I grew up obsessed with tech — but my version of it. GirlsGoGames, my pink DS, my iPod Nano. My dad and brother kept me surrounded by it, and it never occurred to me that it wasn&apos;t for me. I never saw the gender gap because no one told me it existed.</p>
-                  <p>I studied computer science and built a career as an engineer — Spotify, Nike, EA. But somewhere along the way I realized my passion wasn&apos;t just in how things work. It was in how they feel. I kept gravitating toward the design side, the interaction side, the &quot;make it feel alive&quot; side.</p>
-                  <p>I&apos;ve been the only girl in the room more times than I can count. I&apos;ve had my work dismissed as &quot;just aesthetics&quot; by people who didn&apos;t realize I wrote the code too. I&apos;ve spent years hearing &quot;she&apos;s just rounding edges&quot; while shipping production systems with 92+ components.</p>
+                  <p>I grew up obsessed with tech — but my version of it. GirlsGoGames, my pink DS, my iPod Nano. My dad and brother kept me surrounded and inspired by it, so it never occurred to me that it wasn&apos;t for me. I never saw the gender gap because no one told me it existed.</p>
+                  <p>I studied computer science and built a career as an engineer — Spotify, Nike. But along the way I realized my passion wasn&apos;t just in how things work. It was in how they feel. I kept gravitating toward the design side, the interaction side, the &quot;make it feel alive&quot; side.</p>
+                  <p>I&apos;ve been the only girl in the room more times than I can count. I&apos;ve had my work dismissed as &quot;just aesthetics&quot; by people who didn&apos;t realize I wrote the code too.</p>
                   <p>The truth is, I do both. I design what I build and I build what I design. And as AI makes everyone faster, I think the human stuff — personality, emotion, whimsy — becomes the thing that actually matters.</p>
-                  <p>This page is proof of that. The &quot;Now&quot; side is who I am today — clean, polished, intentional. The &quot;Then&quot; side is where it all started — the nostalgia, the fun, the girly tech kid who never stopped building. Both sides are me.</p>
+                  <p>This page is proof of that. The &quot;Now&quot; side is who I am today and the &quot;Then&quot; side is where it all started — the nostalgia, the fun, the y2k girly tech kid. Both sides are me.</p>
                 </div>
                 </div>
               </div>
