@@ -2088,8 +2088,8 @@ function ComicalResumeRow() {
     const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
     async function animate() {
-      // Wait for the ContactInfoRow to finish typing (~1s delay + 0.4 + 0.4 + 19chars*40ms = ~2.6s)
-      await sleep(4000);
+      // Wait for tagline to finish before starting
+      await sleep(18000);
       if (cancelled) return;
 
       while (!cancelled) {
@@ -2158,7 +2158,7 @@ function ComicalResumeRow() {
         icon="/paper-icon.png"
         text="Download Resume.pdf"
         href="/Taylor_Breitzman_Resume.pdf"
-        delay={1}
+        delay={10}
       />
     </motion.div>
   );
@@ -2299,6 +2299,167 @@ function ResumeDownloadBox() {
         </div>
       </motion.div>
     </a>
+  );
+}
+
+// ─── Resume Tagline — typing animation on right side ───
+function ResumeTagline() {
+  const [phase, setPhase] = useState<"hidden" | "typing1" | "typing2" | "selecting3x" | "bold3x" | "typing3" | "selectingLine3" | "fontChange" | "done">("hidden");
+  const [text1, setText1] = useState("");
+  const [text2, setText2] = useState("");
+  const [text3, setText3] = useState("");
+  const [bold3x, setBold3x] = useState(false);
+  const [showLine3, setShowLine3] = useState(false);
+  const [line3Font, setLine3Font] = useState<"normal" | "serif">("normal");
+  const [funSize, setFunSize] = useState(15);
+  const line1 = "I bridge design and engineering...";
+  const line2 = "and use AI to do it 3x faster.";
+  const line3 = "while keeping things fun!!!";
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      await sleep(2000);
+      if (cancelled) return;
+
+      setPhase("typing1");
+      for (let i = 1; i <= line1.length; i++) {
+        if (cancelled) return;
+        setText1(line1.slice(0, i));
+        await sleep(40);
+      }
+      await sleep(400);
+      if (cancelled) return;
+
+      setPhase("typing2");
+      for (let i = 1; i <= line2.length; i++) {
+        if (cancelled) return;
+        setText2(line2.slice(0, i));
+        await sleep(40);
+      }
+      await sleep(800);
+      if (cancelled) return;
+
+      // Select 3x
+      setPhase("selecting3x");
+      await sleep(600);
+      if (cancelled) return;
+
+      // Bold it
+      setBold3x(true);
+      setPhase("bold3x");
+      await sleep(1000);
+      if (cancelled) return;
+
+      // Type line 3
+      setShowLine3(true);
+      setPhase("typing3");
+      for (let i = 1; i <= line3.length; i++) {
+        if (cancelled) return;
+        setText3(line3.slice(0, i));
+        await sleep(40);
+      }
+      await sleep(800);
+      if (cancelled) return;
+
+      // Select "fun"
+      setPhase("selectingLine3");
+      await sleep(600);
+      if (cancelled) return;
+
+      // Grow "fun" bigger and bigger
+      setPhase("fontChange");
+      for (const size of [18, 22, 26, 32, 38]) {
+        if (cancelled) return;
+        setFunSize(size);
+        await sleep(250);
+      }
+      await sleep(500);
+      if (cancelled) return;
+
+      setPhase("done");
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (phase === "hidden") return null;
+
+  const typingMain = phase === "typing1" || phase === "typing2";
+  const typingLine3 = phase === "typing3";
+
+  return (
+    <div className="relative space-y-3">
+      <div
+        className="relative px-3 py-2 rounded-[2px]"
+        style={{ border: typingMain ? "1px solid #0D99FF" : "1px solid transparent" }}
+      >
+        {typingMain && (
+          <>
+            <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+          </>
+        )}
+        <p className="text-[16px] text-gray-900 leading-relaxed font-normal">
+          {text1}
+          {text1.length > 0 && text2.length > 0 && <br />}
+          {text2.length > 0 && (
+            text2.includes("3x") ? (
+              <>
+                {text2.split("3x")[0]}
+                <span className={`${phase === "selecting3x" ? "bg-[#0D99FF]/20" : ""} ${bold3x ? "font-bold" : ""} transition-all duration-200`}>3x</span>
+                {text2.split("3x")[1]}
+              </>
+            ) : text2
+          )}
+          {typingMain && (
+            <motion.span
+              animate={{ opacity: [1, 0] }}
+              transition={{ duration: 0.5, repeat: Infinity }}
+              className="inline-block w-[1px] h-[14px] bg-[#1D1D1F] ml-[1px] align-text-bottom"
+            />
+          )}
+        </p>
+      </div>
+      {showLine3 && (
+        <div
+          className="relative px-3 py-2 rounded-[2px]"
+          style={{ border: typingLine3 ? "1px solid #0D99FF" : "1px solid transparent" }}
+        >
+          {typingLine3 && (
+            <>
+              <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+              <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            </>
+          )}
+          <p className="text-[15px] text-gray-500 leading-relaxed transition-all duration-300">
+            {phase !== "typing3" && text3.includes("fun!!!") ? (
+              <>
+                {text3.split("fun!!!")[0]}
+                <span
+                  className={`${phase === "selectingLine3" ? "bg-[#0D99FF]/20" : ""} font-bold transition-all duration-200 inline-block`}
+                  style={{ fontSize: funSize, color: funSize > 20 ? "#D46CB3" : "inherit" }}
+                >fun!!!</span>
+              </>
+            ) : text3}
+            {typingLine3 && (
+              <motion.span
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+                className="inline-block w-[1px] h-[14px] bg-[#1D1D1F] ml-[1px] align-text-bottom"
+              />
+            )}
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -5717,7 +5878,7 @@ export default function Home() {
           className="cursor-pointer"
           onClick={() => setActiveTab("Contact")}
         >
-          <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-md">
+          <div className="w-9 h-9 rounded-full overflow-hidden shadow-md">
             <img src="/taylor.jpeg" alt="Taylor" className="w-full h-full object-cover" />
           </div>
         </motion.div>
@@ -5766,7 +5927,7 @@ export default function Home() {
           {/* ── Modern Canvas — Mobile ── */}
           <div className="md:hidden px-5 py-8 space-y-8" style={{ background: "#FFFDFB" }}>
             {/* Books — 2x2 tilted */}
-            <div className="grid grid-cols-2 gap-4 px-10 mx-auto max-w-[300px]">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-8 px-10 mx-auto max-w-[300px]">
               <div className="rotate-[-5deg]"><InteractiveBook cover="/books/project-hail-mary-alt.jpg" title="Project Hail Mary" author="Andy Weir" /></div>
               <div className="rotate-[3deg]"><InteractiveBook cover="/books/fourth-wing.jpg" title="Fourth Wing" author="Rebecca Yarros" /></div>
               <div className="rotate-[-2deg]"><InteractiveBook cover="/books/acomaf.jpg" title="A Court of Mist and Fury" author="Sarah J. Maas" /></div>
@@ -6698,6 +6859,11 @@ export default function Home() {
               {/* Download resume — far left */}
               <div className="md:absolute md:left-[-24vw] md:top-[30%] mb-6 md:mb-0">
                 <ComicalResumeRow />
+              </div>
+
+              {/* Bio tagline — far right */}
+              <div className="md:absolute md:right-[-20vw] md:top-[30%] mb-6 md:mb-0 w-[280px]">
+                <ResumeTagline />
               </div>
 
               <IDBadgeCoverflow />
