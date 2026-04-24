@@ -2313,7 +2313,7 @@ function ResumeTagline() {
   const [line3Font, setLine3Font] = useState<"normal" | "serif">("normal");
   const [funSize, setFunSize] = useState(15);
   const line1 = "I bridge design and engineering...";
-  const line2 = "and use AI to do it 3x faster.";
+  const line2 = "and use AI to do it 10x faster.";
   const line3 = "while keeping things fun!!!";
 
   useEffect(() => {
@@ -2409,11 +2409,11 @@ function ResumeTagline() {
           {text1}
           {text1.length > 0 && text2.length > 0 && <br />}
           {text2.length > 0 && (
-            text2.includes("3x") ? (
+            text2.includes("10x") ? (
               <>
-                {text2.split("3x")[0]}
-                <span className={`${phase === "selecting3x" ? "bg-[#0D99FF]/20" : ""} ${bold3x ? "font-bold" : ""} transition-all duration-200`}>3x</span>
-                {text2.split("3x")[1]}
+                {text2.split("10x")[0]}
+                <span className={`${phase === "selecting3x" ? "bg-[#0D99FF]/20" : ""} ${bold3x ? "font-bold" : ""} transition-all duration-200`}>10x</span>
+                {text2.split("10x")[1]}
               </>
             ) : text2
           )}
