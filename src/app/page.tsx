@@ -1635,6 +1635,7 @@ function XPDialog({ title, message, icon, buttons = ["OK"], defaultX = 0, defaul
       initial={{ opacity: 0, scale: 0.7, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.7 }}
+      whileHover={{ scale: 1.02, transition: { delay: 0, duration: 0.15 } }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className="absolute"
       style={{ left: pos.x, top: pos.y, zIndex: z, cursor: dragging ? "grabbing" : "default" }}
@@ -3028,6 +3029,7 @@ function NowPlayingPill() {
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ scale: 1.03, y: -2, transition: { delay: 0, duration: 0.2 } }}
       transition={{ delay: 0.7, type: "spring" }}
       className="md:absolute left-auto md:left-[36vw] bottom-auto md:bottom-[26%]"
     >
@@ -3113,6 +3115,7 @@ function XcodeCrash() {
       initial={{ opacity: 0, y: -20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20 }}
+      whileHover={{ scale: 1.03, y: -2, transition: { delay: 0, duration: 0.2 } }}
       transition={{ delay: 1.2, type: "spring", stiffness: 300, damping: 20 }}
       className="md:absolute right-auto md:right-[6vw] bottom-auto md:bottom-[38%] z-40 cursor-pointer"
       onClick={dismiss}
@@ -4048,16 +4051,42 @@ function BigCDCase({ cover, title }: { cover: string; title: string }) {
         style={{ left: 40 }}
       >
         <div
-          className="w-[140px] h-[140px] rounded-full"
+          className="w-[140px] h-[140px] rounded-full relative"
           style={{
-            background: "conic-gradient(from 0deg, #E8E8E8, #F5F5F5, #D0D0D0, #F0F0F0, #E0E0E0, #F8F8F8, #D8D8D8, #E8E8E8)",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+            background: "conic-gradient(from 0deg, #D8D8DC, #F0F0F4, #C8C8CC, #E8E8EC, #D0D0D4, #F5F5F8, #CCCCCE, #D8D8DC)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.4)",
           }}
         >
-          <div className="absolute inset-[15px] rounded-full" style={{ background: "conic-gradient(from 45deg, #F0F0F0, #E0E0E0, #F5F5F5, #D5D5D5, #F0F0F0)", opacity: 0.6 }} />
-          <div className="absolute inset-[10px] rounded-full opacity-20" style={{ background: "conic-gradient(from 0deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0000)" }} />
-          <div className="absolute inset-0 m-auto w-[30px] h-[30px] rounded-full bg-white" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)" }}>
-            <div className="absolute inset-0 m-auto w-[10px] h-[10px] rounded-full" style={{ background: "linear-gradient(135deg, #E0E0E0, #C0C0C0)" }} />
+          {/* Grooves */}
+          <div className="absolute inset-[12px] rounded-full border border-white/[0.06]" />
+          <div className="absolute inset-[20px] rounded-full border border-white/[0.04]" />
+          <div className="absolute inset-[28px] rounded-full border border-white/[0.06]" />
+          <div className="absolute inset-[36px] rounded-full border border-white/[0.04]" />
+          <div className="absolute inset-[44px] rounded-full border border-white/[0.03]" />
+          {/* Rainbow holographic sheen */}
+          <motion.div
+            className="absolute inset-[6px] rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+            style={{
+              background: "conic-gradient(from 0deg, rgba(255,0,0,0.08), rgba(255,140,0,0.12), rgba(255,255,0,0.08), rgba(0,255,0,0.1), rgba(0,140,255,0.12), rgba(140,0,255,0.08), rgba(255,0,140,0.1), rgba(255,0,0,0.08))",
+            }}
+          />
+          {/* Secondary rainbow band */}
+          <div
+            className="absolute inset-[18px] rounded-full"
+            style={{
+              background: "conic-gradient(from 120deg, rgba(255,200,100,0.1), rgba(100,255,200,0.08), rgba(200,100,255,0.1), rgba(255,100,200,0.08), rgba(255,200,100,0.1))",
+            }}
+          />
+          {/* Metallic sheen highlight */}
+          <div className="absolute inset-[6px] rounded-full" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 40%, rgba(255,255,255,0.1) 60%, transparent 100%)" }} />
+          {/* Center hub */}
+          <div className="absolute inset-0 m-auto w-[34px] h-[34px] rounded-full" style={{ background: "linear-gradient(145deg, #F0F0F0, #D8D8D8, #E8E8E8)", boxShadow: "0 1px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.5)" }}>
+            {/* Center hole */}
+            <div className="absolute inset-0 m-auto w-[10px] h-[10px] rounded-full" style={{ background: "linear-gradient(135deg, #C0C0C0, #A0A0A0)", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.2)" }} />
+            {/* Label area */}
+            <div className="absolute inset-[6px] rounded-full border border-gray-200/30" />
           </div>
         </div>
       </motion.div>
@@ -5966,7 +5995,7 @@ export default function Home() {
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
                 </div>
                 <span className="text-[11px] font-medium text-gray-700">Do Not Disturb</span>
-                <span className="text-[11px] text-gray-400">Coding</span>
+                <span className="text-[11px] text-gray-400">Designing</span>
               </div>
             </div>
             {/* Spotify — centered */}
@@ -6056,7 +6085,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.03, y: -3 }}
+              whileHover={{ scale: 1.03, y: -3, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.3 }}
               className="absolute right-[5vw] top-[6%]"
             >
@@ -6136,7 +6165,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              whileHover={{ scale: 1.03, y: -3 }}
+              whileHover={{ scale: 1.03, y: -3, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.5, type: "spring", stiffness: 300, damping: 20 }}
               className="absolute left-[58%] top-[35%]"
             >
@@ -6177,8 +6206,8 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.03, y: -2, transition: { delay: 0, duration: 0.2 } }}
+              whileTap={{ scale: 0.97, transition: { delay: 0, duration: 0.1 } }}
               transition={{ delay: 0.7 }}
               className="absolute left-[4vw] bottom-[18%]"
             >
@@ -6213,7 +6242,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.02, y: -3 }}
+              whileHover={{ scale: 1.02, y: -3, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.65 }}
               className="absolute right-[5vw] bottom-[12%]"
             >
@@ -6255,8 +6284,8 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.03, y: -2, transition: { delay: 0, duration: 0.2 } }}
+              whileTap={{ scale: 0.97, transition: { delay: 0, duration: 0.1 } }}
               transition={{ delay: 0.8, type: "spring", stiffness: 300, damping: 20 }}
               className="absolute left-1/2 -translate-x-1/2 bottom-[4%] cursor-pointer"
             >
@@ -6285,8 +6314,8 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05, transition: { delay: 0, duration: 0.2 } }}
+              whileTap={{ scale: 0.95, transition: { delay: 0, duration: 0.1 } }}
               transition={{ delay: 0.6 }}
               className="absolute left-1/2 -translate-x-1/2 top-[3%]"
             >
@@ -6304,7 +6333,7 @@ export default function Home() {
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
                 </div>
                 <span className="text-[11px] font-medium text-gray-700">Do Not Disturb</span>
-                <span className="text-[11px] text-gray-400">Coding</span>
+                <span className="text-[11px] text-gray-400">Designing</span>
               </div>
             </motion.div>
 
@@ -6314,7 +6343,7 @@ export default function Home() {
             {/* ── Siri Suggestion ── */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
-              whileHover={{ scale: 1.04, y: -2 }}
+              whileHover={{ scale: 1.04, y: -2, transition: { delay: 0, duration: 0.2 } }}
               whileTap={{ scale: 0.96 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
@@ -6484,6 +6513,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.04, y: -3, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.16 }}
               className="absolute left-[22vw] top-[35%]"
             >
@@ -6494,6 +6524,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20, rotate: -2 }}
               animate={{ opacity: 1, y: 0, rotate: -2 }}
+              whileHover={{ scale: 1.03, y: -3, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.22 }}
               className="absolute right-[32vw] top-[28%]"
             >
@@ -6507,6 +6538,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20, rotate: -6 }}
               animate={{ opacity: 1, y: 0, rotate: -6 }}
+              whileHover={{ scale: 1.04, y: -4, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.05 }}
               className="absolute left-[3vw] top-[4%] origin-top-left"
               style={{ transform: "scale(0.6) rotate(-6deg)" }}
@@ -6518,6 +6550,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20, rotate: 2 }}
               animate={{ opacity: 1, y: 0, rotate: 2 }}
+              whileHover={{ scale: 1.03, y: -3, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.12 }}
               className="absolute right-[6vw] top-[52%]"
             >
@@ -6528,6 +6561,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.03, y: -3, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.08 }}
               className="absolute right-[6vw] top-[3%]"
             >
@@ -6679,6 +6713,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.06, y: -3, transition: { delay: 0, duration: 0.2 } }}
               transition={{ delay: 0.2 }}
               className="absolute right-[28vw] top-[82%] rotate-[-6deg]"
             >
