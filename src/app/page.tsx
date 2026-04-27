@@ -1168,7 +1168,7 @@ const journeyStops = [
   { year: "2021", city: "Portland, OR", role: "iOS Engineer", company: "Nike", logo: "/logos/nike.svg", color: "#111111", tag: "First job → coast to coast" },
   { year: "2022", city: "New Jersey", role: "iOS Engineer", company: "Spotify", logo: "/logos/spotify.png", color: "#1DB954", tag: "61% CTR increase on ads" },
   { year: "2024", city: "San Diego, CA", role: "Design Engineer", company: "Sidework", logo: "/logos/sidework.png", color: "#3DC1B8", tag: "Engineer → Design pivot" },
-  { year: "2025", city: "San Francisco, CA", role: "Design Engineer", company: "Electronic Arts", logo: "/logos/ea.jpg", color: "#2D5BE3", tag: "92+ component design system" },
+  { year: "2025", city: "San Francisco, CA", role: "Design Engineer", company: "Electronic Arts", logo: "/logos/ea.jpg", color: "#2D5BE3", tag: "70+ component design system" },
 ];
 
 function JourneyTimeline() {
@@ -1203,7 +1203,7 @@ function JourneyTimeline() {
     4: [
       { x: 55, y: 25, rotate: -4, type: "logo", content: "/logos/ea.jpg" },
       { x: 20, y: 45, rotate: 3, type: "pin", content: "San Francisco, CA" },
-      { x: 70, y: 60, rotate: -6, type: "tag", content: "92+ components" },
+      { x: 70, y: 60, rotate: -6, type: "tag", content: "70+ components" },
       { x: 35, y: 70, rotate: 5, type: "tag", content: "Design System" },
       { x: 75, y: 15, rotate: -2, type: "tag", content: "SwiftUI + Figma" },
     ],
@@ -3478,16 +3478,18 @@ function AirDropPopup() {
           >
             Decline
           </button>
-          <button
+          <a
+            href="/Taylor_Breitzman_Resume.pdf"
+            download
             onClick={() => setAccepted(true)}
-            className="flex-1 py-3 text-[14px] text-blue-500 font-bold active:bg-gray-100/50"
+            className="flex-1 py-3 text-[14px] text-blue-500 font-bold active:bg-gray-100/50 text-center"
           >
             Accept
-          </button>
+          </a>
         </div>
       ) : (
         <div className="py-3 text-center">
-          <p className="text-[12px] text-gray-500">Saved to Photos</p>
+          <p className="text-[12px] text-gray-500">Saved to Files</p>
         </div>
       )}
     </motion.div>
@@ -4603,12 +4605,11 @@ const experiences = [
     description:
       "Sole design engineer on Parasoul, EA's world-building platform. Built the design system from scratch and owned the creative engineering — the animations, interactions, and details that make the product feel alive.",
     highlights: [
-      "Architected and built a 90+ component design system in SwiftUI from the ground up — defining tokens for color, typography, spacing, motion, and layout with 1:1 Figma parity, enabling scalable and consistent UI development",
-      "Created high-fidelity, tactile interaction systems using spring physics, gesture-driven interfaces, and motion design to elevate product feel and responsiveness",
-      "Designed and engineered an immersive character chat experience, leveraging custom Metal shaders and transparent video avatars — supporting 8 dynamic emotion states with GPU-accelerated compositing, depth layering, and real-time sentiment-driven transitions",
-      "Built a rich messaging interface with variable font interpolation, ambient thinking animations, and depth-based avatar hierarchy",
-      "Shipped interaction concepts like glassmorphism, transparent video layers, and gesture-driven flows directly in production SwiftUI",
-      "Defined an AI-native design engineering workflow using Claude and MCP integrations to parallelize design and development — reducing design-to-code cycles from days to hours",
+      "Designing AI-native interaction systems in an innovation lab, defining new patterns for conversational behavior and responsiveness (0→1)",
+      "Architected a 70+ component SwiftUI design system with full token parity across color, typography, spacing, motion, and layout — establishing the visual foundation for the team",
+      "Defined tactile interaction patterns using spring physics, gesture-driven flows, and motion to create a cohesive product feel",
+      "Designed and shipped a character chat experience with eight emotion states, exploring how depth, motion, and sentiment-driven transitions could shape the feel of conversational AI",
+      "Defined an AI-native design workflow using Claude + MCP, syncing Figma and SwiftUI tokens to compress design-to-code cycles from days to hours",
     ],
     color: "#0071E3",
   },
@@ -4637,6 +4638,7 @@ const experiences = [
       "Led iOS development of Spotify's Ads UI redesign across audio, video, and podcast formats, shipping to hundreds of millions of users globally.",
     highlights: [
       "Developed a new Ads UI, enhancing interactivity and delivering a 61% increase in overall click-through rates and a 120% surge in global video click-through rates",
+      "Partnered with data science to design and run A/B experiments on new ad concepts, using results to refine UI patterns before global rollout",
       "Engineered a client-side color-extraction algorithm using binary search to find the brightest brand-safe shade that passes WCAG AA — preserving advertiser identity while guaranteeing 4.5:1 contrast compliance",
       "Worked across the full ads lifecycle (audio, video, and podcast formats) shipping components that served ads to hundreds of millions of users globally",
     ],
@@ -6920,20 +6922,36 @@ export default function Home() {
               </div>
 
               {/* Skills pills */}
-              <div className="mt-12">
-                <h3 className="text-sm font-bold text-gray-900 mb-4">Skills & Technologies</h3>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "SwiftUI", "Swift", "iOS", "UIKit", "Design Systems",
-                    "Figma", "Prototyping", "Interaction Design", "Motion Design",
-                    "AI-Assisted Development", "Claude", "MCP Integrations",
-                    "Accessibility", "WCAG", "Design Tokens", "Component Libraries",
-                    "API Design", "Metal", "Flutter", "React", "TypeScript", "Next.js",
-                    "Design Engineering", "Product Design", "Git",
-                  ].map((skill) => (
-                    <span key={skill} className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-500">{skill}</span>
-                  ))}
-                </div>
+              <div className="mt-12 space-y-5">
+                <h3 className="text-sm font-bold text-gray-900">Skills & Technologies</h3>
+                {[
+                  {
+                    label: "Design",
+                    items: [
+                      "Product Design", "Interaction Design", "Design Systems",
+                      "Workflow Design", "Information Architecture", "Figma",
+                      "Prototyping", "A/B Testing", "Accessibility", "WCAG",
+                      "Design Tokens", "Motion Design",
+                    ],
+                  },
+                  {
+                    label: "Engineering",
+                    items: ["SwiftUI", "Swift", "iOS", "UIKit", "React", "TypeScript", "Next.js"],
+                  },
+                  {
+                    label: "AI",
+                    items: ["Claude", "MCP", "AI-Assisted Design"],
+                  },
+                ].map((group) => (
+                  <div key={group.label}>
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">{group.label}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {group.items.map((skill) => (
+                        <span key={skill} className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">{skill}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
 
             </motion.div>
