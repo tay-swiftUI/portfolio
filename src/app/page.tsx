@@ -291,32 +291,48 @@ function NavPill({
             boxShadow: "0 0 0 0.5px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
           }}
         >
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => onChange(tab)}
-              className="relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors"
-            >
-              {active === tab && (
-                <motion.div
-                  layoutId="nav-pill"
-                  className="absolute inset-0 rounded-full bg-black"
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 30,
-                  }}
-                />
-              )}
-              <span
-                className={`relative z-10 ${
-                  active === tab ? "text-white" : "text-gray-500 hover:text-black"
-                }`}
+          {tabs.map((tab) => {
+            const isActive = active === tab;
+            return (
+              <motion.button
+                key={tab}
+                onClick={() => onChange(tab)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.94 }}
+                transition={{
+                  scale: { type: "spring", stiffness: 600, damping: 38, mass: 0.6 },
+                }}
+                className="relative rounded-full px-4 py-1.5 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-black/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                aria-current={isActive ? "page" : undefined}
               >
-                {tab}
-              </span>
-            </button>
-          ))}
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-pill"
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: "linear-gradient(180deg, #1a1a1a 0%, #000 100%)",
+                      boxShadow:
+                        "inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.12)",
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 520,
+                      damping: 32,
+                      mass: 0.9,
+                    }}
+                  />
+                )}
+                <motion.span
+                  className="relative z-10 block"
+                  animate={{ color: isActive ? "#ffffff" : "#6b7280" }}
+                  whileHover={!isActive ? { color: "#000000" } : undefined}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                >
+                  {tab}
+                </motion.span>
+              </motion.button>
+            );
+          })}
         </div>
       </motion.nav>
 
@@ -363,15 +379,17 @@ function NavPill({
               }}
             >
               {tabs.map((tab) => (
-                <button
+                <motion.button
                   key={tab}
                   onClick={() => { onChange(tab); setMenuOpen(false); }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 28 }}
                   className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                    active === tab ? "text-black" : "text-gray-400"
+                    active === tab ? "text-black" : "text-gray-400 hover:text-black"
                   }`}
                 >
                   {tab}
-                </button>
+                </motion.button>
               ))}
             </motion.div>
           )}
@@ -6372,20 +6390,6 @@ export default function Home() {
             <ImageFolder x="48vw" y="20%" delay={0.46} label="untitled" image="/meme.webp" />
             <MacAppFolder x="37vw" y="24%" delay={0.46} />
             <WeatherApp x="68vw" y="6%" delay={0.5} />
-
-            {/* Notes app icon — below weather */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.92 }}
-              transition={{ delay: 0.55 }}
-              className="absolute flex flex-col items-center cursor-pointer select-none"
-              style={{ left: "64vw", top: "18%" }}
-            >
-              <img src="/notes-icon.png" alt="Notes" className="w-[56px] h-[56px] rounded-[14px] object-contain" style={{ boxShadow: "0 3px 10px rgba(0,0,0,0.12)" }} />
-              <span className="text-[10px] font-medium text-gray-600 mt-1.5 text-center">Notes</span>
-            </motion.div>
 
           </div>
 
