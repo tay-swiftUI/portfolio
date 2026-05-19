@@ -4605,10 +4605,10 @@ const experiences = [
     description:
       "Sole design engineer on Parasoul, EA's world-building platform. Built the design system from scratch and owned the creative engineering — the animations, interactions, and details that make the product feel alive.",
     highlights: [
-      "Designing AI-native interaction systems in an innovation lab, defining new patterns for conversational behavior and responsiveness (0→1)",
       "Architected a 70+ component SwiftUI design system with full token parity across color, typography, spacing, motion, and layout — establishing the visual foundation for the team",
-      "Defined tactile interaction patterns using spring physics, gesture-driven flows, and motion to create a cohesive product feel",
-      "Designed and shipped a character chat experience with eight emotion states, exploring how depth, motion, and sentiment-driven transitions could shape the feel of conversational AI",
+      "Designing AI-native interaction systems in an innovation lab, defining new patterns for conversational behavior and responsiveness (0→1)",
+      "Designed tactile interaction systems using spring physics, gesture-driven flows, and motion patterns to create a cohesive product feel",
+      "Designed and shipped a character chat experience with eight emotion states using Metal shaders and dynamic avatars, exploring how depth, motion, and sentiment-driven transitions could shape the feel of conversational AI",
       "Defined an AI-native design workflow using Claude + MCP, syncing Figma and SwiftUI tokens to compress design-to-code cycles from days to hours",
     ],
     color: "#0071E3",
@@ -4823,6 +4823,52 @@ const projects = [
           { label: "Character Reactions", src: "/projects/character-reactions.mov", scroll: false, transparent: true },
         ],
       },
+    ],
+  },
+  {
+    id: "parasoul-ds",
+    type: "design-system" as const,
+    company: "Electronic Arts",
+    logo: "/logos/ea.jpg",
+    coverImage: "/projects/parasoul-cover.png",
+    title: "Parasoul Design System",
+    subtitle: "Tokens, foundations, and components for EA's world-building platform",
+    role: "Design Engineer",
+    period: "2025",
+    color: "#FFD400",
+    heroGradient: "radial-gradient(ellipse 80% 70% at 22% 30%, rgba(255,138,77,0.85), transparent 55%), radial-gradient(ellipse 70% 55% at 78% 80%, rgba(157,225,238,0.75), transparent 60%), linear-gradient(135deg, #F88AED 0%, #E879F9 100%)",
+    blurb: "",
+    overview: "",
+    tools: ["Figma", "SwiftUI", "Design Tokens"],
+    images: [],
+    sections: [],
+    dsSections: [
+      { id: "foundations", category: "Overview", label: "Overview", title: "Design System", subtitle: "Tokens, foundations, and components for EA's world-building platform.", body: "Parasoul's design system is built from the ground up to scale across a world-building app where every character, story, and environment is unique. Tokens are the contract; primitives compose into 90+ production components; and a custom squircle algorithm matches Figma's corner smoothing 1:1 so design and code stay aligned. The system is opinionated where it matters and expressive where it should be.<br/><br/><span style=\"color:#9ca3af\">This page is a selected glimpse — foundations in full, and a handful of representative components rather than the whole catalog.</span>", frames: [] as string[] },
+      { id: "color", category: "Foundations", label: "Color", title: "Color", subtitle: "Semantic theme tokens for surface, content, border, and emphasis modes.", body: "Parasoul's color system works in three layers. The <strong>brand</strong> palette is the primitive scale — every named color with deliberate tint and shade variants, plus three neutral families (neutral, sand, navy). The <strong>theme</strong> layer maps semantic tokens like <code>theme.surface.emphasis</code> and <code>theme.content.onContainer</code> to those primitives, so components don't reach for raw hex values. The <strong>highlight</strong> mode then lets a composition swap its accent color contextually — perfect for character moods, featured worlds, and ML-feature surfaces. Expressive on purpose: this is a world-building app, and the system should give worlds room to feel vibrant, not corporate.", frames: [], tabs: [
+        { id: "brand", label: "Brand", frames: ["/projects/parasoul-ds/color-brand.png"] },
+        { id: "theme", label: "Theme", frames: ["/projects/parasoul-ds/color-theme.png"] },
+        { id: "highlight", label: "Highlight", frames: ["/projects/parasoul-ds/color-highlight.png"] },
+      ] },
+      { id: "gradients", category: "Foundations", label: "Gradients", title: "Gradients", subtitle: "Twelve named gradient tokens for emotional and atmospheric surfaces.", body: "Gradients are first-class tokens in Parasoul, exposed as <code>MLGradient.gradient01</code> through <code>MLGradient.gradient12</code>. The set is deliberately ranged — warm and energetic to cool and dimensional — covering character moods, ML-feature surfaces, and special states. Designers reach for a named gradient instead of inventing a one-off, so updates propagate centrally and the system stays cohesive across worlds.", frames: ["/projects/parasoul-ds/gradients-1.png"] },
+      { id: "radius", category: "Foundations", label: "Radius", title: "Radius", subtitle: "Six corner radius tokens, from tight detail to fully rounded.", body: "Six radius tokens span 8px tight detail up to a 999px fully-rounded value for pills and avatars, exposed as <code>MLCornerRadius.xSmall</code> through <code>MLCornerRadius.rounded</code>. Every rounded corner in Parasoul uses a custom squircle algorithm that matches Figma's 100% corner smoothing — so the design and the code agree on the same curve, not a CSS approximation of one. It's a small detail that adds up across every card, button, avatar, and surface in the product.", frames: ["/projects/parasoul-ds/radius-1.png"] },
+      { id: "typography", category: "Foundations", label: "Typography", title: "Typography", subtitle: "A two-register type system — disciplined for UI, expressive for worldbuilding.", body: "Parasoul's typography works in two registers. The <strong>core</strong> system covers Display, Heading, Section, Content, and Label tokens — exposed as <code>.mlTypography(.displayLarge)</code> through <code>.mlTypography(.labelUppercase)</code> — handling every standard UI surface from headlines to fine print. The <strong>tapestry</strong> layer is the expressive side: a curated set of genre-driven type treatments designers reach for when a world needs to feel like its genre at a glance. Sci-fi gets a stenciled mono; horror leans dripping; fantasy goes blackletter; westerns get the slab. Each tapestry treatment is a token, so a genre swap on a world propagates everywhere it appears.", frames: [], tabs: [
+        { id: "core", label: "Core", frames: ["/projects/parasoul-ds/typography-core.png"] },
+        { id: "tapestry", label: "Tapestry", frames: ["/projects/parasoul-ds/typography-tapestry.png"] },
+      ] },
+      { id: "icons", category: "Foundations", label: "Iconography", title: "Iconography", subtitle: "Two icon libraries — one for the brand, one for the system — sharing the same grid and stroke discipline.", body: "Parasoul's icon system has two libraries. The <strong>brand</strong> set covers product nouns — world, story, character, creator, lore, genre, parasoul — drawn in a thicker, more expressive style that matches the game-world identity. The <strong>system</strong> set is the standard UI vocabulary — arrows, chevrons, search, settings — drawn cleaner and thinner for high-density UI. Every icon is exposed as a token (<code>MLIcon.Brand.world</code>, <code>MLIcon.System.search</code>), and both libraries share the same grid so they read as one family at different volumes.", frames: [], tabs: [
+        { id: "brand", label: "Brand", frames: ["/projects/parasoul-ds/icons-brand.png"] },
+        { id: "system", label: "System", frames: ["/projects/parasoul-ds/icons-system.png"] },
+      ] },
+
+      // ─── Components ───
+      { id: "avatars", category: "Components", label: "Avatars", title: "Avatars", subtitle: "Three avatar shapes for creators, characters, and worlds.", body: "", frames: [] as string[] },
+      { id: "avatar-creator", category: "Components", parentId: "avatars", label: "Avatar Creator", title: "Avatar Creator", subtitle: "The creator profile avatar — a soft-cornered square scaling across eight sizes with a gradient initials fallback.", body: "", frames: ["/projects/parasoul-ds/avatar-creator.png"] },
+      { id: "avatar-character", category: "Components", parentId: "avatars", label: "Avatar Character", title: "Avatar Character", subtitle: "The character avatar — an organic oval mask scaling across seven sizes with gradient-egg fallbacks for unseeded characters.", body: "", frames: ["/projects/parasoul-ds/avatar-character.png"] },
+      { id: "avatar-world", category: "Components", parentId: "avatars", label: "Avatar World", title: "Avatar World", subtitle: "The world avatar — a stamped sphere that lives across feeds and headers, with a dotted-globe fallback for empty worlds.", body: "", frames: ["/projects/parasoul-ds/avatar-world.png"] },
+
+      { id: "button", category: "Components", label: "Button", title: "Button", subtitle: "The standard text button — primary, secondary, and tertiary variants.", body: "", frames: [] as string[] },
+      { id: "chips-tags", category: "Components", label: "Chips & Tags", title: "Chips & Tags", subtitle: "Small metadata indicators — categories, statuses, filters.", body: "", frames: [] as string[] },
+      { id: "rows", category: "Components", label: "Rows", title: "Rows", subtitle: "List rows for settings, navigation, and metadata.", body: "", frames: [] as string[] },
     ],
   },
   {
@@ -5368,6 +5414,337 @@ const projects = [
   },
 ];
 
+// ─── DS Section Content (body + tabs + frames) ───
+function DSSectionContent({ section }: { section: any }) {
+  const tabs = section.tabs as Array<{ id: string; label: string; frames: string[] }> | undefined;
+  const [activeTabId, setActiveTabId] = useState<string>(tabs?.[0]?.id ?? "");
+  const activeTab = tabs?.find((t) => t.id === activeTabId);
+  const frames: string[] = activeTab ? activeTab.frames : (section.frames || []);
+
+  return (
+    <>
+      {/* Body */}
+      {section.body && (
+        <div className="mb-10">
+          <div className="bg-white rounded-2xl border border-gray-100 p-8">
+            <p
+              className="text-gray-600 leading-relaxed"
+              style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}
+              dangerouslySetInnerHTML={{ __html: section.body }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Horizontal tab bar (only when tabs exist) */}
+      {tabs && tabs.length > 0 && (
+        <div className="mb-8">
+          <div className="inline-flex items-center gap-1 p-1 rounded-full bg-gray-100/80">
+            {tabs.map((tab) => {
+              const isActive = tab.id === activeTabId;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTabId(tab.id)}
+                  className="relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-150"
+                  style={{
+                    color: isActive ? "#0a0a0a" : "#6b7280",
+                  }}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId={`ds-tab-bg-${section.id}`}
+                      className="absolute inset-0 rounded-full bg-white"
+                      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)" }}
+                      transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                    />
+                  )}
+                  <span className="relative z-10">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Frames */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab ? activeTab.id : "frames"}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.2 }}
+        >
+          {frames.length > 0 ? (
+            <div className="flex flex-col gap-8">
+              {frames.map((src, i) => (
+                <motion.div
+                  key={src + i}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="rounded-2xl overflow-hidden"
+                >
+                  <img src={src} alt={`${section.label} frame ${i + 1}`} className="w-full block" />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50/40 p-16 text-center">
+              <p className="text-sm text-gray-400">
+                Add Figma exports to <code className="px-1.5 py-0.5 rounded bg-white text-gray-600 text-[12px]">dsSections.{section.id}.frames</code>
+              </p>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ─── Design System Case Study ───
+function DesignSystemCaseStudy({ project, onBack }: { project: any; onBack: () => void }) {
+  type DSTab = {
+    id: string;
+    label: string;
+    frames: string[];
+  };
+  type DSSection = {
+    id: string;
+    category: string;
+    parentId?: string;
+    label: string;
+    title: string;
+    subtitle: string;
+    body: string;
+    frames: string[];
+    tabs?: DSTab[];
+  };
+  const sections = (project.dsSections || []) as DSSection[];
+  const [activeId, setActiveId] = useState<string>(sections[0]?.id ?? "");
+  const active = sections.find((s) => s.id === activeId) ?? sections[0];
+  const activeParent = active?.parentId ? sections.find((s) => s.id === active.parentId) : undefined;
+
+  // Scroll to top of case study when section changes (skip initial render)
+  const heroRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    heroRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [activeId]);
+
+  // Group top-level sections by category, preserving order. Children are nested under parents.
+  const topLevel = sections.filter((s) => !s.parentId);
+  const childrenOf = (parentId: string) => sections.filter((s) => s.parentId === parentId);
+  const grouped = topLevel.reduce<Record<string, DSSection[]>>((acc, s) => {
+    (acc[s.category] = acc[s.category] || []).push(s);
+    return acc;
+  }, {});
+  const categoryOrder = Array.from(new Set(topLevel.map((s) => s.category)));
+
+  return (
+    <motion.div
+      key="ds-case-study"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Back */}
+      <motion.button
+        onClick={onBack}
+        whileHover={{ x: -3 }}
+        className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 mb-10 transition-colors"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 4L6 8L10 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        Back
+      </motion.button>
+
+      {/* ─── Full live doc — breaks out of max-w-3xl parent ─── */}
+      <div
+        className="relative mb-16"
+        style={{
+          width: "100vw",
+          marginLeft: "calc(50% - 50vw)",
+          marginRight: "calc(50% - 50vw)",
+        }}
+      >
+        <div className="mx-auto px-6 md:px-12" style={{ maxWidth: 1280 }}>
+          {/* Morphing hero */}
+          <div
+            ref={heroRef}
+            className="relative rounded-[28px] overflow-hidden mb-16"
+            style={{ minHeight: 520 }}
+          >
+            {/* Cover image background */}
+            {project.coverImage && (
+              <img
+                src={project.coverImage}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
+
+            <div className="relative z-10 p-10 md:p-14 flex flex-col h-full justify-between" style={{ minHeight: 520 }}>
+              <div className="flex items-start justify-between">
+                <img
+                  src="/projects/parasoul-ds/parasoul-logo.png"
+                  alt="Parasoul"
+                  className="w-12 h-12 object-contain"
+                />
+                <span className="text-[10px] font-bold tracking-[0.24em] text-black/65 uppercase">
+                  {project.company} · {project.title}
+                </span>
+              </div>
+
+              <div className="max-w-3xl">
+                <AnimatePresence mode="wait">
+                  <motion.h1
+                    key={active.id + "-title"}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-[68px] md:text-[88px] leading-[0.95] font-bold tracking-[-0.02em] text-black/90 mb-5"
+                  >
+                    {active.title}
+                  </motion.h1>
+                </AnimatePresence>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={active.id + "-sub"}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                    className="text-lg md:text-xl text-black/70 max-w-xl leading-snug"
+                  >
+                    {active.subtitle}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)] gap-10 md:gap-20 items-start">
+            {/* Sidebar */}
+            <aside className="sticky top-8 self-start hidden md:block">
+              <nav className="flex flex-col gap-8">
+                {categoryOrder.map((cat) => (
+                  <div key={cat}>
+                    <p className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase mb-3 pl-3">
+                      {cat}
+                    </p>
+                    <div className="flex flex-col gap-0.5">
+                      {grouped[cat].map((s) => {
+                        const isActive = s.id === activeId;
+                        const kids = childrenOf(s.id);
+                        return (
+                          <div key={s.id} className="flex flex-col gap-0.5">
+                            <button
+                              onClick={() => setActiveId(s.id)}
+                              className="relative text-left pl-3 pr-2 py-1.5 text-[13.5px] transition-colors duration-200"
+                              style={{
+                                color: isActive ? "#0a0a0a" : "#9ca3af",
+                                fontWeight: isActive ? 600 : 500,
+                              }}
+                            >
+                              {isActive && (
+                                <motion.span
+                                  layoutId="ds-nav-indicator"
+                                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-full bg-gray-900"
+                                  transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                                />
+                              )}
+                              {s.label}
+                            </button>
+
+                            {kids.length > 0 && (
+                              <div className="flex flex-col gap-0.5 ml-3 pl-3 border-l border-gray-100">
+                                {kids.map((k) => {
+                                  const kActive = k.id === activeId;
+                                  return (
+                                    <button
+                                      key={k.id}
+                                      onClick={() => setActiveId(k.id)}
+                                      className="relative text-left pl-3 pr-2 py-1.5 text-[13px] transition-colors duration-200"
+                                      style={{
+                                        color: kActive ? "#0a0a0a" : "#9ca3af",
+                                        fontWeight: kActive ? 600 : 500,
+                                      }}
+                                    >
+                                      {kActive && (
+                                        <motion.span
+                                          layoutId="ds-nav-indicator"
+                                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-full bg-gray-900"
+                                          transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                                        />
+                                      )}
+                                      {k.label}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </nav>
+            </aside>
+
+            {/* Mobile dropdown */}
+            <div className="md:hidden mb-2">
+              <select
+                value={activeId}
+                onChange={(e) => setActiveId(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white"
+              >
+                {categoryOrder.map((cat) => (
+                  <optgroup key={cat} label={cat}>
+                    {grouped[cat].flatMap((s) => [
+                      <option key={s.id} value={s.id}>{s.label}</option>,
+                      ...childrenOf(s.id).map((k) => (
+                        <option key={k.id} value={k.id}>{"    "}{k.label}</option>
+                      )),
+                    ])}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+
+            {/* Content */}
+            <main className="min-w-0">
+              <AnimatePresence mode="wait">
+                {active && (
+                  <motion.div
+                    key={active.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.22 }}
+                  >
+                    <DSSectionContent section={active} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </main>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Projects View ───
 function ProjectsView() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
@@ -5463,6 +5840,12 @@ function ProjectsView() {
               })}
             </div>
           </motion.div>
+        ) : project && (project as any).type === "design-system" ? (
+          <DesignSystemCaseStudy
+            key="ds-case"
+            project={project}
+            onBack={() => setSelectedProject(null)}
+          />
         ) : project ? (
           <motion.div
             key="case-study"
@@ -6926,17 +7309,19 @@ export default function Home() {
                 <h3 className="text-sm font-bold text-gray-900">Skills & Technologies</h3>
                 {[
                   {
-                    label: "Design",
+                    label: "Engineering",
                     items: [
-                      "Product Design", "Interaction Design", "Design Systems",
-                      "Workflow Design", "Information Architecture", "Figma",
-                      "Prototyping", "A/B Testing", "Accessibility", "WCAG",
-                      "Design Tokens", "Motion Design",
+                      "SwiftUI", "Swift", "iOS", "UIKit", "Design Systems",
+                      "Design Tokens", "Component Libraries", "Motion", "Metal",
+                      "React", "TypeScript", "Next.js",
                     ],
                   },
                   {
-                    label: "Engineering",
-                    items: ["SwiftUI", "Swift", "iOS", "UIKit", "React", "TypeScript", "Next.js"],
+                    label: "Design",
+                    items: [
+                      "Product Design", "Interaction Design", "Design Systems",
+                      "Figma", "Prototyping", "Accessibility", "WCAG", "Motion Design",
+                    ],
                   },
                   {
                     label: "AI",
