@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import LiquidGlass from "liquid-glass-react";
 
 // ─── Typewriter Hook ───
@@ -4831,6 +4831,7 @@ const projects = [
     company: "Electronic Arts",
     logo: "/logos/ea.jpg",
     coverImage: "/projects/parasoul-cover.png",
+    thumbnailImage: "/projects/parasoul-ds/parasoul-ds-thumb.png",
     title: "Parasoul Design System",
     subtitle: "Tokens, foundations, and components for EA's world-building platform",
     role: "Design Engineer",
@@ -4861,15 +4862,35 @@ const projects = [
       ] },
 
       // ─── Components ───
-      { id: "avatars", category: "Components", label: "Avatars", title: "Avatars", subtitle: "Three avatar shapes for creators, characters, and worlds.", body: "", frames: [] as string[] },
-      { id: "avatar-creator", category: "Components", parentId: "avatars", label: "Avatar Creator", title: "Avatar Creator", subtitle: "The creator profile avatar — a soft-cornered square scaling across eight sizes with a gradient initials fallback.", body: "", frames: ["/projects/parasoul-ds/avatar-creator.png"] },
-      { id: "avatar-character", category: "Components", parentId: "avatars", label: "Avatar Character", title: "Avatar Character", subtitle: "The character avatar — an organic oval mask scaling across seven sizes with gradient-egg fallbacks for unseeded characters.", body: "", frames: ["/projects/parasoul-ds/avatar-character.png"] },
-      { id: "avatar-world", category: "Components", parentId: "avatars", label: "Avatar World", title: "Avatar World", subtitle: "The world avatar — a stamped sphere that lives across feeds and headers, with a dotted-globe fallback for empty worlds.", body: "", frames: ["/projects/parasoul-ds/avatar-world.png"] },
+      { id: "avatars", category: "Components", label: "Avatars", title: "Avatars", subtitle: "Three avatar shapes — one for creators, one for characters, one for worlds — each with its own size scale and fallback.", body: "Parasoul has three distinct avatar primitives because the things they represent aren't interchangeable. <strong>Creator</strong> is a soft-cornered square for real people, with a gradient initials fallback. <strong>Character</strong> is an organic oval mask for generated characters, with gradient-egg fallbacks for unseeded ones. <strong>World</strong> is a stamped sphere for places, with a dotted-globe fallback for empty worlds. Each has its own size scale tuned to where it appears most often.", frames: [], tabs: [
+        { id: "creator", label: "Creator", frames: ["/projects/parasoul-ds/avatar-creator.png"] },
+        { id: "character", label: "Character", frames: ["/projects/parasoul-ds/avatar-character.png"] },
+        { id: "world", label: "World", frames: ["/projects/parasoul-ds/avatar-world.png"] },
+      ] },
 
-      { id: "button", category: "Components", label: "Button", title: "Button", subtitle: "The standard text button — primary, secondary, and tertiary variants.", body: "", frames: [] as string[] },
-      { id: "chips-tags", category: "Components", label: "Chips & Tags", title: "Chips & Tags", subtitle: "Small metadata indicators — categories, statuses, filters.", body: "", frames: [] as string[] },
-      { id: "rows", category: "Components", label: "Rows", title: "Rows", subtitle: "List rows for settings, navigation, and metadata.", body: "", frames: [] as string[] },
+      { id: "button", category: "Components", label: "Button", title: "Button", subtitle: "Three sizes, disabled state, leading and trailing icons, and a set of surface-aware variants for emphasis and uncontrolled backgrounds.", body: "", frames: ["/projects/parasoul-ds/button.png"] },
+      { id: "chip", category: "Components", label: "Chip", title: "Chip", subtitle: "Five chip variants — default, secondary, selectable, accent, and accent outline — plus surface-aware specialty variants and a Chip-vs-Tag usage rule.", body: "", frames: ["/projects/parasoul-ds/chip.png"] },
+      { id: "section-block", category: "Components", label: "Section Block", title: "Section Block", subtitle: "The repeating section pattern across world and character pages — title, trailing action, and a slot for chips, text, custom content, or a row of avatars.", body: "", frames: ["/projects/parasoul-ds/section-block.png"] },
+      { id: "detail-row", category: "Components", label: "Detail Row", title: "Detail Row", subtitle: "A flexible row primitive — plain text, text + action, chips + action, trailing icon, or fully custom content. Includes layout tokens and a SwiftUI API surface.", body: "", frames: ["/projects/parasoul-ds/detail-row.png"] },
     ],
+  },
+  {
+    id: "ai-tooling",
+    type: "ai-tooling" as const,
+    company: "Electronic Arts",
+    logo: "/logos/ea.jpg",
+    coverImage: "/projects/ai-tooling/ai-tooling-cover.png",
+    title: "AI Design Tooling",
+    subtitle: "Designer-facing AI at the design ↔ code seam",
+    role: "Design Engineer",
+    period: "2026",
+    color: "#FFD400",
+    overview: "",
+    impact: [],
+    hideContext: true,
+    tools: ["Python", "Figma API", "AI SDK"],
+    images: [],
+    contentBlocks: [],
   },
   {
     id: "sidework-pos",
@@ -5745,6 +5766,926 @@ function DesignSystemCaseStudy({ project, onBack }: { project: any; onBack: () =
   );
 }
 
+// ─── AI Tooling Case Study ───
+type AISection = {
+  id: string;
+  category: string;
+  label: string;
+  title: string;
+  subtitle: string;
+};
+
+const aiSections: AISection[] = [
+  { id: "overview", category: "Overview", label: "Overview", title: "AI Design Tooling", subtitle: "The design system as the context AI agents operate inside — primitives to compose, tokens to respect, docs to follow." },
+  { id: "pipeline", category: "The System as Context", label: "Pipeline", title: "Pipeline", subtitle: "Figma is the spec. Code is the implementation. Agents read the markdown in between." },
+  { id: "component-docs", category: "The System as Context", label: "Component Docs", title: "Component Docs", subtitle: "Markdown is the protocol. This is what an LLM actually reads when it's about to use one of your components." },
+  { id: "token-sync", category: "The System as Context", label: "Token Sync", title: "Token Sync", subtitle: "The foundation — a Python script in CI that keeps Figma variables and code in lockstep." },
+  { id: "composition", category: "Agent-Driven Composition", label: "Composition Demo", title: "Constrained Composition", subtitle: "MCP gives the agent the file. The DS gives it the rules. The agent can only compose from primitives it's allowed to use." },
+];
+
+type DocComponent = { id: string; name: string; markdown: string };
+const docComponents: DocComponent[] = [
+  {
+    id: "card",
+    name: "Card",
+    markdown: `---
+component: Card
+package: parasoul-ds
+status: stable
+imports:
+  swiftui: "import ParasoulDS"
+  react: "import { Card } from '@parasoul/ds'"
+props:
+  - name: surface
+    type: "'background' | 'subtle' | 'emphasis' | 'contrast'"
+    default: "background"
+  - name: padding
+    type: "'sm' | 'md' | 'lg'"
+    default: "md"
+allowedChildren:
+  - Avatar.Character
+  - Avatar.Creator
+  - Chip
+  - Button
+  - SectionBlock
+  - DetailRow
+tokens:
+  background: theme.surface.{surface}
+  radius: radius.medium
+  border: border.onBackground
+---
+
+## Card
+
+The base surface primitive. Composes any of the allowed children to build
+character pages, world feeds, settings rows, and modals.
+
+## Examples
+
+\`\`\`swift
+Card(surface: .background, padding: .md) {
+    Avatar.Character(imageURL: url, size: .large)
+    SectionBlock(title: "About") {
+        Text("Atlas — steady and grounded")
+    }
+}
+\`\`\`
+
+## When to use
+
+- Any grouped surface that holds DS primitives.
+- Anywhere you'd previously reach for a raw VStack with manual padding.
+
+## When NOT to use
+
+- Don't use for full-screen modals — that's \`Sheet\`.
+- Don't override \`radius\` or \`border\` directly — use \`surface\` instead.
+
+## AI usage hints
+
+- The agent should always set \`surface\` explicitly when composing on
+  emphasis backgrounds.
+- If a designer's Figma frame contains a list of items, prefer
+  \`SectionBlock\` inside a single \`Card\` over many cards in a stack.`,
+  },
+  {
+    id: "avatar-character",
+    name: "Avatar.Character",
+    markdown: `---
+component: Avatar.Character
+package: parasoul-ds
+status: stable
+sizes: [small, medium, large, xLarge, xxLarge, threeXLarge, fourXLarge]
+fallback: gradient-egg
+props:
+  - name: imageURL
+    type: URL?
+  - name: gradientHex1
+    type: String
+  - name: gradientHex2
+    type: String
+  - name: size
+    type: AvatarSize
+    default: large
+---
+
+## Avatar.Character
+
+Organic oval mask for AI-generated characters. Falls back to a
+gradient egg when no image is available.
+
+## Examples
+
+\`\`\`swift
+Avatar.Character(
+    imageURL: character.imageURL,
+    gradientHex1: character.gradient.start,
+    gradientHex2: character.gradient.end
+).size(.xLarge)
+\`\`\`
+
+## AI usage hints
+
+- Use \`Avatar.Character\` for fictional characters; use
+  \`Avatar.Creator\` for real users; use \`Avatar.World\` for places.
+- Never substitute a \`Circle\` with an image fill — the oval mask
+  and fallback behaviors are non-negotiable.`,
+  },
+  {
+    id: "chip",
+    name: "Chip",
+    markdown: `---
+component: Chip
+package: parasoul-ds
+status: stable
+variants:
+  - default
+  - secondary
+  - selectable
+  - accent
+  - accentOutline
+surfaceVariants:
+  - regular
+  - alwaysLight
+  - alwaysDark
+  - onEmphasis
+---
+
+## Chip
+
+Compact, interactive metadata indicators. Composes inside cards,
+section blocks, and modals.
+
+## Examples
+
+\`\`\`swift
+Chip(label: "Mentor", variant: .accentOutline)
+Chip(label: "Comedy", variant: .default, leadingIcon: .genre)
+\`\`\`
+
+## AI usage hints
+
+- Use \`.accent\` for the *primary* entity in a frame ("king chip").
+- Use \`.accentOutline\` for related entities (Mentor, Rival).
+- Never invent a new chip color — if a Figma frame uses an unknown
+  fill, ask the user before generating.`,
+  },
+];
+
+type CompositionExample = {
+  id: string;
+  label: string;
+  description: string;
+  previewImage?: string;
+  preview: () => ReactNode;
+  primitives: { name: string; color: string }[];
+  code: string;
+};
+
+const compositionExamples: CompositionExample[] = [
+  {
+    id: "character-card",
+    label: "Character profile",
+    description: "Avatar + name + relationship chips + CTA",
+    previewImage: "/projects/parasoul-ds/composition/character-card.png",
+    preview: () => (
+      <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white border border-gray-200" style={{ width: 220 }}>
+        <div className="w-16 h-20 rounded-[40%/45%] bg-gradient-to-br from-green-300 to-yellow-200" />
+        <div className="text-[13px] font-semibold text-gray-900">Atlas</div>
+        <div className="flex gap-1.5 flex-wrap justify-center">
+          <span className="text-[9px] font-medium px-2 py-0.5 rounded-full border border-sky-300 text-sky-700">Mentor</span>
+          <span className="text-[9px] font-medium px-2 py-0.5 rounded-full border border-sky-300 text-sky-700">Steady</span>
+        </div>
+        <button className="w-full text-[10px] font-semibold py-1.5 px-3 rounded-full bg-gray-900 text-white">View world →</button>
+      </div>
+    ),
+    primitives: [
+      { name: "Avatar.Character", color: "#9DE1EE" },
+      { name: "Chip.default", color: "#3DC1B8" },
+      { name: "Button.primary", color: "#FE8A4D" },
+      { name: "Button.iconSecondary", color: "#FE8A4D" },
+      { name: "AvatarStack", color: "#F88AED" },
+    ],
+    code: `// Generated from Figma frame: Character/Profile — Fenn
+// All primitives resolved from @parasoul/ds — no inventions.
+
+VStack(spacing: .md) {
+    Avatar.Character(imageURL: character.imageURL)
+        .size(.xLarge)
+        .overlay(alignment: .bottomTrailing) {
+            Chip(label: character.world.name,
+                 leadingIcon: .world,
+                 variant: .default)
+        }
+
+    Text(character.name)
+        .mlTypography(.displayMedium)
+
+    HStack(spacing: 12) {
+        Button("Follow", variant: .primary) { follow(character) }
+        Button(icon: .chat, variant: .iconSecondary) { message(character) }
+    }
+
+    Text("\\(character.followerCount.formatted()) followers")
+        .mlTypography(.labelMedium)
+
+    AvatarStack(
+        avatars: character.mutuals,
+        label: "Followed by",
+        moreCount: character.mutualOverflow
+    )
+}`,
+  },
+  {
+    id: "genre-tray",
+    label: "Genre picker tray",
+    description: "Bottom sheet · section header · media card carousel · chip row",
+    previewImage: "/projects/parasoul-ds/composition/genre-tray.png",
+    preview: () => <div />,
+    primitives: [
+      { name: "BottomSheet", color: "#FFE26B" },
+      { name: "SectionBlock", color: "#9DE1EE" },
+      { name: "Button.secondary", color: "#FE8A4D" },
+      { name: "Card.media", color: "#3DC1B8" },
+      { name: "Chip.default", color: "#F88AED" },
+    ],
+    code: `// Generated from Figma frame: Creation/GenrePicker
+// Agent resolved a SectionBlock with trailing action +
+// a horizontally-scrolling Card.media set + a Chip row.
+
+BottomSheet(detents: [.medium, .large]) {
+    SectionBlock(
+        title: "Select a genre",
+        trailing: Button("Create", leadingIcon: .plus, variant: .secondary) {
+            openCustomGenreFlow()
+        }
+    ) {
+        HScroll(spacing: .sm) {
+            ForEach(genres.featured) { genre in
+                Card.media(
+                    imageURL: genre.coverURL,
+                    title: genre.name,
+                    aspectRatio: .portrait
+                ) { select(genre) }
+            }
+        }
+
+        HScroll(spacing: .xs) {
+            ForEach(genres.all) { genre in
+                Chip(label: genre.name.uppercased(),
+                     leadingIcon: .genre,
+                     variant: .default) { select(genre) }
+            }
+        }
+    }
+}`,
+  },
+  {
+    id: "settings-row",
+    label: "Settings row",
+    description: "Title + value + trailing affordance",
+    previewImage: "/projects/parasoul-ds/composition/settings-row.png",
+    preview: () => (
+      <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-gray-200" style={{ width: 280 }}>
+        <div>
+          <div className="text-[11px] font-semibold text-gray-900">Voice</div>
+          <div className="text-[10px] text-gray-500 mt-0.5">Atlas · Steady & grounded</div>
+        </div>
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-sky-300 via-pink-200 to-amber-200" />
+      </div>
+    ),
+    primitives: [
+      { name: "DetailRow", color: "#FFE26B" },
+      { name: "VoiceSelectorView", color: "#FE8A4D" },
+    ],
+    code: `// Generated from Figma frame: Settings/Voice
+// Agent recognized a custom slot — wrapped in DetailRow custom-content variant.
+
+DetailRow(title: "Voice") {
+    VoiceSelectorView(
+        selectedVoice: settings.voice,
+        onTap: { openVoicePicker() }
+    )
+}`,
+  },
+];
+
+function ComponentDocsViewer() {
+  const [activeId, setActiveId] = useState(docComponents[0].id);
+  const active = docComponents.find((d) => d.id === activeId) ?? docComponents[0];
+
+  return (
+    <div className="rounded-2xl border border-gray-100 overflow-hidden" style={{ background: "#0a0a0a" }}>
+      <div className="px-5 py-3 border-b border-white/10 flex items-center gap-3">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-400/60" />
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/60" />
+          <div className="w-2.5 h-2.5 rounded-full bg-green-400/60" />
+        </div>
+        <div className="text-[11px] font-mono text-gray-400 ml-2">parasoul-ds / docs / {active.id}.md</div>
+      </div>
+
+      <div className="grid grid-cols-[160px_minmax(0,1fr)]">
+        <aside className="border-r border-white/10 py-3 px-2">
+          <div className="text-[9px] font-semibold tracking-[0.18em] text-gray-500 uppercase px-2 mb-2">
+            components/
+          </div>
+          {docComponents.map((d) => (
+            <button
+              key={d.id}
+              onClick={() => setActiveId(d.id)}
+              className="w-full text-left px-2 py-1.5 text-[12px] font-mono rounded transition-colors"
+              style={{
+                color: d.id === activeId ? "#fafaf7" : "#9ca3af",
+                background: d.id === activeId ? "rgba(255,255,255,0.06)" : "transparent",
+              }}
+            >
+              {d.id}.md
+            </button>
+          ))}
+        </aside>
+
+        <pre className="px-6 py-5 text-[12px] leading-relaxed overflow-x-auto max-h-[520px]" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", color: "#e5e7eb" }}>
+          {active.markdown.split("\n").map((line, i) => {
+            let color = "#e5e7eb";
+            if (line.startsWith("---")) color = "#6b7280";
+            else if (line.startsWith("##")) color = "#FFD400";
+            else if (line.startsWith("```")) color = "#6b7280";
+            else if (/^\s*-\s/.test(line) && line.includes(":")) color = "#9DE1EE";
+            else if (/^[a-zA-Z]+:/.test(line)) color = "#F88AED";
+            return (
+              <div key={i} style={{ color }}>{line || " "}</div>
+            );
+          })}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+function CompositionDemo() {
+  const [activeId, setActiveId] = useState(compositionExamples[0].id);
+  const active = compositionExamples.find((e) => e.id === activeId) ?? compositionExamples[0];
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {compositionExamples.map((ex) => (
+          <button
+            key={ex.id}
+            onClick={() => setActiveId(ex.id)}
+            className="relative px-4 py-2 rounded-xl text-[12.5px] font-medium transition-colors"
+            style={{
+              color: ex.id === activeId ? "#0a0a0a" : "#9ca3af",
+              background: ex.id === activeId ? "white" : "transparent",
+              border: ex.id === activeId ? "1px solid #e5e7eb" : "1px solid transparent",
+            }}
+          >
+            {ex.label}
+          </button>
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={active.id}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.22 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        >
+          {/* Left: Figma-frame mock */}
+          <div className="rounded-2xl border border-gray-100 p-8 flex flex-col items-center justify-center gap-6" style={{ background: "#FAFAF7", minHeight: 420 }}>
+            <div className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase">
+              Figma frame
+            </div>
+            {active.previewImage ? (
+              <img
+                src={active.previewImage}
+                alt={active.label}
+                className="max-w-full max-h-[360px] object-contain"
+              />
+            ) : (
+              active.preview()
+            )}
+            <div className="text-[11px] text-gray-500 text-center max-w-[240px]">{active.description}</div>
+          </div>
+
+          {/* Right: Detected primitives + code */}
+          <div className="flex flex-col gap-4">
+            <div className="rounded-2xl border border-gray-100 p-5 bg-white">
+              <div className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase mb-3">
+                Agent detected
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {active.primitives.map((p, i) => (
+                  <motion.div
+                    key={p.name}
+                    initial={{ opacity: 0, x: -4 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2, delay: 0.1 + i * 0.06 }}
+                    className="flex items-center gap-2"
+                  >
+                    <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
+                    <code className="text-[12.5px] text-gray-900" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}>
+                      {p.name}
+                    </code>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl overflow-hidden border border-gray-100 flex-1" style={{ background: "#0a0a0a" }}>
+              <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+                <div className="text-[10px] font-mono text-gray-500">composed.swift</div>
+              </div>
+              <pre className="px-5 py-4 text-[11.5px] leading-relaxed overflow-x-auto" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", color: "#e5e7eb" }}>
+                {active.code}
+              </pre>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function AISectionContent({ section }: { section: AISection }) {
+  if (section.id === "overview") {
+    return (
+      <div className="mb-10">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8">
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Designers don't ship UI anymore. They ship <strong>intentions</strong> — and a growing set of agents turn those intentions into code. The question for any modern DS team isn't "how do we build components?" It's "what does an agent need to know to ship a screen that's on-brand, accessible, and on-system without a human in the loop?"
+          </p>
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            The answer is the same things a junior designer would need: <strong>primitives they can compose, tokens they shouldn't override, and documentation that explains when to use what — and when not to.</strong> The design system becomes the agent's context, and the agent becomes the DS team's force multiplier.
+          </p>
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Protocols like <strong>MCP</strong> have solved the <em>connection</em> between LLMs and Figma — agents can finally read the file. The interesting work now is the system <em>around</em> the connection: what the agent reads, what it's allowed to output, and what it has to ask permission for. That's design-engineering work, not protocol work.
+          </p>
+          <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Below: the pipeline that makes this real, the agent-readable component docs that power it, and an interactive composition demo that shows it working.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (section.id === "pipeline") {
+    return (
+      <div className="mb-10">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6">
+          <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Figma holds the design intent. Code holds the implementation. <strong>MCP</strong> is the transport that lets the agent read both. But raw Figma data is low-signal — it tells you a rectangle is at x=240 with fill #FFD400, not that it's a <code className="px-1 py-0.5 rounded bg-gray-50 text-gray-900 text-[13px]">Card</code> with <code className="px-1 py-0.5 rounded bg-gray-50 text-gray-900 text-[13px]">surface=emphasis</code>. The agent only becomes useful when it reads the <strong>markdown documentation</strong> alongside the file — and that documentation is design work, not protocol work.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-gray-100 p-8 md:p-10" style={{ background: "#FAFAF7" }}>
+          <div className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase mb-6">
+            System architecture
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-stretch">
+              <div className="md:col-span-1 bg-white border border-gray-200 rounded-xl p-4 flex flex-col justify-center">
+                <div className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase mb-1">Source</div>
+                <div className="text-sm font-semibold text-gray-900">Figma file</div>
+                <div className="text-[11px] text-gray-500 mt-1">via MCP server</div>
+              </div>
+
+              <div className="hidden md:flex items-center justify-center text-gray-300">→</div>
+
+              <div className="md:col-span-1 bg-white border border-gray-900 rounded-xl p-4 flex flex-col justify-center" style={{ background: "#0a0a0a" }}>
+                <div className="text-[10px] font-semibold tracking-wider text-gray-500 uppercase mb-1">Pipeline</div>
+                <div className="text-sm font-semibold text-white">Python Sync Script</div>
+                <div className="text-[11px] text-gray-400 mt-1">Runs in CI</div>
+              </div>
+
+              <div className="hidden md:flex items-center justify-center text-gray-300">→</div>
+
+              <div className="md:col-span-1 bg-white border border-gray-200 rounded-xl p-4 flex flex-col justify-center">
+                <div className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase mb-1">Truth</div>
+                <div className="text-sm font-semibold text-gray-900">tokens.json + .md specs</div>
+                <div className="text-[11px] text-gray-500 mt-1">Agent context</div>
+              </div>
+            </div>
+
+            <div className="hidden md:flex items-center justify-center text-gray-300 my-2">↓</div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
+                <div className="text-[11px] font-mono text-gray-500">Swift</div>
+                <div className="text-[10px] text-gray-400 mt-0.5">iOS</div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
+                <div className="text-[11px] font-mono text-gray-500">TypeScript</div>
+                <div className="text-[10px] text-gray-400 mt-0.5">Web</div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
+                <div className="text-[11px] font-mono text-gray-500">Markdown</div>
+                <div className="text-[10px] text-gray-400 mt-0.5">Docs</div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase mb-3">
+                Agent layer (reads docs · composes from primitives)
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="bg-white border border-gray-200 rounded-xl p-4">
+                  <div className="text-sm font-semibold text-gray-900 mb-1">Component Docs (markdown)</div>
+                  <div className="text-[12px] text-gray-500 leading-relaxed">Every component ships with a <code className="text-[11px] bg-gray-50 px-1 rounded">.md</code> spec — props, examples, AI usage hints. This is the agent's context window.</div>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-xl p-4">
+                  <div className="text-sm font-semibold text-gray-900 mb-1">Composition Engine</div>
+                  <div className="text-[12px] text-gray-500 leading-relaxed">Given a Figma frame, the agent resolves it into existing primitives — never raw HTML, never invented colors, never new components.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (section.id === "token-sync") {
+    return (
+      <div className="mb-10">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6">
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            The foundation underneath everything else: a Python script that runs on every push to the Figma file (via webhook) and every PR to the codebase (via CI). It turns Figma variables into typed code, regenerates the markdown specs the agent reads, and opens a PR if anything drifted.
+          </p>
+          <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Plumbing, not magic — but the agent layer above only works if this layer is trustworthy.
+          </p>
+        </div>
+
+        <div className="rounded-2xl overflow-hidden border border-gray-100" style={{ background: "#0a0a0a" }}>
+          <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+            <div className="text-[10px] font-mono text-gray-500">sync_tokens.py</div>
+          </div>
+          <pre className="px-6 py-6 text-[12.5px] leading-relaxed overflow-x-auto" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", color: "#e5e7eb" }}>
+{`# 1. Pull variables from Figma
+variables = figma_api.get_variables(FILE_ID)
+
+# 2. Normalize into a semantic token tree
+tokens = transform_to_semantic(variables)
+# {
+#   "theme.surface.emphasis": { "value": "#FFD400", "mode": "light" },
+#   "theme.content.primary":  { "value": "#111111", "mode": "light" },
+#   ...
+# }
+
+# 3. Generate platform outputs
+write_swift(tokens,      out="ios/DesignTokens.swift")
+write_typescript(tokens, out="web/tokens.ts")
+write_markdown(tokens,   out="docs/tokens.md")
+
+# 4. Diff against what's committed
+drift = compare(tokens, load_committed_tokens())
+
+if drift:
+    pr = open_pr(
+        title=f"DS sync: {len(drift)} token(s) drifted",
+        body=format_drift_report(drift),
+        reviewers=["design-system-team"],
+        labels=["design-system", "auto-sync"],
+    )
+    notify_slack("#design-system", pr.url)`}
+          </pre>
+        </div>
+      </div>
+    );
+  }
+
+  if (section.id === "component-docs") {
+    return (
+      <div className="mb-10">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6">
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Every component in the design system ships with a <code className="px-1.5 py-0.5 rounded bg-gray-50 text-gray-900 text-[13px]">.md</code> file. Frontmatter declares the typed props, allowed children, and tokens it references. The body is normal Markdown — examples, do's and don'ts, and AI usage hints.
+          </p>
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            This isn't documentation for humans <em>or</em> machines — it's documentation for both. A designer reads the examples; an LLM agent loads the frontmatter and the usage hints into context before generating a screen.
+          </p>
+          <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            These specs get loaded into the agent's context via the same <strong>MCP</strong> transport that exposes Figma — but writing them well is design work, not protocol work. The DS team's highest-leverage work is now writing the markdown that turns a generic LLM into a competent user of <em>your</em> system.
+          </p>
+        </div>
+
+        <ComponentDocsViewer />
+
+        <div className="mt-4 px-2 text-[11px] text-gray-400 italic">
+          Click through the components — this is the actual file an agent reads.
+        </div>
+      </div>
+    );
+  }
+
+  if (section.id === "composition") {
+    return (
+      <div className="mb-10">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6">
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Plug a Figma file into Cursor with the MCP server today and ask it to "build this screen." You'll get React or Swift that <em>looks</em> like the Figma — but it invents components, hallucinates colors, and doesn't know that the rectangle on row two is supposed to be a <code className="px-1 py-0.5 rounded bg-gray-50 text-gray-900 text-[13px]">Chip.accentOutline</code>, not a one-off pill.
+          </p>
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            <strong>Constrained composition</strong> closes that gap. Same agent, same Figma file — but the agent's context now includes the component markdown specs, and its system prompt enforces a hard rule: <em>only existing primitives are valid output.</em> If a frame doesn't decompose into approved primitives, the agent has to ask, not guess.
+          </p>
+          <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            The constraint is the feature. In a regulated domain, an agent that can <em>only</em> compose from approved primitives is exactly what you want shipping to production.
+          </p>
+        </div>
+
+        <CompositionDemo />
+
+        <div className="mt-4 px-2 text-[11px] text-gray-400 italic">
+          Each frame above resolves to a different set of Parasoul DS primitives — click through them.
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function AIToolingCaseStudy({ project, onBack }: { project: any; onBack: () => void }) {
+  const [activeId, setActiveId] = useState<string>(aiSections[0].id);
+  const active = aiSections.find((s) => s.id === activeId) ?? aiSections[0];
+
+  const heroRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    heroRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [activeId]);
+
+  const grouped = aiSections.reduce<Record<string, AISection[]>>((acc, s) => {
+    (acc[s.category] = acc[s.category] || []).push(s);
+    return acc;
+  }, {});
+  const categoryOrder = Array.from(new Set(aiSections.map((s) => s.category)));
+
+  return (
+    <motion.div
+      key="ai-case-study"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.button
+        onClick={onBack}
+        whileHover={{ x: -3 }}
+        className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 mb-10 transition-colors"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 4L6 8L10 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        Back
+      </motion.button>
+
+      <div
+        className="relative mb-16"
+        style={{
+          width: "100vw",
+          marginLeft: "calc(50% - 50vw)",
+          marginRight: "calc(50% - 50vw)",
+        }}
+      >
+        <div className="mx-auto px-6 md:px-12" style={{ maxWidth: 1280 }}>
+          <div
+            ref={heroRef}
+            className="relative rounded-[28px] overflow-hidden mb-16"
+            style={{ minHeight: 520 }}
+          >
+            {project.coverImage && (
+              <img
+                src={project.coverImage}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ objectPosition: "left center" }}
+              />
+            )}
+
+            <div className="relative z-10 p-10 md:p-14 flex flex-col h-full justify-between" style={{ minHeight: 520 }}>
+              <div className="flex items-start justify-between">
+                <img
+                  src="/projects/parasoul-ds/parasoul-logo.png"
+                  alt="Parasoul"
+                  className="w-12 h-12 object-contain"
+                />
+                <span className="text-[10px] font-bold tracking-[0.24em] text-black/65 uppercase">
+                  {project.company} · {project.title}
+                </span>
+              </div>
+
+              <div className="max-w-3xl">
+                <AnimatePresence mode="wait">
+                  <motion.h1
+                    key={active.id + "-title"}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-[60px] md:text-[80px] leading-[0.95] font-bold tracking-[-0.02em] text-black/90 mb-5"
+                  >
+                    {active.title}
+                  </motion.h1>
+                </AnimatePresence>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={active.id + "-sub"}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                    className="text-lg md:text-xl text-black/70 max-w-2xl leading-snug"
+                  >
+                    {active.subtitle}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)] gap-10 md:gap-20 items-start">
+            <aside className="sticky top-8 self-start hidden md:block">
+              <nav className="flex flex-col gap-8">
+                {categoryOrder.map((cat) => (
+                  <div key={cat}>
+                    <p className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase mb-3 pl-3">
+                      {cat}
+                    </p>
+                    <div className="flex flex-col gap-0.5">
+                      {grouped[cat].map((s) => {
+                        const isActive = s.id === activeId;
+                        return (
+                          <button
+                            key={s.id}
+                            onClick={() => setActiveId(s.id)}
+                            className="relative text-left pl-3 pr-2 py-1.5 text-[13.5px] transition-colors duration-200"
+                            style={{
+                              color: isActive ? "#0a0a0a" : "#9ca3af",
+                              fontWeight: isActive ? 600 : 500,
+                            }}
+                          >
+                            {isActive && (
+                              <motion.span
+                                layoutId="ai-nav-indicator"
+                                className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-full bg-gray-900"
+                                transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                              />
+                            )}
+                            {s.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </nav>
+            </aside>
+
+            <div className="md:hidden mb-2">
+              <select
+                value={activeId}
+                onChange={(e) => setActiveId(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white"
+              >
+                {categoryOrder.map((cat) => (
+                  <optgroup key={cat} label={cat}>
+                    {grouped[cat].map((s) => (
+                      <option key={s.id} value={s.id}>{s.label}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+
+            <main className="min-w-0">
+              <AnimatePresence mode="wait">
+                {active && (
+                  <motion.div
+                    key={active.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.22 }}
+                  >
+                    <AISectionContent section={active} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </main>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Animated terminal mock for AI Tooling bento tile ───
+const terminalLines: { prefix?: string; prefixColor?: string; text: string; color: string }[] = [
+  { prefix: "$", prefixColor: "#FFD400", text: " python sync_tokens.py", color: "#e5e7eb" },
+  { text: "→ pulling figma variables…", color: "#9ca3af" },
+  { text: "→ 47 tokens normalized", color: "#9ca3af" },
+  { text: "✓ wrote ios/DesignTokens.swift", color: "#3DC1B8" },
+  { text: "✓ wrote web/tokens.ts", color: "#3DC1B8" },
+  { text: "⚠ 2 drifted — opening PR", color: "#FE8A4D" },
+];
+
+function AnimatedTerminal() {
+  const [lineIdx, setLineIdx] = useState(0);
+  const [charIdx, setCharIdx] = useState(0);
+
+  useEffect(() => {
+    const current = terminalLines[lineIdx];
+
+    if (!current) {
+      const t = setTimeout(() => {
+        setLineIdx(0);
+        setCharIdx(0);
+      }, 3200);
+      return () => clearTimeout(t);
+    }
+
+    if (charIdx < current.text.length) {
+      const t = setTimeout(() => setCharIdx((c) => c + 1), 22);
+      return () => clearTimeout(t);
+    }
+
+    const t = setTimeout(() => {
+      setLineIdx((i) => i + 1);
+      setCharIdx(0);
+    }, 320);
+    return () => clearTimeout(t);
+  }, [lineIdx, charIdx]);
+
+  const completed = terminalLines.slice(0, lineIdx);
+  const current = terminalLines[lineIdx];
+  const partial = current?.text.slice(0, charIdx) ?? "";
+
+  return (
+    <motion.div
+      initial={{ y: 8, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+      className="w-[78%] rounded-xl overflow-hidden"
+      style={{ background: "#0a0a0a", boxShadow: "0 24px 60px -12px rgba(0,0,0,0.35)" }}
+    >
+      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/10">
+        <div className="w-2 h-2 rounded-full bg-red-400/70" />
+        <div className="w-2 h-2 rounded-full bg-yellow-400/70" />
+        <div className="w-2 h-2 rounded-full bg-green-400/70" />
+        <div className="ml-2 text-[9px] font-mono text-gray-500">sync_tokens.py</div>
+      </div>
+      <div
+        className="px-3 py-2.5 text-[10px] leading-[1.55]"
+        style={{
+          fontFamily: "ui-monospace, SFMono-Regular, monospace",
+          color: "#e5e7eb",
+          minHeight: 132,
+        }}
+      >
+        {completed.map((l, i) => (
+          <div key={i}>
+            {l.prefix && <span style={{ color: l.prefixColor }}>{l.prefix}</span>}
+            <span style={{ color: l.color }}>{l.text}</span>
+          </div>
+        ))}
+        {current && (
+          <div>
+            {current.prefix && <span style={{ color: current.prefixColor }}>{current.prefix}</span>}
+            <span style={{ color: current.color }}>{partial}</span>
+            <motion.span
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
+              style={{ color: "#FFD400", marginLeft: 1 }}
+            >▎</motion.span>
+          </div>
+        )}
+        {!current && completed.length > 0 && (
+          <div>
+            <motion.span
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
+              style={{ color: "#FFD400" }}
+            >▎</motion.span>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Projects View ───
 function ProjectsView() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
@@ -5765,7 +6706,8 @@ function ProjectsView() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 auto-rows-auto">
               {projects.map((p, i) => {
                 const isHero = i === 0;
-                const coverSrc = (p as any).coverImage || (p as any).heroImage || (p.images.length > 0 ? p.images[0] : null);
+                const isWide = isHero || (p as any).wide === true;
+                const coverSrc = (p as any).thumbnailImage || (p as any).coverImage || (p as any).heroImage || (p.images.length > 0 ? p.images[0] : null);
                 const coverVideo = (p as any).coverVideos?.[0] || (p as any).coverVideo;
                 const coverVideos = (p as any).coverVideos as string[] | undefined;
 
@@ -5777,12 +6719,12 @@ function ProjectsView() {
                     transition={{ type: "spring", stiffness: 200, damping: 20, delay: i * 0.1 }}
                     whileHover={{ y: -4, transition: { delay: 0, duration: 0.2 } }}
                     onClick={() => setSelectedProject(p.id)}
-                    className={`cursor-pointer group ${isHero ? "md:col-span-2" : ""}`}
+                    className={`cursor-pointer group ${isWide ? "md:col-span-2" : ""}`}
                   >
                     {/* Image/video area */}
                     <div
                       className="rounded-2xl overflow-hidden relative"
-                      style={{ height: isHero ? 280 : 260 }}
+                      style={{ height: isWide ? 280 : 260 }}
                     >
                       {/* Background */}
                       {isHero && coverSrc ? (
@@ -5806,9 +6748,16 @@ function ProjectsView() {
                       ) : coverVideo ? (
                         <video src={coverVideo} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" />
                       ) : coverSrc ? (
-                        <img src={coverSrc} alt={p.title} className="absolute inset-0 w-full h-full object-cover" />
+                        <img src={coverSrc} alt={p.title} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: (p as any).coverPosition || "center" }} />
                       ) : (
                         <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${p.color}20, ${p.color}40)` }} />
+                      )}
+
+                      {/* AI Tooling — animated terminal mock */}
+                      {(p as any).type === "ai-tooling" && (
+                        <div className="absolute inset-0 flex items-center justify-center p-6 pointer-events-none">
+                          <AnimatedTerminal />
+                        </div>
                       )}
 
                       {/* Hover shine */}
@@ -5823,13 +6772,13 @@ function ProjectsView() {
                         )}
                         <span className="text-[11px] text-gray-400 font-medium">{p.company}</span>
                       </div>
-                      <h3 className={`font-bold text-gray-900 ${isHero ? "text-lg" : "text-sm"}`}>{p.title}</h3>
+                      <h3 className={`font-bold text-gray-900 ${isWide ? "text-lg" : "text-sm"}`}>{p.title}</h3>
                       {(p as any).subtitle && (
                         <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{(p as any).subtitle}</p>
                       )}
                       {(p as any).tools && (
                         <div className="flex gap-1.5 mt-2">
-                          {((p as any).tools as string[]).slice(0, isHero ? 5 : 3).map((t: string) => (
+                          {((p as any).tools as string[]).slice(0, isWide ? 5 : 3).map((t: string) => (
                             <span key={t} className="text-[9px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">{t}</span>
                           ))}
                         </div>
@@ -5843,6 +6792,12 @@ function ProjectsView() {
         ) : project && (project as any).type === "design-system" ? (
           <DesignSystemCaseStudy
             key="ds-case"
+            project={project}
+            onBack={() => setSelectedProject(null)}
+          />
+        ) : project && (project as any).type === "ai-tooling" ? (
+          <AIToolingCaseStudy
+            key="ai-case"
             project={project}
             onBack={() => setSelectedProject(null)}
           />
