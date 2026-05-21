@@ -4844,7 +4844,6 @@ const projects = [
     images: [],
     sections: [],
     dsSections: [
-      { id: "foundations", category: "Overview", label: "Overview", title: "Design System", subtitle: "Tokens, foundations, and components for EA's world-building platform.", body: "Parasoul's design system is built from the ground up to scale across a world-building app where every character, story, and environment is unique. Tokens are the contract; primitives compose into 90+ production components; and a custom squircle algorithm matches Figma's corner smoothing 1:1 so design and code stay aligned. The system is opinionated where it matters and expressive where it should be.<br/><br/><span style=\"color:#9ca3af\">This page is a selected glimpse — foundations in full, and a handful of representative components rather than the whole catalog.</span>", frames: [] as string[] },
       { id: "color", category: "Foundations", label: "Color", title: "Color", subtitle: "Semantic theme tokens for surface, content, border, and emphasis modes.", body: "Parasoul's color system works in three layers. The <strong>brand</strong> palette is the primitive scale — every named color with deliberate tint and shade variants, plus three neutral families (neutral, sand, navy). The <strong>theme</strong> layer maps semantic tokens like <code>theme.surface.emphasis</code> and <code>theme.content.onContainer</code> to those primitives, so components don't reach for raw hex values. The <strong>highlight</strong> mode then lets a composition swap its accent color contextually — perfect for character moods, featured worlds, and ML-feature surfaces. Expressive on purpose: this is a world-building app, and the system should give worlds room to feel vibrant, not corporate.", frames: [], tabs: [
         { id: "brand", label: "Brand", frames: ["/projects/parasoul-ds/color-brand.png"] },
         { id: "theme", label: "Theme", frames: ["/projects/parasoul-ds/color-theme.png"] },
@@ -4872,6 +4871,7 @@ const projects = [
       { id: "chip", category: "Components", label: "Chip", title: "Chip", subtitle: "Five chip variants — default, secondary, selectable, accent, and accent outline — plus surface-aware specialty variants and a Chip-vs-Tag usage rule.", body: "", frames: ["/projects/parasoul-ds/chip.png"] },
       { id: "section-block", category: "Components", label: "Section Block", title: "Section Block", subtitle: "The repeating section pattern across world and character pages — title, trailing action, and a slot for chips, text, custom content, or a row of avatars.", body: "", frames: ["/projects/parasoul-ds/section-block.png"] },
       { id: "detail-row", category: "Components", label: "Detail Row", title: "Detail Row", subtitle: "A flexible row primitive — plain text, text + action, chips + action, trailing icon, or fully custom content. Includes layout tokens and a SwiftUI API surface.", body: "", frames: ["/projects/parasoul-ds/detail-row.png"] },
+      { id: "list-item-row", category: "Components", label: "List Item Row", title: "List Item Row", subtitle: "A people-and-worlds row primitive — leading avatar, optional metadata cluster, and a trailing affordance (label, primary button, or icon button) for follow lists, discovery feeds, and search results.", body: "", frames: ["/projects/parasoul-ds/list-item-row.png"] },
     ],
   },
   {
@@ -5444,8 +5444,8 @@ function DSSectionContent({ section }: { section: any }) {
 
   return (
     <>
-      {/* Body */}
-      {section.body && (
+      {/* Body — only shown on the overview section */}
+      {section.body && section.id === "foundations" && (
         <div className="mb-10">
           <div className="bg-white rounded-2xl border border-gray-100 p-8">
             <p
@@ -5489,33 +5489,21 @@ function DSSectionContent({ section }: { section: any }) {
       )}
 
       {/* Frames */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={activeTab ? activeTab.id : "frames"}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
-          {frames.length > 0 ? (
+          {frames.length > 0 && (
             <div className="flex flex-col gap-8">
               {frames.map((src, i) => (
-                <motion.div
-                  key={src + i}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="rounded-2xl overflow-hidden"
-                >
+                <div key={src + i} className="rounded-2xl overflow-hidden">
                   <img src={src} alt={`${section.label} frame ${i + 1}`} className="w-full block" />
-                </motion.div>
+                </div>
               ))}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50/40 p-16 text-center">
-              <p className="text-sm text-gray-400">
-                Add Figma exports to <code className="px-1.5 py-0.5 rounded bg-white text-gray-600 text-[12px]">dsSections.{section.id}.frames</code>
-              </p>
             </div>
           )}
         </motion.div>
@@ -5575,18 +5563,6 @@ function DesignSystemCaseStudy({ project, onBack }: { project: any; onBack: () =
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Back */}
-      <motion.button
-        onClick={onBack}
-        whileHover={{ x: -3 }}
-        className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 mb-10 transition-colors"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M10 4L6 8L10 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        Back
-      </motion.button>
-
       {/* ─── Full live doc — breaks out of max-w-3xl parent ─── */}
       <div
         className="relative mb-16"
@@ -5597,6 +5573,18 @@ function DesignSystemCaseStudy({ project, onBack }: { project: any; onBack: () =
         }}
       >
         <div className="mx-auto px-6 md:px-12" style={{ maxWidth: 1280 }}>
+          {/* Back */}
+          <motion.button
+            onClick={onBack}
+            whileHover={{ x: -3 }}
+            className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 mb-8 transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 4L6 8L10 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            Back
+          </motion.button>
+
           {/* Morphing hero */}
           <div
             ref={heroRef}
@@ -5653,6 +5641,10 @@ function DesignSystemCaseStudy({ project, onBack }: { project: any; onBack: () =
               </div>
             </div>
           </div>
+
+          <p className="text-[13px] text-gray-400 italic mb-12 max-w-3xl" style={{ fontFamily: "var(--font-nouvelle), sans-serif" }}>
+            A selected glimpse into the system, not the whole catalog.
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)] gap-10 md:gap-20 items-start">
             {/* Sidebar */}
@@ -5776,11 +5768,11 @@ type AISection = {
 };
 
 const aiSections: AISection[] = [
-  { id: "overview", category: "Overview", label: "Overview", title: "AI Design Tooling", subtitle: "The design system as the context AI agents operate inside — primitives to compose, tokens to respect, docs to follow." },
-  { id: "pipeline", category: "The System as Context", label: "Pipeline", title: "Pipeline", subtitle: "Figma is the spec. Code is the implementation. Agents read the markdown in between." },
+  { id: "overview", category: "Overview", label: "Overview", title: "AI Design Tooling", subtitle: "How I've been using MCP, a Figma variables pipeline, and agent-readable docs to keep agent output on-system." },
   { id: "component-docs", category: "The System as Context", label: "Component Docs", title: "Component Docs", subtitle: "Markdown is the protocol. This is what an LLM actually reads when it's about to use one of your components." },
-  { id: "token-sync", category: "The System as Context", label: "Token Sync", title: "Token Sync", subtitle: "The foundation — a Python script in CI that keeps Figma variables and code in lockstep." },
+  { id: "token-sync", category: "The System as Context", label: "Token Sync", title: "Token Sync", subtitle: "Extracting Figma variables via the API — the foundation that keeps tokens addressable from code and agents." },
   { id: "composition", category: "Agent-Driven Composition", label: "Composition Demo", title: "Constrained Composition", subtitle: "MCP gives the agent the file. The DS gives it the rules. The agent can only compose from primitives it's allowed to use." },
+  { id: "anatomy", category: "Agent-Driven Composition", label: "Component Anatomy", title: "Anatomy of an Agent-Readable Component", subtitle: "One source of truth, three artifacts. The Figma frame, the design tokens, the Swift API, and the markdown spec — all generated from the same component." },
 ];
 
 type DocComponent = { id: string; name: string; markdown: string };
@@ -6212,100 +6204,407 @@ function CompositionDemo() {
   );
 }
 
+type AnatomyTabId = "figma" | "tokens" | "swift" | "markdown";
+
+function ComponentAnatomy() {
+  const [activeTab, setActiveTab] = useState<AnatomyTabId>("figma");
+
+  const tabs: { id: AnatomyTabId; label: string; audience: string }[] = [
+    { id: "figma", label: "Figma frame", audience: "Designer" },
+    { id: "tokens", label: "Design tokens", audience: "Sync pipeline" },
+    { id: "swift", label: "Swift API", audience: "iOS engineer" },
+    { id: "markdown", label: "Agent .md", audience: "LLM" },
+  ];
+
+  const active = tabs.find((t) => t.id === activeTab) ?? tabs[0];
+
+  return (
+    <div className="rounded-2xl border border-gray-100 overflow-hidden bg-white">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center">
+            <div className="w-3 h-3 rounded-sm bg-white" />
+          </div>
+          <div>
+            <div className="text-[14px] font-semibold text-gray-900">MLSectionBlock</div>
+            <div className="text-[11px] text-gray-500">parasoul-ds · components/SectionBlock</div>
+          </div>
+        </div>
+        <div className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase">
+          Audience · <span className="text-gray-900">{active.audience}</span>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="px-6 pt-4 border-b border-gray-100 flex gap-1 overflow-x-auto">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            className="relative px-4 py-2 text-[12.5px] font-medium transition-colors whitespace-nowrap"
+            style={{
+              color: t.id === activeTab ? "#0a0a0a" : "#9ca3af",
+            }}
+          >
+            {t.label}
+            {t.id === activeTab && (
+              <motion.div
+                layoutId="anatomy-tab-underline"
+                className="absolute left-0 right-0 -bottom-px h-[2px] bg-gray-900"
+                transition={{ type: "spring", stiffness: 400, damping: 32 }}
+              />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Body */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.2 }}
+          className="p-6"
+        >
+          {activeTab === "figma" && (
+            <div className="flex flex-col items-center gap-4 py-2">
+              <div className="text-[11px] text-gray-500 max-w-[520px] text-center leading-relaxed">
+                Designed once in Figma — five layout variants, six tokenized properties, a single component published to the Parasoul DS library.
+              </div>
+              <div className="w-full rounded-lg overflow-hidden" style={{ background: "#FAFAF7" }}>
+                <img
+                  src="/projects/parasoul-ds/section-block.png"
+                  alt="Section Block — Figma frame"
+                  className="w-full h-auto block"
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "tokens" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="text-[11px] text-gray-500 max-w-[520px] leading-relaxed md:col-span-2 mb-1">
+                The sync script reads these directly from the Figma component's exposed variables and emits them as JSON. Both the Swift implementation and the agent's markdown spec are generated from this single source.
+              </div>
+
+              {[
+                {
+                  group: "Layout",
+                  items: [
+                    ["padding.vertical", "24pt"],
+                    ["gap.titleToContent", "12pt"],
+                    ["header.minHeight", "40pt"],
+                    ["divider.bottom", "border.onBackground · 1px"],
+                  ],
+                },
+                {
+                  group: "Typography",
+                  items: [
+                    ["title", "typography.sectionSmall · uppercase"],
+                    ["body", "typography.contentMedium · 18pt"],
+                    ["trailingLabel", "typography.labelSmall · 14pt"],
+                  ],
+                },
+                {
+                  group: "Color",
+                  items: [
+                    ["title", "content.onBackground"],
+                    ["body", "content.onBackground"],
+                    ["divider", "border.onBackground"],
+                  ],
+                },
+                {
+                  group: "Icons",
+                  items: [
+                    ["icon.edit", "12 × 12"],
+                    ["icon.trailing", "20 × 20 (in 40pt frame)"],
+                    ["icon.trailingLabel", "10 × 10"],
+                  ],
+                },
+              ].map((g) => (
+                <div key={g.group} className="rounded-xl border border-gray-100 p-4" style={{ background: "#FAFAF7" }}>
+                  <div className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase mb-3">{g.group}</div>
+                  <div className="flex flex-col gap-2">
+                    {g.items.map(([k, v]) => (
+                      <div key={k} className="flex items-baseline justify-between gap-3 text-[12px]">
+                        <code className="text-gray-500" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}>{k}</code>
+                        <code className="text-gray-900 text-right" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}>{v}</code>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === "swift" && (
+            <div className="flex flex-col gap-4">
+              <div className="text-[11px] text-gray-500 max-w-[520px] leading-relaxed">
+                The generated SwiftUI surface. Every variant the agent saw in Figma resolves to one of these initializers — no improvisation, no off-system layout.
+              </div>
+              <div className="rounded-xl overflow-hidden border border-gray-100" style={{ background: "#0a0a0a" }}>
+                <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-400/60" />
+                  </div>
+                  <div className="text-[10px] font-mono text-gray-500 ml-2">MLSectionBlock.swift</div>
+                </div>
+                <pre className="px-6 py-5 text-[12.5px] leading-relaxed overflow-x-auto" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", color: "#e5e7eb" }}>
+{`// Text + edit action
+MLSectionBlock(
+    title: "World Description",
+    value: "Retroveldt is a fading, analog-soaked world…",
+    onAction: { editDescription() }
+)
+
+// Custom content (chip)
+MLSectionBlock(
+    title: "World Genre",
+    onAction: { editGenre() }
+) {
+    MLChip("Comedy", leadingIcon: MLIcon.Brand.genre)
+}
+
+// Text + trailing icon
+MLSectionBlock(
+    title: "Content Safety",
+    value: "This world is safe for all audiences on Parasoul",
+    trailingIcon: MLIcon.System.check
+)
+
+// Trailing label + custom content
+MLSectionBlock(
+    title: "World Characters",
+    trailingLabel: "View all",
+    onTrailingLabel: { showAll() }
+) {
+    CharacterPreviewRow(characters: world.characters)
+}`}
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "markdown" && (
+            <div className="flex flex-col gap-4">
+              <div className="text-[11px] text-gray-500 max-w-[640px] leading-relaxed">
+                The agent doesn't see Figma or Swift. It sees this. The top of the file declares props and tokens. The body explains <em>when to use what</em>. This is the file that turns a general-purpose LLM into a competent user of the Parasoul system.
+              </div>
+              <div className="rounded-xl overflow-hidden border border-gray-100" style={{ background: "#0a0a0a" }}>
+                <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-400/60" />
+                  </div>
+                  <div className="text-[10px] font-mono text-gray-500 ml-2">parasoul-ds / docs / section-block.md</div>
+                </div>
+                <pre className="px-6 py-5 text-[12px] leading-relaxed overflow-x-auto max-h-[520px]" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", color: "#e5e7eb" }}>
+                  {`---
+component: SectionBlock
+package: parasoul-ds
+status: stable
+import:
+  swift: "import ParasoulDS"
+props:
+  - name: title
+    type: String
+    required: true
+  - name: value
+    type: String?
+    description: "Body text. Omit when using a custom-content slot."
+  - name: trailingLabel
+    type: String?
+  - name: trailingIcon
+    type: MLIcon?
+  - name: onAction
+    type: "() -> Void"
+    description: "Tap handler for the edit pencil."
+  - name: onTrailingLabel
+    type: "() -> Void"
+slot:
+  name: content
+  description: "Custom view — chip, character row, dual cards, etc."
+tokens:
+  layout:
+    padding.vertical:       "24pt"
+    gap.titleToContent:     "12pt"
+    header.minHeight:       "40pt"
+  typography:
+    title:                  "sectionSmall · uppercase"
+    body:                   "contentMedium 18pt"
+    trailingLabel:          "labelSmall 14pt"
+  color:
+    title:                  "content.onBackground"
+    body:                   "content.onBackground"
+    divider:                "border.onBackground"
+---
+
+## Use this when
+
+A repeating section on a world or character page that needs a
+title, an optional value or custom content slot, and an optional
+trailing affordance (edit pencil, status icon, or "View all").
+
+## Variants
+
+- **Text + edit action** — short structured fields (Description, Bio).
+- **Custom content** — anything that doesn't fit in a string value:
+  a single Chip, a row of avatars, a pair of selectable cards.
+- **Trailing icon** — passive status (safety check, locked state).
+- **Trailing label** — navigates to a fuller view.
+
+## AI usage hints
+
+- Never compose two SectionBlocks with no divider between them —
+  use the bottom divider variant or wrap them in a List container.
+- Custom-content slots should hold **one** primitive, not a stack of
+  raw views. If a frame needs more than one, the agent should ask
+  whether it should become two SectionBlocks or be promoted to a
+  bespoke layout.
+- The trailing label is *navigation*, not an action. If the affordance
+  is "edit," use \`onAction\` (the pencil), not \`trailingLabel\`.`}
+                </pre>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── AI Tooling typing header — types the headline, selects "code", transforms it to a markdown code span ───
+function AIToolingTypingHeader() {
+  const [phase, setPhase] = useState<"hidden" | "typing" | "settled" | "selecting" | "transformed">("hidden");
+  const [typed, setTyped] = useState("");
+  const fullText = "Think like a designer, code like an engineer.";
+
+  useEffect(() => {
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    async function animate() {
+      await sleep(400);
+      if (cancelled) return;
+
+      setPhase("typing");
+      for (let i = 1; i <= fullText.length; i++) {
+        if (cancelled) return;
+        setTyped(fullText.slice(0, i));
+        await sleep(58);
+      }
+      await sleep(550);
+      if (cancelled) return;
+
+      setPhase("settled");
+      await sleep(500);
+      if (cancelled) return;
+
+      setPhase("selecting");
+      await sleep(700);
+      if (cancelled) return;
+
+      setPhase("transformed");
+    }
+
+    animate();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (phase === "hidden") return null;
+
+  const typing = phase === "typing";
+  const isSelecting = phase === "selecting";
+  const isTransformed = phase === "transformed";
+  const showHandles = typing;
+
+  // Use the fixed index from fullText so partial typing ("c", "co", "cod") still styles as mono
+  const codeStart = fullText.indexOf("code");
+  const codeEnd = codeStart + 4;
+  const before = typed.slice(0, Math.min(typed.length, codeStart));
+  const codePart = typed.length > codeStart ? typed.slice(codeStart, Math.min(typed.length, codeEnd)) : "";
+  const after = typed.length > codeEnd ? typed.slice(codeEnd) : "";
+  const hasFullCode = typed.length >= codeEnd;
+
+  return (
+    <div className="mb-6">
+      <div
+        className="relative inline-block px-3 py-1.5 rounded-[2px]"
+        style={{ border: showHandles ? "1px solid #0D99FF" : "1px solid transparent" }}
+      >
+        {showHandles && (
+          <>
+            <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+            <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-white border border-[#0D99FF] rounded-[1px]" />
+          </>
+        )}
+        <h2 className="text-2xl md:text-3xl font-normal tracking-tight text-gray-900 leading-tight">
+          {before}
+          {codePart && (
+            isTransformed && hasFullCode ? (
+              <motion.code
+                initial={{ scale: 0.94, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 320, damping: 18 }}
+                className="inline-block align-baseline mx-0.5 text-gray-900"
+                style={{
+                  background: "#F3F3EE",
+                  fontFamily: "ui-monospace, SFMono-Regular, monospace",
+                  padding: "2px 10px",
+                  borderRadius: 6,
+                  fontSize: "0.78em",
+                  fontWeight: 400,
+                }}
+              >code</motion.code>
+            ) : isSelecting ? (
+              <span
+                className="bg-[#0D99FF]/25 transition-colors duration-150"
+                style={{
+                  fontFamily: "ui-monospace, SFMono-Regular, monospace",
+                  fontSize: "0.82em",
+                }}
+              >{codePart}</span>
+            ) : (
+              <span>{codePart}</span>
+            )
+          )}
+          {after}
+          {typing && (
+            <motion.span
+              animate={{ opacity: [1, 0] }}
+              transition={{ duration: 0.5, repeat: Infinity }}
+              className="inline-block w-[2px] h-[0.85em] bg-gray-900 ml-[2px] align-text-bottom"
+            />
+          )}
+        </h2>
+      </div>
+    </div>
+  );
+}
+
 function AISectionContent({ section }: { section: AISection }) {
   if (section.id === "overview") {
     return (
       <div className="mb-10">
+        <AIToolingTypingHeader />
         <div className="bg-white rounded-2xl border border-gray-100 p-8">
           <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            Designers don't ship UI anymore. They ship <strong>intentions</strong> — and a growing set of agents turn those intentions into code. The question for any modern DS team isn't "how do we build components?" It's "what does an agent need to know to ship a screen that's on-brand, accessible, and on-system without a human in the loop?"
+            The gap between design and engineering has always been there, and AI tooling is starting to close it.
           </p>
           <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            The answer is the same things a junior designer would need: <strong>primitives they can compose, tokens they shouldn't override, and documentation that explains when to use what — and when not to.</strong> The design system becomes the agent's context, and the agent becomes the DS team's force multiplier.
-          </p>
-          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            Protocols like <strong>MCP</strong> have solved the <em>connection</em> between LLMs and Figma — agents can finally read the file. The interesting work now is the system <em>around</em> the connection: what the agent reads, what it's allowed to output, and what it has to ask permission for. That's design-engineering work, not protocol work.
+            I've been wiring agents to Figma with MCP, writing scripts that pull design variables out into typed tokens, and treating component docs as something the agent actually reads.
           </p>
           <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            Below: the pipeline that makes this real, the agent-readable component docs that power it, and an interactive composition demo that shows it working.
+            What I've learned is an agent is only as good as the design system it can read, which means closing the gap takes a system that's <strong>organized and machine-readable</strong>: tokens with names, components that describe themselves, and docs that live next to the code.
           </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (section.id === "pipeline") {
-    return (
-      <div className="mb-10">
-        <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6">
-          <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            Figma holds the design intent. Code holds the implementation. <strong>MCP</strong> is the transport that lets the agent read both. But raw Figma data is low-signal — it tells you a rectangle is at x=240 with fill #FFD400, not that it's a <code className="px-1 py-0.5 rounded bg-gray-50 text-gray-900 text-[13px]">Card</code> with <code className="px-1 py-0.5 rounded bg-gray-50 text-gray-900 text-[13px]">surface=emphasis</code>. The agent only becomes useful when it reads the <strong>markdown documentation</strong> alongside the file — and that documentation is design work, not protocol work.
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-gray-100 p-8 md:p-10" style={{ background: "#FAFAF7" }}>
-          <div className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase mb-6">
-            System architecture
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-stretch">
-              <div className="md:col-span-1 bg-white border border-gray-200 rounded-xl p-4 flex flex-col justify-center">
-                <div className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase mb-1">Source</div>
-                <div className="text-sm font-semibold text-gray-900">Figma file</div>
-                <div className="text-[11px] text-gray-500 mt-1">via MCP server</div>
-              </div>
-
-              <div className="hidden md:flex items-center justify-center text-gray-300">→</div>
-
-              <div className="md:col-span-1 bg-white border border-gray-900 rounded-xl p-4 flex flex-col justify-center" style={{ background: "#0a0a0a" }}>
-                <div className="text-[10px] font-semibold tracking-wider text-gray-500 uppercase mb-1">Pipeline</div>
-                <div className="text-sm font-semibold text-white">Python Sync Script</div>
-                <div className="text-[11px] text-gray-400 mt-1">Runs in CI</div>
-              </div>
-
-              <div className="hidden md:flex items-center justify-center text-gray-300">→</div>
-
-              <div className="md:col-span-1 bg-white border border-gray-200 rounded-xl p-4 flex flex-col justify-center">
-                <div className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase mb-1">Truth</div>
-                <div className="text-sm font-semibold text-gray-900">tokens.json + .md specs</div>
-                <div className="text-[11px] text-gray-500 mt-1">Agent context</div>
-              </div>
-            </div>
-
-            <div className="hidden md:flex items-center justify-center text-gray-300 my-2">↓</div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
-                <div className="text-[11px] font-mono text-gray-500">Swift</div>
-                <div className="text-[10px] text-gray-400 mt-0.5">iOS</div>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
-                <div className="text-[11px] font-mono text-gray-500">TypeScript</div>
-                <div className="text-[10px] text-gray-400 mt-0.5">Web</div>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
-                <div className="text-[11px] font-mono text-gray-500">Markdown</div>
-                <div className="text-[10px] text-gray-400 mt-0.5">Docs</div>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="text-[10px] font-semibold tracking-[0.18em] text-gray-400 uppercase mb-3">
-                Agent layer (reads docs · composes from primitives)
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="text-sm font-semibold text-gray-900 mb-1">Component Docs (markdown)</div>
-                  <div className="text-[12px] text-gray-500 leading-relaxed">Every component ships with a <code className="text-[11px] bg-gray-50 px-1 rounded">.md</code> spec — props, examples, AI usage hints. This is the agent's context window.</div>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="text-sm font-semibold text-gray-900 mb-1">Composition Engine</div>
-                  <div className="text-[12px] text-gray-500 leading-relaxed">Given a Figma frame, the agent resolves it into existing primitives — never raw HTML, never invented colors, never new components.</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     );
@@ -6316,10 +6615,10 @@ function AISectionContent({ section }: { section: AISection }) {
       <div className="mb-10">
         <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6">
           <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            The foundation underneath everything else: a Python script that runs on every push to the Figma file (via webhook) and every PR to the codebase (via CI). It turns Figma variables into typed code, regenerates the markdown specs the agent reads, and opens a PR if anything drifted.
+            Underneath everything is a script that calls Figma's <strong>Variables REST API</strong> and pulls every token from the file: colors, spacing, radii, typography. Once those tokens are addressable from code, engineers and agents stop reading hex values out of design and start referencing semantic names instead.
           </p>
           <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            Plumbing, not magic — but the agent layer above only works if this layer is trustworthy.
+            What's shipped is the extraction layer: the script below pulls Figma variables into a normalized token tree. The next phase is transforming those tokens into Swift, Tailwind, and markdown outputs, then opening a PR when anything drifts. That part is straightforward templating once extraction is reliable.
           </p>
         </div>
 
@@ -6328,7 +6627,8 @@ function AISectionContent({ section }: { section: AISection }) {
             <div className="text-[10px] font-mono text-gray-500">sync_tokens.py</div>
           </div>
           <pre className="px-6 py-6 text-[12.5px] leading-relaxed overflow-x-auto" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", color: "#e5e7eb" }}>
-{`# 1. Pull variables from Figma
+{`# ─── Shipped: extraction layer ─────────────────────
+# 1. Pull variables from Figma's Variables REST API
 variables = figma_api.get_variables(FILE_ID)
 
 # 2. Normalize into a semantic token tree
@@ -6339,6 +6639,7 @@ tokens = transform_to_semantic(variables)
 #   ...
 # }
 
+# ─── Next phase: transform, write, drift PR ────────
 # 3. Generate platform outputs
 write_swift(tokens,      out="ios/DesignTokens.swift")
 write_typescript(tokens, out="web/tokens.ts")
@@ -6366,13 +6667,13 @@ if drift:
       <div className="mb-10">
         <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6">
           <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            Every component in the design system ships with a <code className="px-1.5 py-0.5 rounded bg-gray-50 text-gray-900 text-[13px]">.md</code> file. Frontmatter declares the typed props, allowed children, and tokens it references. The body is normal Markdown — examples, do's and don'ts, and AI usage hints.
+            Every component in the design system ships with its own <code className="px-1.5 py-0.5 rounded bg-gray-50 text-gray-900 text-[13px]">.md</code> file. The top of the file lists what the component is, what props it accepts, and which tokens it uses. The rest is plain Markdown: usage examples, do's and don'ts, and notes written specifically for the agent.
           </p>
           <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            This isn't documentation for humans <em>or</em> machines — it's documentation for both. A designer reads the examples; an LLM agent loads the frontmatter and the usage hints into context before generating a screen.
+            It isn't documentation for humans or machines. It's documentation for both. A designer reads the examples, and an agent loads the same file into context before generating a screen.
           </p>
           <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
-            These specs get loaded into the agent's context via the same <strong>MCP</strong> transport that exposes Figma — but writing them well is design work, not protocol work. The DS team's highest-leverage work is now writing the markdown that turns a generic LLM into a competent user of <em>your</em> system.
+            This markdown is what turns a generic LLM into a competent user of <em>your</em> system.
           </p>
         </div>
 
@@ -6409,6 +6710,27 @@ if drift:
     );
   }
 
+  if (section.id === "anatomy") {
+    return (
+      <div className="mb-10">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6">
+          <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Constrained composition only works if the agent can actually <em>understand</em> a component. So every component in Parasoul ships not as one artifact, but as four — generated from the same Figma source by the sync pipeline.
+          </p>
+          <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "var(--font-nouvelle), sans-serif", fontSize: 16 }}>
+            Same component, four audiences: the <strong>designer</strong> sees the Figma frame, the <strong>sync pipeline</strong> consumes the design tokens, the <strong>iOS engineer</strong> imports the SwiftUI API, and the <strong>agent</strong> reads the markdown spec. Toggle through each tab to see what every audience sees.
+          </p>
+        </div>
+
+        <ComponentAnatomy />
+
+        <div className="mt-4 px-2 text-[11px] text-gray-400 italic">
+          One component, four artifacts — none authored separately, all kept in sync by the pipeline.
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }
 
@@ -6440,17 +6762,6 @@ function AIToolingCaseStudy({ project, onBack }: { project: any; onBack: () => v
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
     >
-      <motion.button
-        onClick={onBack}
-        whileHover={{ x: -3 }}
-        className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 mb-10 transition-colors"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M10 4L6 8L10 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        Back
-      </motion.button>
-
       <div
         className="relative mb-16"
         style={{
@@ -6460,6 +6771,17 @@ function AIToolingCaseStudy({ project, onBack }: { project: any; onBack: () => v
         }}
       >
         <div className="mx-auto px-6 md:px-12" style={{ maxWidth: 1280 }}>
+          <motion.button
+            onClick={onBack}
+            whileHover={{ x: -3 }}
+            className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 mb-8 transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 4L6 8L10 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            Back
+          </motion.button>
+
           <div
             ref={heroRef}
             className="relative rounded-[28px] overflow-hidden mb-16"
@@ -6714,10 +7036,10 @@ function ProjectsView() {
                 return (
                   <motion.div
                     key={p.id}
-                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 20, delay: i * 0.1 }}
-                    whileHover={{ y: -4, transition: { delay: 0, duration: 0.2 } }}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1], delay: Math.min(i, 4) * 0.04 }}
+                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
                     onClick={() => setSelectedProject(p.id)}
                     className={`cursor-pointer group ${isWide ? "md:col-span-2" : ""}`}
                   >
@@ -6729,7 +7051,7 @@ function ProjectsView() {
                       {/* Background */}
                       {isHero && coverSrc ? (
                         <div className="absolute inset-0">
-                          <img src={coverSrc} alt={p.title} className="w-full h-full object-cover" />
+                          <img src={coverSrc} alt={p.title} className="w-full h-full object-cover" decoding="async" fetchPriority="high" />
                           {/* Phone mockups overlaid */}
                           {coverVideos && (
                             <div className="absolute inset-0 flex items-center justify-center gap-4">
@@ -6737,7 +7059,7 @@ function ProjectsView() {
                                 <div key={vi} className="relative w-[90px] h-[190px] rounded-[20px] border-[3px] border-gray-900 bg-black shadow-xl overflow-hidden">
                                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[36px] h-[10px] bg-black rounded-b-lg z-10" />
                                   <div className="w-full h-full rounded-[17px] overflow-hidden">
-                                    <video src={vid} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+                                    <video src={vid} autoPlay loop muted playsInline preload="metadata" className="w-full h-full object-cover" />
                                   </div>
                                   <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[30%] h-[2px] bg-gray-600 rounded-full" />
                                 </div>
@@ -6746,9 +7068,9 @@ function ProjectsView() {
                           )}
                         </div>
                       ) : coverVideo ? (
-                        <video src={coverVideo} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" />
+                        <video src={coverVideo} autoPlay loop muted playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
                       ) : coverSrc ? (
-                        <img src={coverSrc} alt={p.title} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: (p as any).coverPosition || "center" }} />
+                        <img src={coverSrc} alt={p.title} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: (p as any).coverPosition || "center" }} />
                       ) : (
                         <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${p.color}20, ${p.color}40)` }} />
                       )}
